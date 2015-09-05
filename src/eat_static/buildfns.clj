@@ -245,7 +245,7 @@ arg-vector & body]
 Optional arguments shown in brackets may be in any order. "))
 
 (defn- process-arg-loop
-  "Helper for process-args. Analyzes the forms provided in the argument vector."
+  "Helper for process-args. Analyzes the forms provided to the function definition."
   [args is-pred? begin]
   (loop [process args
          finished false

@@ -417,12 +417,26 @@ The above validation expressions like (> 1) are efficient syntax similar to the 
 
 ;; Any validiation expression can be combined with ++ :
 
-[(++ :i (or> (< 2 % 10) (> -2 % -10))) x y]
+(df int-stuff
+    (:i (< 1))
+    [(++ :i (or> (< 2 % 10) (> -2 % -10))) [x y 5]]
+    ... )
 
 ;; x and y must also be integers between one of these two ranges
 
 ;; and> and or> mean the same thing if you just use a single
 ;; anonymous function expression
+
+;; standard Clojure equivalent of int-stuff:
+
+(defn int-stuff
+      [{:keys [x y] :or {x 5 y 5}
+        :as int-stuff-input}]
+      {:pre [(integer? x) (integer? y)
+             (or (< 2 x 10) (> -2 x -10))
+             (or (< 2 y 10) (> -2 y -10))]
+       :post [(integer? %) (< % 1)]}
+      ... )
 ```
 
 Attempting to call functions with improper arguments yields useful exceptions indicating the exact argument name and the validation it failed.

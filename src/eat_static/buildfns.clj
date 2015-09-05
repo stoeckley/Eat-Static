@@ -377,7 +377,9 @@ Optional arguments shown in brackets may be in any order. "))
 
 (defmacro or> [v & r] (fn*> 'or v r))
 
-(defmacro g [s]
+(defmacro g
+  "A simple macro to facilitate syntax for pulling out data in nested structured. (g a.b.c) is the same as (get-in a [:b :c]) but provides a bit more of an OOP feel to it. Works on keywords only."
+  [s]
   (let [a (clojure.string/split (str s) #"[.]")
         l (symbol (first a))
         r (rest a)]

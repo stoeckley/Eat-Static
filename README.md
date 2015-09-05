@@ -1,16 +1,17 @@
 ## Eat Static
 
-#### Easy run-time type-checking and validation of Clojure maps
+#### Easy run-time type-checking and validation of Clojure maps and functions
 
 ##### A single vector DSL that joins many features in one place for *quickly*:
 * Making type checks on whole maps, specific k/v pairs, or function arguments easily
+* Specifying and validating function return types and other criteria
 * Building intricate map constructors & validators with one line of code
 * Constructing complex functional predicates on the fly
 * Building custom types on demand
 * Writing functions that accept named, unordered parameters
 * Specifying function arguments as required or optional
 * Providing default values for optional arguments
-* Grouping :pre-style conditions
+* Grouping :pre/:post style conditions
 * Leveraging trait-like behavior from basic Clojure maps
 
 ... and doing these tasks with *very* minimal syntax.
@@ -630,7 +631,7 @@ Predicates are great for building trait validation, where a data structure must 
 ;; You get truth or false: Either Hank is a senior citizen who lives in Holland
 ;; or isn't. 
 ```
-#### Using the full input-map 
+##### Using the full input-map 
 
 In the above example, it is unnecessarily verbose to pass hank with a key of :person rather than just letting the guy pass on his own -- he is a map, after all, and our functions all accept maps.     
 

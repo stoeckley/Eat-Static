@@ -114,7 +114,11 @@
           (throw-text "Full input map or output return value cannot be optional.")
 
           (= return sym)
-          (update-in result [:output-validations] conj (:lastfn result))
+          (let [l (:lastfn result)]
+            (if (vector? l)
+              (reduce #(update-in % [:output-validations] conj %2)
+                      result l)
+              (update-in result [:output-validations] conj l)))
           
           :else (place-symbol result (if (is-optional arg) :opt :req) sym input-map return)))
 

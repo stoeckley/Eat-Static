@@ -179,11 +179,11 @@
 
 (deftest objects-traits
   (is (object person [:str name :i age :k sex :n height]))
-  (is (object tall [(> 2) height]))
+  (is (object- tall [(> 2) height]))
   (is (object tall-person [(ep> person? tall?) tall-person-input]))
   (is (object short-person [(person?) short-person-input (< 1) height]))
   (is (object tall-person-bobby [(tall-person?) tall-person-bobby-input (= "bobby") name]))
-  (is (object child [(person?) child-input (< 27) age]))
+  (is (object- child [(person?) child-input (< 27) age]))
   (is (object short-child [(child?) short-child-input (< 0.8) height]))
   (is (not (false? (c tall-person? :name "andrew" :sex :m :age 95 :height 2.1))))
   (is (false? (c tall-person? :name "andrew" :sex :m :age 95 :height 2)))
@@ -198,7 +198,8 @@
   (is (false? (short-child? {:name "alice" :age 35 :sex :f :height 0.5})))
   (is (thrown? AssertionError (make-short-child {:name "andrew" :age 25 :sex :m})))
   (is (thrown? AssertionError (make-short-child {:name "andrew" :age 25 :height 1.5 :sex :m})))
-  (is (not (false? (make-short-child {:name "andrew" :age 25 :height 0.5 :sex :m})))))
+  (is (def andrew (make-short-child {:name "andrew" :age 25 :height 0.5 :sex :m})))
+  (is (not (false? (short-child? andrew)))))
 
 (deftest collections
   (is (pred vex [(epcoll> #(pred> % [:i a b])) v]))

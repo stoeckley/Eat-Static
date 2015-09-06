@@ -650,7 +650,7 @@ Here are a few more examples of quickly generating custom types and traits that 
 
 ;; fails:
 
-(make-short-child {:name "andrew" :age 25 :height 1.5 :sex :m})
+(make-short-child {:name "andrew" :age 12 :height 1.5 :sex :m})
 ```
 #### Combining traits
 
@@ -756,7 +756,7 @@ When composing predicates, accessing the full single input map in the arg list (
 (pred young-veggie-eater? m [(ep> person? is-vegetarian?) m (< 20) age])
 
 ;; (pred ...) is typically easier when you combine
-;; full-map validation with more complex individual element checks
+;; full-map validation with individual element checks
 ```
 #### Relationships between objects:
 ```clojure

@@ -380,7 +380,8 @@ Just as :n specified Z as a number, Eat Static provides easy built-in run-time t
     The anything type is also the default if an arg 
     is not preceded by any validation criteria. 
 
-    See docs for all corresponding keyword validators.
+    Keyword specifiers for these types are listed at the top of this
+    distribution's validations.clj file, in the map called type-checks.
 
 Creating specific validation expressions for :pre-style checks uses syntax similar to the -> macro, and allows one validation to check multiple args:
 
@@ -883,23 +884,33 @@ Hopefully, they help you take advantage of Clojure's excellent tools for making 
 * assertions
 * internal native Off
 
-### Documentation
+### Tests and Code Examples
 
-Full explanation of the tiny syntax is here.
+All the code on this page is available in the examples.clj file of the test folder, so you can download and play around with the functions.
+
+Also, if you are familiar with the basic tools offered by clojure.test, including just the **deftest** and **is** macros, you can see many examples of this library's features in the test folder, including scenarios when assertions are thrown.
 
 ### Gotchas
 
-##### A few things to remember and watch out for
+#### A few things to remember and watch out for
 
-* specifying multiple default values for the same symbol, in different opt vectors
-* [[a b 9 c 8 d]]  -- a has a default value of 9, not nil.
-* specify wrong type for a default based on preceding validator
-* does not test fn outputs, only inputs. use :post for that.
-* remember these are run-time checks, not static compilation checks. clojure is a dynamic language and we like it that way! the checks are entirely opt-in and easy to reach for when you want them
-* all these fns take only 1 argument!
-* more than one test in a row, also a good thing, i.e. :i :f
-* hang yourself with conflicting tests, with or without these macros
-* all preds are lists, not functions i.e. neg?. lists are as with -> macro
+Just as you can do things in a Clojure pre/post map that make no sense, you could also do the same with Eat Static. For example, requiring conflicting validations to all pass for a local. Here are a few other additional things to look out for.
+
+##### General tidbits
+
+* Remember, all the functions created with this library take a single argument, a map, and the parameters are named. The **c** macro helps make this idiomatic. The benefits are huge, but it might take a bit to remember this as you start using the library.
+* Remember, these are run-time checks, not static compilation checks. We like the dynamic nature of Clojure and have no intention of interefering with that. Reach for this run-time safety when you need it.
+
+##### Default values
+
+* Default value vectors can assign multiple symbols to the same default, which appears at the end of a sequence of symbols. Be mindful that in [[a b 9]], "a" has a default value of 9, not nil. If you want to mix optional and default values and make "a" have no default, use [-a [b 9]] or [b 9 a]
+* It is entirely possible to specify a default value for a symbol that would not itself pass another validation specified in the argument vector, just as you could write conflicting :or and :pre maps. 
+
+##### Validation
+
+* A validation item in the argument vector affects only those symbols up until the next validation item. If you have [:i :n a b c] the :i has no purpose. This is good since often these would confict, i.e. [:i :f a b]. If you need to combine them, use the **++** expression.
+* Validation expressions are not functions. They are list expressions, similar to the thread-first -> macro. Don't use functions like **neg?** in isolation, use (neg?) instead.
+
 * null ptr exception instead of useful assert msg in some output validators
 
 ### Community

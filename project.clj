@@ -1,5 +1,5 @@
 (defproject nl.balconystudio/eat-static "0.1.0"
-  :description "Type checking of Clojure maps."
+  :description "Eat Static, a library for type checking and validation of Clojure maps and functions."
   :url "http://github.com"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}

@@ -82,10 +82,18 @@
   (let [l (:lastfn ass)
         put #(cond
                (= sym input-map) (update-in % [%2] conj sym)
+
                (= sym return) (throw-text "wrong use of place-symbol")
-               :else
-               (-> % (update-in [place] conj sym)
-                   (update-in [%2] conj sym)))]
+
+               (and (= :opt place) (some #{sym} (:opt ass)))
+               (throw-text (str "Multiple declarations of optional value " sym))
+
+               (or (and (= :opt place) (some #{sym} (:req ass)))
+                   (and (= :req place) (some #{sym} (:opt ass))))
+               (throw-text (str "Symbol " sym " cannot be both optional and required."))
+               
+               :else (-> % (update-in [place] conj sym)
+                         (update-in [%2] conj sym)))]
     (cond (= :finished process) ass
           process (-> ass (put process)
                       (place-symbol place sym input-map return

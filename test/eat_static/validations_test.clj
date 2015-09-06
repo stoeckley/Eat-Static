@@ -208,7 +208,13 @@
   (is (thrown? AssertionError (make-short-child {:name "andrew" :age 25 :sex :m})))
   (is (thrown? AssertionError (make-short-child {:name "andrew" :age 25 :height 1.5 :sex :m})))
   (is (def andrew (make-short-child {:name "andrew" :age 25 :height 0.5 :sex :m})))
-  (is (not (false? (short-child? andrew)))))
+  (is (not (false? (short-child? andrew))))
+  (is (df make-tall ((tall-person?)) [(person?) make-tall-input]
+          (assoc make-tall-input :height 3)))
+  (is (df make-small (:m) [(person?) make-small-input]
+          (assoc make-small-input :height 0.1)))
+  (is (not (false? (tall-person? (make-tall andrew)))))
+  (is (false? (tall-person? (make-small andrew)))))
 
 (deftest collections
   (is (pred vex [(epcoll> #(pred> % [:i a b])) v]))

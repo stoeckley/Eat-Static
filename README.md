@@ -200,7 +200,11 @@ You have some flexibility in what you supply to the function definition:
 ```
 #### Validating a function's output
 
-The above examples have introduced basic validation for fn inputs, and the flexibility available for much more specific and complex validation is described in the rest of this document. All forms of validation available for the argument vector are also available for asserting the output of a function's return value as well. The key distinction is that you do not provide symbol names of locals in the output validation, as all expressions operate directly on its return value:
+The above examples have introduced basic validation for fn inputs, and the flexibility available for much more specific and complex validation is described in the rest of this document. All forms of validation available for the argument vector are also available for asserting the output of a function's return value as well, with two caveats:
+* You cannot assign a default value to any of the output data; if you try, it is simply ignored
+* You do not provide symbol names of locals in the output validation, as all expressions operate directly on its return value.
+
+Examples:
 ```clojure
 (df validate-output
     (:i)

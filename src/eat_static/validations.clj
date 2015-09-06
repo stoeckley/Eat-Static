@@ -1,4 +1,4 @@
-(ns eat-static.buildfns)
+(ns eat-static.validations)
 
 (defn is-bool?
   "Determines if the provided value is a true or false value."

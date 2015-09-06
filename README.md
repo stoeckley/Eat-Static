@@ -906,6 +906,8 @@ Just as you can do things in a Clojure pre/post map that make no sense, you coul
 * Default value vectors can assign multiple symbols to the same default, which appears at the end of a sequence of symbols. Be mindful that in ```[[a b 9]]```, ```a``` has a default value of ```9```, not ```nil```. If you want to mix optional and default values and make ```a``` have no default, use ```[-a [b 9]]``` or ```[b 9 a]```.
 * It is entirely possible to specify a default value for a symbol that would not itself pass another validation specified in the argument vector, just as you could write conflicting ```:or``` and ```:pre``` maps. 
 * If you use a local in your function body, but specify that local as optional with no default value, then it is entirely possible that you will get a null pointer exception if you haven't first checked that it could be nil and act appropriately. i.e. ```(df mult [-b] (* b 1))``` does exactly this with ```(mult {})```, since you cannot multiply nil as a number.
+* The library will let you try to assign multiple default values to the same symbol in different default value vectors. Only one will be used, of course, and it is not defined which one it will be. You would not likely ever do this except by accident.
+* The libary will not let you specify a symbol as both required and optional.
 
 ##### Validation
 

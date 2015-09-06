@@ -881,8 +881,11 @@ Hopefully, they help you take advantage of Clojure's excellent tools for making 
 
 ### Turning it Off
 
-* assertions
-* internal native Off
+While the ```pred``` functions are non-assertive, the functions you build with ```df``` and ```object``` throw run-time assertions if arguments are not provided as expected. That's the idea, but eventually you may wish to disable these assertions in production code.
+
+In Clojure, all asserts can be ignored by setting the global dynamic variable ```*assert*``` to ```false```. You must recompile your code for this to take affect. Any assertive function written with Eat Static, as well as any other asserts you use in your code, including :pre/:post maps, will no longer then throw assertions.
+
+Eat Static offers another library-specific mechanism to remove all the expanded ```assert``` expressions entirely (but not the non-assertive expressions used in functions built with the ```pred``` family). Simply call ```(off)``` and then recompile, and the expanded `defn` forms will not have any asserts. Turn it back on by calling ```(on)```, and recompiling. This is independent of the ```*assert*``` binding.
 
 ### Tests and Code Examples
 

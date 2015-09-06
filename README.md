@@ -888,7 +888,7 @@ Hopefully, they help you take advantage of Clojure's excellent tools for making 
 
 All the code on this page is available in the examples.clj file of the test folder, so you can download and play around with the functions.
 
-Also, if you are familiar with the basic tools offered by clojure.test, including just the **deftest** and **is** macros, you can see many examples of this library's features in the test folder, including scenarios when assertions are thrown.
+Also, if you are familiar with the basic tools offered by clojure.test, including just the ```deftest``` and ```is``` macros, you can see many examples of this library's features in the test folder, including scenarios when assertions are thrown.
 
 ### Gotchas
 

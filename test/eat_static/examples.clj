@@ -629,3 +629,14 @@
 
 ;; (c old-dutch-vegetarian-spouses? :wife alice :husband jason)
 
+;; these two expressions are the same, and return false:
+
+((predfn [a b]) {:a 1})
+
+(pred> {:a 1} [a b])
+
+(c my-function :c 4 :a 1 :b 2 :e 5 :f 6)
+
+;; this provides interesting uses for trait-like behavior, 
+;; describe further below
+

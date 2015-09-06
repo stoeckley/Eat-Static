@@ -513,8 +513,15 @@ Finally, for completeness, you can create an anonymous predicate function with p
 
 (df foo [(pred> [a b]) mymap] ...)
 
-;; This macro introduces a new layer of the special arg vector, and you can nest
-;; these as deep as you need for complex object hierarchies, if necessary
+;; these two expressions are the same, and return false:
+
+((predfn [a b]) {:a 1})
+
+(pred> {:a 1} [a b])
+
+;; predfn and pred> introduce a new layer of the special arg vector, 
+;; and you can nest these as deep as you need for complex object
+;; hierarchies, if necessary
 
 ;; But if you merely want to see if a single key exists in a map supplied as
 ;; an argument, this is easier:

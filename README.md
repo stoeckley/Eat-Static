@@ -542,7 +542,9 @@ Sometimes you need to ensure that all items in a sequence, such as a vector, exh
 ;; It implicitly requires the argument to pass the coll? test *first* so you can
 ;; still get a false value rather than an exception in cases where you need that:
 
-(df process-senior
+(pred is-awesome? [(= :super-cool) cool-factor])
+
+(df process-awesome-seniors
     [(epcoll> is-senior? is-awesome?) persons]
     ...)
 

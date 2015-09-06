@@ -107,7 +107,6 @@
  "A really great doc string"
  input-map 
  [a b c]
- 
  )
 
 ;; The optional parameters of a custom map name and a doc string
@@ -117,7 +116,6 @@
  input-map 
  "Still a really great doc string"
  [a b c]
- 
  )
 
 (df validate-output
@@ -220,7 +218,6 @@
 
 (df circle
    [(>= 1) radius :i x y -z (#{:valid :colors}) [color :blue]]
-
   )
 
 ;; added -z
@@ -360,7 +357,7 @@
 
 (pred is-awesome? [(= :super-cool) cool-factor])
 
-(df process-senior
+(df process-awesome-seniors
     [(epcoll> is-senior? is-awesome?) persons]
     )
 

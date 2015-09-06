@@ -823,11 +823,11 @@ Just as the **c** macro lets you pass named parameters as individual arguments, 
       [(elder-dutch-vegetarian?) husband wife 
        (c> married? :wife :husband husband) wife])
 
-;; Or, with or> or and>:
+;; In this particular example, just using the input map is better:
 
-(pred old-dutch-vegetarian-spouses?
+(pred old-dutch-vegetarian-spouses? in
       [(elder-dutch-vegetarian?) husband wife 
-       (or> (c married? :wife % :husband husband)) wife])
+       (married?) in])
 
 ;; You call these the same as the above df version:
 

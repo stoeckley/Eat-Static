@@ -615,6 +615,10 @@
       [(elder-dutch-vegetarian?) husband wife 
        (c> married? :wife :husband husband) wife])
 
+(pred old-dutch-vegetarian-spouses? in
+      [(elder-dutch-vegetarian?) husband wife 
+       (married?) in])
+
 ;; Or, with or> or and>:
 
 (pred old-dutch-vegetarian-spouses?

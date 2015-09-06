@@ -226,3 +226,17 @@
                  :w [{:a 1 :b 2} {:c 5 :a 99 :b -20}])))
   (is (false? (c vex :v [{:a 1 :b -1} {:c 5 :a 99 :b -20}] :z [{:a 1 :b 1.1}]
                  :w [{:a 1 :b 2} {:c 5 :a 99 :b -20}]))))
+
+(deftest c>test
+  (is (object person [:str name spouse country]))
+  (is (df married? [(person?) wife husband] (= (:name husband) (:spouse wife))))
+  (is (pred dutch? [(person?) dutch?-input (= "netherlands" country)]))
+  (is (pred married-dutch? in [(married?) in (dutch?) wife husband]))
+  (is (pred married-dutch-c? [(c> married? :wife :husband husband) wife (dutch?) wife husband]))
+  (is (def andrew (make-person {:name "andrew" :spouse "christine" :country "netherlands"})))
+  (is (def bobby (make-person {:name "bobby" :spouse "alice" :country "netherlands"})))
+  (is (def christine (make-person {:name "christine" :spouse "andrew" :country "netherlands"})))
+  (is (not (false? (c married-dutch? :wife christine :husband andrew ))))
+  (is (false? (married-dutch? {:c {:wife christine :husband bobby}})))
+  (is (not (false? (c married-dutch-c? :wife christine :husband andrew ))))
+  (is (false? (married-dutch-c? {:c {:wife christine :husband bobby}}))))

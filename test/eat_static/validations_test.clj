@@ -203,6 +203,9 @@
 (deftest collections
   (is (pred vex [(epcoll> #(pred> % [:i a b])) v]))
   (is (not (false? (c vex :v [{:a 1 :b 2} {:c 5 :a 99 :b -20}]))))
+  (is (pred vex2 [(epcoll> (predfn [:i a b]) map?) v]))
+  (is (not (false? (c vex2 :v [{:a 1 :b 2} {:c 5 :a 99 :b -20}]))))
+  (is (false? (c vex2 :v [5 []])))
   (is (false? (c vex :v [{:a 1 :b 2} {:c 5 :a 99 :b -20.0}])))
   (is (false? (c vex :v [{:a 1} {:c 5 :a 99 :b -20}])))
   (is (pred vex [(epcoll> #(pred> % [:i a b -c])) v w -z]))

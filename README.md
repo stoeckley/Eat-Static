@@ -530,12 +530,12 @@ Finally, for completeness, you can create an anonymous predicate function with p
 
 ;; expands to a check of (:a mymap)
 
-;; the *> helpers are laid out to simplify validation expressions, 
-;; and several are introduced below.
-
 ;; pred and predfn are not assertive, but this foo call is assertive
 ;; as all df forms enforce their arguments to the specified criteria.
 ;; foo fails if mymap does not have :a and :b keys
+
+;; the *> helpers are laid out to simplify validation expressions, 
+;; and several are introduced below.
 ```
 In this way, the pred/predfn tools may be useful even if you have no desire to introduce assertions in your work. Use them to quickly build predicates for testing the contents of a map anywhere in your code.
 

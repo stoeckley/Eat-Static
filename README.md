@@ -54,7 +54,7 @@ A normal function without any validations and default values simply offers a nam
 ;; unlike the simple defn version which sets them to nil if they are omitted.
 ;; Read on to see how easy it is to change these requirements.
 ```
-The df family of macros simply expand to a defn, defn-, or fn that takes a single map argument. All the destructuring and assertions are automatically handled.
+The df family of macros simply expand to a ```defn```, ```defn-```, or ```fn``` that takes a single map argument. All the destructuring and assertions are automatically handled.
 
 Functions created this way with or without these macros are called like this:
 
@@ -109,7 +109,7 @@ More and more syntax is saved as argument requirements increase. If you want to 
                     :as input}] ...) ;; added :as local
 ```
 #### Type Checks
-Next, you want to ensure that a b and c are only integers:
+Next, you want to ensure that ```a``` ```b``` and ```c``` are only integers:
 
 ```clojure
 (df my-function [:int [a b c 0]] ...)
@@ -299,7 +299,7 @@ This example leverages basic primitive types and simple validation expressions. 
 
 You want a function that creates a colored circle with a specified radius, centered at X, Y, with an optional color passed by a keyword, but a default color otherwise. The specified radius must be at least 1, and any passed keyword color must exist in a color map you have somewhere. You need X and Y to only be integers. You want to ensure this function is always called properly based on these requirements. You don't want to remember which order these arguments are passed in. And, you want the option to *quickly* add new args or default values later without breaking existing calls to the function, and without the verbosity and time of writing new multi-arity functions or editing assertions and :pre checks.
 
-You can get halfway there by using a combination of destructuring, :or maps and :pre conditions. But doing this frequently is tedious.
+You can get halfway there by using a combination of destructuring, ```:or``` maps and ```:pre``` conditions. But doing this frequently is tedious.
 
 The above function could be written as:
 
@@ -321,7 +321,7 @@ This library creates the equivalent fn like this:
   ...
   )
 ```
-Later, you decide to take this function into 3 dimensions, but keep it working for 2 dimensions. So you want to add an optional Z value. It must also be passed as an integer and will have no default value and thus should remain nil if it is excluded.
+Later, you decide to take this function into 3 dimensions, but keep it working for 2 dimensions. So you want to add an optional ```z``` value. It must also be passed as an integer and will have no default value and thus should remain nil if it is excluded.
 
 You could amend your function in Clojure by doing two things:
 
@@ -346,20 +346,20 @@ You could amend your function in Clojure by doing two things:
 
 ;; added -z
 ```
-Validation checks like (>= 1) or :i affect only those symbols that follow until the next validator. Thus x y and z must be integers, but are not affected by (>= 1), and z must only be an integer if it is actually provided. 
+Validation checks like ```(>= 1)``` or ```:i``` affect only those symbols that follow until the next validator. Thus ```x``` ```y``` and ```z``` must be integers, but are not affected by ```(>= 1)```, and ```z``` must only be an integer if it is actually provided. 
 
 Basic keyword validator syntax:
 
-  * **:i -z** specifies z is an optional integer arg
-  * **:i [z]** means the same thing as :i -z
-  * **:i [z 5]** would add a default value to the optional z
-  * **:i [z w 5]** would make both z w optional integers with a default of 5
-  * **:i [z 4 w 5]** would make both z w optional integers with separate default values
-  * **:i z** would mean z is a required integer argument
-  * **:n z** would mean z is a required number, including any number type (i.e. floats)
-  * Instead of the :n or :i shortcuts, all types have more verbose synonyms, like **:num** and **:number** or **:int** and **:integer**
+  * ```:i -z``` specifies ```z``` is an optional integer arg
+  * ```:i [z]``` means the same thing as ```:i -z```
+  * ```:i [z 5]``` would add a default value to the optional ```z```
+  * ```:i [z w 5]``` would make both ```z``` ```w``` optional integers with a default of 5
+  * ```:i [z 4 w 5]``` would make both ```z``` ```w``` optional integers with separate default values
+  * ```:i z``` would mean ```z``` is a required integer argument
+  * ```:n z``` would mean ```z``` is a required number, including any number type (i.e. floats)
+  * Instead of the ```:n``` or ```:i``` shortcuts, all types have more verbose synonyms, like ```:num``` and ```:number``` or ```:int``` and ```:integer```
 
-Just as :n specified Z as a number, Eat Static provides easy built-in run-time type checks for all Clojure primitives:
+Just as ```:n``` specified ```z``` as a number, Eat Static provides easy built-in run-time type checks for all Clojure primitives:
 
     * number
     * integer
@@ -383,7 +383,7 @@ Just as :n specified Z as a number, Eat Static provides easy built-in run-time t
     Keyword specifiers for these types are listed at the top of this
     distribution's validations.clj file, in the map called type-checks.
 
-Creating specific validation expressions for :pre-style checks uses syntax similar to the -> macro, and allows one validation to check multiple args:
+Creating specific validation expressions for :pre-style checks uses syntax similar to the ```->``` macro, and allows one validation to check multiple args:
 
 ```clojure
 [(>= 1) radius (neg?) x y]
@@ -405,7 +405,7 @@ Creating specific validation expressions for :pre-style checks uses syntax simil
 ;; inside validation forms like (>= 1) which may
 ;; use keywords for other purposes.
 ```
-Combine validation expressions with **++**
+Combine validation expressions with ```++```
 ```clojure
 [(++ :i (> 1)) x y z]
 
@@ -419,7 +419,7 @@ Combine validation expressions with **++**
 ```
 Writing normal function expressions:
 
-The above validation expressions like (> 1) are efficient syntax similar to the thread-first macro expressions, but sometimes you want a bit more flexibility. The **and>** and **or>** validation helpers let you do just that, using **%** as in an anonymous function:
+The above validation expressions like ```(> 1)``` are efficient syntax similar to the thread-first macro expressions, but sometimes you want a bit more flexibility. The **and>** and **or>** validation helpers let you do just that, using ```%``` as in an anonymous function:
 ```clojure
 [(or> (< 2 % 10) (> -2 % -10)) x y]
 
@@ -465,7 +465,7 @@ Complex predicates built as separate functions are an easy way to declare custom
 
 #### pred
 
-You could write a normal function that returns a truthy value to use as a predicate, but since the df forms build these tests automatically, one very quick way to build a trait predicate would be:
+You could write a normal function that returns a truthy value to use as a predicate, but since the ```df``` forms build these tests automatically, one very quick way to build a trait predicate would be:
 
 ```clojure
 ;; Create a simple fn that returns true if its args pass:
@@ -497,7 +497,7 @@ You could write a normal function that returns a truthy value to use as a predic
 ;; Predicates created with pred are not allowed to have a function body,
 ;; but they do accept doc strings and custom names for the input map.
 ```
-Finally, for completeness, you can create an anonymous predicate function with predfn, which builds a fn rather than a defn:
+Finally, for completeness, you can create an anonymous predicate function with ```predfn```, which builds a fn rather than a defn:
 ```clojure
 ((predfn [a b]) {:a 1})  ;this ad-hoc test returns false for the map {:a 1}
 
@@ -676,7 +676,7 @@ Predicates are great for building trait validation, where a data structure must 
 ```
 ##### Using the full input-map 
 
-In the above example, it is unnecessarily verbose to pass hank with a key of :person rather than just letting the guy pass on his own -- he is a map, after all, and our functions all accept maps.     
+In the above example, it is unnecessarily verbose to pass hank with a key of ```:person``` rather than just letting the guy pass on his own -- he is a map, after all, and our functions all accept maps.     
 
 When composing predicates, accessing the full single input map in the arg list (as shown further above) can be quite helpful to avoid unnecessary nesting:
 

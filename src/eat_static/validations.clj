@@ -67,25 +67,27 @@
 
 (defn- place-symbol
   "Places the symbol in various contexts, such as whether it is a required or optional function argument, and any type checks and/or other tests it must pass when the function is called."
-  [ass place sym input-map & {:keys [process remain]}]
+  [ass place sym input-map return & {:keys [process remain]}]
   (let [l (:lastfn ass)
-        put #(if (= sym input-map)
-               (update-in % [%2] conj sym)
+        put #(cond
+               (= sym input-map) (update-in % [%2] conj sym)
+               (= sym return) (throw-text "wrong use of place-symbol")
+               :else
                (-> % (update-in [place] conj sym)
                    (update-in [%2] conj sym)))]
     (cond (= :finished process) ass
           process (-> ass (put process)
-                      (place-symbol place sym input-map
+                      (place-symbol place sym input-map return
                                     :process (or (first remain) :finished)
                                     :remain (next remain)))
-          (vector? l) (place-symbol ass place sym input-map
+          (vector? l) (place-symbol ass place sym input-map return
                                     :process (first l)
                                     :remain (next l))
           :else (put ass l))))
 
 (defn- arg-split-fn
   "This is the reduction function used when looking at all the forms provided in a function definition's argument vector, or an output validation list. It places symbols into their required contexts."
-  [input-map is-output?]
+  [input-map is-output? return]
   (fn [result arg]
     (cond
       (and (list? arg) (= '++ (first arg)))
@@ -103,12 +105,18 @@
         (assoc result :lastfn arg))
 
       (symbol? arg)
-      (if is-output?
-        (throw-text "Output validations always operate on the function's return value, and no other symbols may be named.")
-        (let [sym (symbol-root arg)]
-          (if (and (is-optional arg) (= input-map sym))
-            (throw-text "Full input map cannot be optional.")
-            (place-symbol result (if (is-optional arg) :opt :req) sym input-map))))
+      (let [sym (symbol-root arg)]
+        (cond
+          is-output?
+          (throw-text "Output validations always operate on the function's return value, and no other symbols may be named.")
+          
+          (and (is-optional arg) (or (= input-map sym) (= return sym)))
+          (throw-text "Full input map or output return value cannot be optional.")
+
+          (= return sym)
+          (update-in result [:output-validations] conj (:lastfn result))
+          
+          :else (place-symbol result (if (is-optional arg) :opt :req) sym input-map return)))
 
       (vector? arg)
       (if is-output?
@@ -119,13 +127,13 @@
                         (if (seq process)
                           (if (not (symbol? (first process)))
                             (recur (first process) (rest process) r)
-                            (if (= input-map (first process))
-                              (throw-text "Full input map cannot be optional.")
+                            (if (#{input-map return} (first process))
+                              (throw-text "Full input map or output value cannot be optional.")
                               (recur v (rest process)
                                      (assoc r (first process) v))))
                           r))]
           (reduce (fn [r [s default]]
-                    (-> r (place-symbol :opt (symbol-root s) input-map)
+                    (-> r (place-symbol :opt (symbol-root s) input-map return)
                         (update-in [:defaults] conj [(symbol-root s) default])))
                   result assigns)))
 
@@ -135,9 +143,9 @@
 
 (defn- arg-split
   "Splits and analyzes the vector of function arguments or the list of output validations."
-  [args input-map is-output?]
+  [args input-map is-output? return]
   (dissoc
-   (reduce (arg-split-fn input-map is-output?)
+   (reduce (arg-split-fn input-map is-output? return)
            {:lastfn :no-fn :opt #{} :req #{} :output-validations []}
            args)
    :lastfn))
@@ -158,7 +166,7 @@
 
 (defn- assert-locals
   "Builds the individual type checks and validations for all the symbols tested by a particular expression or type."
-  [f l req is-pred? input-map is-output?]
+  [f l req is-pred? input-map is-output? return]
   (let [opt-text (if is-output?
                    "Function return value failed condition"
                    "Optional arg failed condition")
@@ -166,7 +174,7 @@
                    "Function return value failed condition"
                    "Arg condition failed")]
     (for [i l]
-      (if (or (req i) (= input-map i))
+      (if (or (req i) (= input-map i) (= return i))
         (assert-sym f i req-text is-pred?)
         (if is-pred?
           `(if ~i
@@ -177,22 +185,22 @@
 
 (defn- build-asserts
   "Maps over all the different type checks and validation expressions and builds the tests for each symbol in each check."
-  [argsplits is-pred? input-map is-output?]
+  [argsplits is-pred? input-map is-output? return]
   (mapcat (fn [[f l]]
-            (assert-locals f l (:req argsplits) is-pred? input-map is-output?))
-          (dissoc argsplits :req :opt :no-fn :defaults)))
+            (assert-locals f l (:req argsplits) is-pred? input-map is-output? return))
+          (dissoc argsplits :req :opt :no-fn :defaults :output-validations)))
 
 (defn- all-validations
   "Asserts, if necessary, that all required parameters are provided by the caller, then builds the validation and type checks for each parameter."
-  [req f arg-analysis is-pred? input-map]
+  [req f arg-analysis is-pred? input-map return]
   (if is-pred?
     [`(empty? (filter nil? ~(vec req)))
-     (build-asserts arg-analysis is-pred? input-map false)]
+     (build-asserts arg-analysis is-pred? input-map false return)]
     [`(assert (empty? (filter nil? ~(vec req)))
               (str "Required named arguments to "
                    ~(clojure.string/upper-case (str f))
                    " missing."))
-     (build-asserts arg-analysis is-pred? input-map false)]))
+     (build-asserts arg-analysis is-pred? input-map false return)]))
 
 (defn- transform-output-validations
   "Prepares an output validation list for processing."
@@ -208,10 +216,12 @@
 
 (defmacro df-build
   "Universal function constructor used by the public macros."
-  [is-pred? begin f m docstring args output body]
+  [is-pred? begin f m docstring args output return body]
   (let [pre# (when (is-pre-or-post (first body)) (first body))
-        arg-analysis (arg-split args m false)
-        arg-outs (arg-split output m true)
+        arg-analysis (arg-split args m false return)
+        arg-outs (arg-split output m true return)
+        arg-outs (update-in arg-outs [:output-validations]
+                            concat (:output-validations arg-analysis))
         {:keys [opt req defaults]} arg-analysis]
     `(~begin ~@(if (= 'fn begin) [f] [f docstring])
              [{:keys ~(vec (concat opt req))
@@ -221,19 +231,18 @@
                         (if is-pred?
                           `(((and ~@(apply list*
                                            (all-validations
-                                            req f arg-analysis is-pred? m)))))
-                          (all-validations req f arg-analysis is-pred? m)))
+                                            req f arg-analysis is-pred? m return)))))
+                          (all-validations req f arg-analysis is-pred? m return)))
                  `((comment "Assertions are turned off.")))
              ~@(if (not is-pred?) 
                  (let [b (if pre# (rest body) body)
-                       returnv (gensym (str f "-return-value"))
-                       outputted (transform-output-validations arg-outs returnv)]
-                   `((let [~returnv (do ~@b)]
+                       outputted (transform-output-validations arg-outs return)]
+                   `((let [~return (do ~@b)]
                        ;; (comment "in: " ~arg-analysis)
                        ;; (comment "out: " ~arg-outs)
                        ;; (comment "outputted:" ~outputted)
-                       ~@(build-asserts outputted false m true)
-                       ~returnv)))
+                       ~@(build-asserts outputted false m true return)
+                       ~return)))
                  ()))))
 
 (defn- throw-arity-exception []
@@ -271,7 +280,16 @@ Optional arguments shown in brackets may be in any order. "))
               (throw-text "More than one output validation list provided.")
               (recur (rest process) false
                      (assoc analysis :output (first process)))))
-          
+
+          (map? (first process))
+          (cond
+            is-pred? (throw-text "Predicate functions cannot name or validate output.")
+            (not= 1 (count (first process))) (throw-text "One key and value allowed for custom in/out name map.")
+            (:input analysis) (throw-text "More than one symbol provided to name input map.")
+            :else (recur (rest process) false
+                         (assoc analysis :input (first (first process))
+                                :return (second (first process)))))
+                    
           (vector? (first process))
           (if (:v-args analysis)
             (throw-text "More than one arg vector provided.")
@@ -287,14 +305,15 @@ Optional arguments shown in brackets may be in any order. "))
   (if (and is-pred? (= :predfn f))
     (assert (vector? (first args)) "predfn accepts a vector only.")
     (assert (symbol? f) "First argument must be a symbol to name your function."))
-  (let [{:keys [input doc v-args body output]
+  (let [{:keys [input doc v-args body output return]
          :or {doc "No doc string provided."
+              return (symbol (str f "-return"))
               input (symbol (str f "-input"))}}
         (process-arg-loop args is-pred? begin)]
     (if (and is-pred? (seq body))
       (throw-text "Predicates do not have bodies or a :pre/:post map. Use the arg list to specify all conditions.")
       (let [ff (if (and is-pred? (= :predfn f)) (gensym) f)]
-        (list `df-build is-pred? begin ff input doc v-args output body)))))
+        (list `df-build is-pred? begin ff input doc v-args output return body)))))
 
 ;; The public macros for building defns that provide checks:
 

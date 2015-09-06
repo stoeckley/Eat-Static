@@ -2,6 +2,8 @@
   (:require [clojure.test :refer :all]
             [eat-static.validations :refer :all]))
 
+;; A mild handful of tests
+
 (deftest df-output-int
   (is (df a (:i) [b] (* b 2)))
   (is (df b (:i) [c] (int (* 2.0 c))))
@@ -94,6 +96,14 @@
   (is (thrown? AssertionError (c a :b 1)))
   (is (thrown? AssertionError (c a :b 1 :z 2.2)))
   (is (thrown? AssertionError (c a :c 4))))
+
+(deftest df-pre-post
+  (is (df a [b] {:pre [(= b 5)]} b))
+  (is (thrown? AssertionError (c a :b 3)))
+  (is (= 5 (c a :b 5)))
+  (is (df a [b] {:post [(= b 5)]} b))
+  (is (thrown? AssertionError (c a :b 3)))
+  (is (= 5 (c a :b 5))))
 
 (deftest pred-keys
   (is (pred a [b c -d [e 9]]))

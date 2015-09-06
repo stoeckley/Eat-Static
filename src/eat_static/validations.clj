@@ -1,4 +1,15 @@
-(ns eat-static.validations)
+;;  Copyright (c) Andrew Stoeckley, 2015. All rights reserved.
+
+;;  The use and distribution terms for this software are covered by the
+;;  Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)
+;;  which can be found in the license file at the root directory of this distribution.
+;;  By using this software in any fashion, you are agreeing to be bound by
+;;  the terms of this license.
+;;  You must not remove this notice, or any other, from this software.
+
+(ns ^{:author "Andrew Stoeckley at Balcony Studio, the Netherlands"
+      :doc "A library for the quick validation of Clojure maps and functions, offering easy safety checks for input, output and rapid generation of custom types and traits."}
+  eat-static.validations)
 
 (defn is-bool?
   "Determines if the provided value is a true or false value."

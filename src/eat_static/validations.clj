@@ -287,8 +287,8 @@ Optional arguments shown in brackets may be in any order. "))
             (not= 1 (count (first process))) (throw-text "One key and value allowed for custom in/out name map.")
             (:input analysis) (throw-text "More than one symbol provided to name input map.")
             :else (recur (rest process) false
-                         (assoc analysis :input (first (first process))
-                                :return (second (first process)))))
+                         (assoc analysis :input (first (first (first process)))
+                                :return (second (first (first process))))))
                     
           (vector? (first process))
           (if (:v-args analysis)

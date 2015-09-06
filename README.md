@@ -899,21 +899,21 @@ Just as you can do things in a Clojure pre/post map that make no sense, you coul
 ##### General tidbits
 
 * Remember, all the functions created with this library take a single argument, a map, and the parameters are named. The **c** macro helps make this idiomatic. The benefits are huge, but it might take a bit to remember this as you start using the library.
-* Remember, these are run-time checks, not static compilation checks. We like the dynamic nature of Clojure and have no intention of interefering with that. Reach for this run-time safety when you need it.
+* Remember, these are run-time checks, not static compilation checks. We like the dynamic nature of Clojure and have no intention of interfering with that. Reach for this run-time safety when you need it.
 
-##### Default values
+##### Default and optional values
 
-* Default value vectors can assign multiple symbols to the same default, which appears at the end of a sequence of symbols. Be mindful that in [[a b 9]], "a" has a default value of 9, not nil. If you want to mix optional and default values and make "a" have no default, use [-a [b 9]] or [b 9 a]
-* It is entirely possible to specify a default value for a symbol that would not itself pass another validation specified in the argument vector, just as you could write conflicting :or and :pre maps. 
+* Default value vectors can assign multiple symbols to the same default, which appears at the end of a sequence of symbols. Be mindful that in ```[[a b 9]]```, ```a``` has a default value of ```9```, not ```nil```. If you want to mix optional and default values and make ```a``` have no default, use ```[-a [b 9]]``` or ```[b 9 a]```.
+* It is entirely possible to specify a default value for a symbol that would not itself pass another validation specified in the argument vector, just as you could write conflicting ```:or``` and ```:pre``` maps. 
+* If you use a local in your function body, but specify that local as optional with no default value, then it is entirely possible that you will get a null pointer exception if you haven't first checked that it could be nil and act appropriately. i.e. ```(df mult [-b] (* b 1))``` does exactly this with ```(mult {})```, since you cannot multiply nil as a number.
 
 ##### Validation
 
-* A validation item in the argument vector affects only those symbols up until the next validation item. If you have [:i :n a b c] the :i has no purpose. This is good since often these would confict, i.e. [:i :f a b]. If you need to combine them, use the **++** expression.
-* Validation expressions are not functions. They are list expressions, similar to the thread-first -> macro. Don't use functions like **neg?** in isolation, use (neg?) instead.
+* A validation item in the argument vector affects only those symbols up until the next validation item. If you have ```[:i :n a b c]``` the ```:i``` has no purpose. This is good since often these would confict, i.e. ```[:i :f a b]```. If you need to combine them, use the ```++``` expression.
+* Validation expressions are not functions. They are list expressions, similar to the thread-first ```->``` macro. Don't use functions like ```neg?``` in isolation, use ```(neg?)``` instead.
+* While the vast majority of use cases will provide a meaningful assertion message if a validation fails, occasionally you can write an expression that attempts to do something with nil that instead leads to a null pointer exception instead, which carries no useful message. The assertion is valid based on your specified validation criteria, but the message is not clear.
 
-* null ptr exception instead of useful assert msg in some output validators
 
 ### Community
 
-* issues, feedback
-* PRs
+Issues, feedback, pull requests all welcome. Many thanks.

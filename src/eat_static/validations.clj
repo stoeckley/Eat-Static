@@ -285,6 +285,7 @@ Optional arguments shown in brackets may be in any order. "))
               (recur (rest process) false
                      (assoc analysis :output (first process)))))
 
+          ;; experimental, undocumented feature
           (map? (first process))
           (cond
             is-pred? (throw-text "Predicate functions cannot name or validate output.")

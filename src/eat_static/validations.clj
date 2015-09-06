@@ -324,12 +324,13 @@ Optional arguments shown in brackets may be in any order. "))
 
 (defn- object-build
   [title arglist d p]
-  (let [m (gensym (str title))]
+  (let [m (symbol (str title "-input"))]
     `(do (~d ~(symbol (str "make-" title))
              ~m
              ~(str "Builds and returns a map meeting the " title " requirements")
              ~arglist ~m)
          (~p ~(symbol (str title "?"))
+             ~m
              ~(str "Verifies if the supplied map matches the " title " structure.")
              ~arglist))))
 

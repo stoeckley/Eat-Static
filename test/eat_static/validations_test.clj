@@ -48,7 +48,8 @@
 (deftest df-output-keys-nested-validations
   (is (df a ((pred> [(++ :i (< 10)) b :k c])) "complex" ain [c] c))
   (is (= {:b 5 :c :hi} (c a :c {:b 5 :c :hi})))
-  (is (thrown? ClassCastException (c a :c 7)))
+  (is (thrown? AssertionError (a {:b :hi})))
+  (is (thrown? AssertionError (c a :c 7)))
   (is (thrown? AssertionError (c a :c {})))
   (is (thrown? AssertionError (a {:c {:b 15 :c :hi}})))
   (is (thrown? AssertionError (a {:c {:b 5 :c 4}}))))
@@ -176,4 +177,26 @@
   (is (false? (c m :c {:a 1 :c :hi})))
   (is (false? (c m :c {:a 1 :b 1}))))
 
-
+(deftest objects-traits
+  (is (object person [:str name :i age :k sex :n height]))
+  (is (object tall [(> 2) height]))
+  (is (object tall-person [(ep> person? tall?) tall-person-input]))
+  (is (object short-person [(person?) short-person-input (< 1) height]))
+  (is (object tall-person-bobby [(tall-person?) tall-person-bobby-input
+                                 (= "bobby") name]))
+  (is (object child [(person?) child-input (< 27) age]))
+  (is (object short-child [(child?) short-child-input (< 0.8) height]))
+  (is (not (false? (c tall-person? :name "andrew" :sex :m :age 95 :height 2.1))))
+  (is (false? (c tall-person? :name "andrew" :sex :m :age 95 :height 2)))
+  (is (false? (c tall-person-bobby? :name "bobby" :sex :m :age 7 :height 2)))
+  (is (false? (c tall-person-bobby? :name "andrew" :sex :m :age 7 :height 3)))
+  (is (false? (c tall-person-bobby? :name "bobby" :age 7 :height 3)))
+  (is (not (false? (c tall-person-bobby? :name "bobby" :sex :m :age 7 :height 3))))
+  (is (not (false? (c short-person? :name "bobby" :sex :m :age 7 :height 0.5))))
+  (is (false? (c short-person? :name "bobby" :sex :m :age 7 :height 1.6)))
+  (is (not (false? (short-child? {:name "alice" :age 15 :sex :f :height 0.5}))))
+  (is (false? (short-child? {:name "alice" :age 15 :sex :f :height 1.5})))
+  (is (false? (short-child? {:name "alice" :age 35 :sex :f :height 0.5})))
+  (is (thrown? AssertionError (make-short-child {:name "andrew" :age 25 :sex :m})))
+  (is (thrown? AssertionError (make-short-child {:name "andrew" :age 25 :height 1.5 :sex :m})))
+  (is (not (false? (make-short-child {:name "andrew" :age 25 :height 0.5 :sex :m})))))

@@ -607,12 +607,31 @@ Constructors and validators:
    (make-child {:name "alex" :fav-toy "legos"
                 :age 8 :education :primary}))
 
-(child? alex) ;; returns a truthy value
-
 ;; (this is a contrived example; you probably wouldn't store alex in a def)
 
-;; Additionally, object- creates private versions of the constructor and validator
+(child? alex) ;; returns a truthy value
 
+;; In both functions, the input map is also named child-input should you
+;; wish to use it in the argument vector to (object ...), i.e. for 
+;; creating new objects of existing objects:
+
+(object baby-child [(child?) baby-child-input (< 2) age])
+
+;; Additionally, object- creates private versions of the constructor and validator
+```
+Here are a few more examples of quickly generating custom types and traits that are easy to build and validate using the object macro:
+```clojure
+(object person [:str name :i age :k sex :n height])
+(object tall [(> 2) height])
+(object tall-person [(ep> person? tall?) tall-person-input])
+(object short-person [(person?) short-person-input (< 1) height])
+(object tall-person-bobby [(tall-person?) tall-person-bobby-input (= "bobby") name])
+(object child [(person?) child-input (< 27) age])
+(object short-child [(child?) short-child-input (< 0.8) height])
+
+;; fails:
+
+(make-short-child {:name "andrew" :age 25 :height 1.5 :sex :m})
 ```
 #### Combining traits
 

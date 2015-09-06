@@ -75,6 +75,14 @@ Of course, the key/value arguments may be presented in any order:
 (c my-function :c 4 :a 1 :b 2) ; same as above
 ```
 
+And of course, keys not specified are simply ignored:
+
+```clojure
+(c my-function :c 4 :a 1 :b 2 :e 5 :f 6)
+
+;; this provides interesting uses for trait-like behavior, 
+;; describe further below
+```
 The syntax savings grows with argument complexity. As soon as you decide that all args are optional with a default value of 0 for each, it becomes:
 
 ```clojure
@@ -270,14 +278,14 @@ Comparison with normal Clojure code:
 ;; OR less than -5:
 
 (df out (:i (or> (> % 10) (< % -5)))
-    [:i x] ...)
+    [:i x y z] ...)
 
 ;; For comparison's sake, here is the normal Clojure way
 ;; to do almost the same thing:
 
 (defn out
       [{:keys [x] :as out-input}]
-      {:pre [(integer? x)]
+      {:pre [(integer? x) (integer? y) (integer? z))]
        :post [(integer? %)
               (or (> % 10) (< % -5))]}
               ...)

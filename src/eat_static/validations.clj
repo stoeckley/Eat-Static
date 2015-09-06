@@ -85,8 +85,8 @@
 
                (= sym return) (throw-text "wrong use of place-symbol")
 
-               (and (= :opt place) (some #{sym} (:opt ass)))
-               (throw-text (str "Multiple declarations of optional value " sym))
+               ;; (and (= :opt place) (some #{sym} (:opt ass)))
+               ;; (throw-text (str "Multiple declarations of optional value " sym))
 
                (or (and (= :opt place) (some #{sym} (:req ass)))
                    (and (= :req place) (some #{sym} (:opt ass))))

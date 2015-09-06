@@ -108,7 +108,7 @@
       (let [sym (symbol-root arg)]
         (cond
           is-output?
-          (throw-text "Output validations always operate on the function's return value, and no other symbols may be named.")
+          (throw-text "Output validation lists always operate on the function's return value, and no other symbols may be named.")
           
           (and (is-optional arg) (or (= input-map sym) (= return sym)))
           (throw-text "Full input map or output return value cannot be optional.")

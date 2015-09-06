@@ -621,6 +621,8 @@ Constructors and validators:
 ```
 Here are a few more examples of quickly generating custom types and traits that are easy to build and validate using the object macro:
 ```clojure
+;; the ep> validation helper is explained a bit further below
+
 (object person [:str name :i age :k sex :n height])
 (object tall [(> 2) height])
 (object tall-person [(ep> person? tall?) tall-person-input])

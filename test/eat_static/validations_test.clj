@@ -182,8 +182,7 @@
   (is (object tall [(> 2) height]))
   (is (object tall-person [(ep> person? tall?) tall-person-input]))
   (is (object short-person [(person?) short-person-input (< 1) height]))
-  (is (object tall-person-bobby [(tall-person?) tall-person-bobby-input
-                                 (= "bobby") name]))
+  (is (object tall-person-bobby [(tall-person?) tall-person-bobby-input (= "bobby") name]))
   (is (object child [(person?) child-input (< 27) age]))
   (is (object short-child [(child?) short-child-input (< 0.8) height]))
   (is (not (false? (c tall-person? :name "andrew" :sex :m :age 95 :height 2.1))))
@@ -200,3 +199,30 @@
   (is (thrown? AssertionError (make-short-child {:name "andrew" :age 25 :sex :m})))
   (is (thrown? AssertionError (make-short-child {:name "andrew" :age 25 :height 1.5 :sex :m})))
   (is (not (false? (make-short-child {:name "andrew" :age 25 :height 0.5 :sex :m})))))
+
+(deftest collections
+  (is (pred vex [(epcoll> #(pred> % [:i a b])) v]))
+  (is (not (false? (c vex :v [{:a 1 :b 2} {:c 5 :a 99 :b -20}]))))
+  (is (false? (c vex :v [{:a 1 :b 2} {:c 5 :a 99 :b -20.0}])))
+  (is (false? (c vex :v [{:a 1} {:c 5 :a 99 :b -20}])))
+  (is (pred vex [(epcoll> #(pred> % [:i a b -c])) v w -z]))
+  (is (not (false? (c vex :v [{:a 1 :b 2} {:c 5 :a 99 :b -20}]
+                      :w [{:a 1 :b 2} {:c 5 :a 99 :b -20}]))))
+  (is (not (false? (c vex :v [{:a 1 :b 2} {:c 5 :a 99 :b -20}]
+                      :w [{:a 1 :b 2} {:c 5 :a 99 :b -20}]
+                      :z [{:a -1 :b -1}]))))
+  (is (not (false? (c vex :v [{:a 1 :b 2 :c 100} {:c 5 :a 99 :b -20}]
+                      :w [{:a 1 :b 2} {:c 5 :a 99 :b -20}]))))
+  (is (not (false? (c vex :v [{:a 1 :b 2} {:a 99 :b -20}]
+                      :w [{:a 1 :b 2} {:c 5 :a 99 :b -20}]
+                      :z [{:a -1 :b -1}]))))
+  (is (false? (c vex :v [{:a 1 :b 2} {:a 99 :b -20}]
+                      :w [{:a 1 :b 2} {:c 1.1 :a 99 :b -20}]
+                      :z [{:a -1 :b -1}])))
+  (is (false? (c vex :v [{:a 1 :b 2} {:c 5 :a 99 :b -20.0}])))
+  (is (false? (c vex :v [{:a 1} {:c 5 :a 99 :b -20}]
+                 :w [{:a 1 :b 2} {:c 5 :a 99 :b -20}])))
+  (is (false? (c vex :v [{:a 1 :b 2} {:c 5 :a 99 :b -20}] :z 5
+                 :w [{:a 1 :b 2} {:c 5 :a 99 :b -20}])))
+  (is (false? (c vex :v [{:a 1 :b -1} {:c 5 :a 99 :b -20}] :z [{:a 1 :b 1.1}]
+                 :w [{:a 1 :b 2} {:c 5 :a 99 :b -20}]))))

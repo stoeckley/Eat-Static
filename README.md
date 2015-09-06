@@ -841,8 +841,7 @@ Just as the **c** macro lets you pass named parameters as individual arguments, 
 ;; In this particular example, just using the input map is better:
 
 (pred old-dutch-vegetarian-spouses? in
-      [(elder-dutch-vegetarian?) husband wife 
-       (married?) in])
+      [(elder-dutch-vegetarian?) husband wife (married?) in])
 
 ;; You call these the same as the above df version:
 

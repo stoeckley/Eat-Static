@@ -649,3 +649,7 @@
 ;; this provides interesting uses for trait-like behavior, 
 ;; describe further below
 
+;; this tests that the vector passed in contains only integers:
+
+(df intvec [(epcoll> integer?) v]
+    )

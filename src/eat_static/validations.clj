@@ -111,7 +111,7 @@
     (cond
       (and (list? arg) (= '++ (first arg)))
       (do (assert (not is-output?) "A function's output validation list already acts like ++ and thus ++ should not be used.")
-          (assert (every? (fn [x] (or (keyword? x) (list? x))) (rest arg)) ">> only accepts keywords or lists as validators.")
+          (assert (every? (fn [x] (or (keyword? x) (list? x))) (rest arg)) "++ only accepts keywords or lists as validators.")
           (assert (< 1 (count (rest arg)))
                   "++ only makes sense with at least two validators after it. Otherwise, use the validator directly in isolation.")
           (if is-output?

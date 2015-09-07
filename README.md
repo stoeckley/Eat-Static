@@ -168,10 +168,14 @@ You have some flexibility in what you supply to the function definition:
 ;; for the whole map that was passed in, rather than using the default 
 ;; name implicitly provided:
 
-(df my-function input-map 
+(df my-function in
  [a b c]
  ;; do something with input-map...
  )
+
+;; This allows you to access any parameter in the function call, 
+;; regardless of whether it appears in the argument list. You could
+;; use (:a in), rather than listing "a" explicitly. 
 
 ;; One particularly interesting feature is that you can reference this
 ;; whole input map in the arg list as well, and treat it with overall validation.
@@ -578,6 +582,11 @@ Sometimes you need to ensure that all items in a sequence, such as a vector, exh
                 :maps2 [{:a "hi" :b 11.1} {:b 6 :a :yo}])
 
 ;; these arguments pass validation
+
+;; this tests that the vector passed in contains only integers:
+
+(df intvec [(epcoll> integer?) v]
+    ... )
 ```
 #### Custom types
 

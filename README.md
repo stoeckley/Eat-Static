@@ -587,6 +587,13 @@ Sometimes you need to ensure that all items in a sequence, such as a vector, exh
 
 (df intvec [(epcoll> integer?) v]
     ... )
+
+;; Note that keyword type checks like :int and thread-first-style 
+;; validation expressions are only available in the top level of
+;; the arg list, and not inside an expression like epcoll>. Thus,
+;; use integer? rather than :i or :int and #(< % 1) not (< 1) --
+;; anything you could pass normally to Clojure's every-pred function.
+
 ```
 #### Custom types
 

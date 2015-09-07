@@ -464,7 +464,9 @@ Additionally, your own custom :pre/:post map can be used in the function normall
 
 ### Custom types, traits, and the pred form
 
-We can think of a custom "type" as restrictions on the contents of an entire map, including the types of its elements, and a custom "trait" as specific requirements for part of a map's contents. But technically, this is merely a conceptual difference as they are tested the same way.
+We can think of a custom "type" as restrictions on the contents of an entire map, including the types of its elements, and a custom "trait" as specific requirements for part of a map's contents. But technically, this is merely a conceptual difference as they are tested the same way and refer here to nothing more than easy analysis and categorization of a map's composite data.
+
+Terminology like type, class, trait, and object tends to vary in the industry, and here we do not refer to them in an OO context; we do not discuss mutable state that is married to functions that act on it (though you could certainly store a function in a map -- that's up to you). We use these terms loosely and sometimes interchangeably below.
 
 Complex predicates built as separate functions are an easy way to declare custom "types" and "traits" in a functional way that you can re-use in your argument lists anywhere. 
 

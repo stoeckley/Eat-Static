@@ -657,3 +657,9 @@
                #(epcoll> % (t :k)))
           v]
     v)
+
+(def sexes #{:male :female})
+
+(df person [:str name (sexes) sex] person-input)
+
+;; The function will only accept a value for "sex" that is :male or :female

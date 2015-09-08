@@ -437,7 +437,7 @@ The above validation expressions like ```(> 1)``` are efficient syntax similar t
 [(or> integer? keyword?) x]
 
 ;; use the "t" function (for "type") to use the same keyword 
-;; type specified available in the arg vector:
+;; type specifier available in the arg vector:
 
 [(or> (t :i) (t :k)) x]
 
@@ -470,6 +470,18 @@ The above validation expressions like ```(> 1)``` are efficient syntax similar t
 Attempting to call functions with improper arguments yields useful exceptions indicating the exact argument name and the validation it failed.
 
 Additionally, your own custom :pre/:post map can be used in the function normally, if desired.
+
+##### Simple enums
+
+Since sets are functions, this simple technique can be re-used everywhere you need a value to be only one of a particular set of options:
+
+```clojure
+(def sexes #{:male :female})
+
+(df person [:str name (sexes) sex] ...)
+
+;; The function will only accept a value for "sex" that is :male or :female
+```
 
 ### Custom types, traits, and the pred form
 

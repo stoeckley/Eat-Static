@@ -413,11 +413,11 @@
 
 ;; Note that the df form and the pred form simply have the exact same
 ;; vector-formatted arg list. 
-;; You can accomplish both at once using the object macro:
+;; You can accomplish both at once using the describe macro:
 
 ;; Two birds, one stone:
 
-(object child [:str name fav-toy :i age :k education])
+(describe child [:str name fav-toy :i age :k education])
 
 ;; This one-liner generates an assertive constructer called make-child
 ;; and a true/false non-assertive validator called child?
@@ -431,22 +431,22 @@
 (child? alex) ;; returns a truthy value
 
 ;; In both functions, the input map is also named child-input should you
-;; wish to use it in the argument vector to (object ...), i.e. for 
+;; wish to use it in the argument vector to (describe ...), i.e. for 
 ;; creating new objects of existing objects:
 
-(object baby-child [(child?) baby-child-input (< 2) age])
+(desc baby-child [(child?) baby-child-input (< 2) age])
 
-;; Additionally, object- creates private versions of the constructor and validator
+;; Additionally, describe- creates private versions of the constructor and validator
 
 ;; the ep> validation helper is explained a bit further below
 
-(object person [:str name :i age :k sex :n height])
-(object tall [(> 2) height])
-(object tall-person [(ep> person? tall?) tall-person-input])
-(object short-person [(person?) short-person-input (< 1) height])
-(object tall-person-bobby [(tall-person?) tall-person-bobby-input (= "bobby") name])
-(object child [(person?) child-input (< 27) age])
-(object short-child [(child?) short-child-input (< 0.8) height])
+(desc person [:str name :i age :k sex :n height])
+(desc tall [(> 2) height])
+(desc tall-person [(ep> person? tall?) tall-person-input])
+(desc short-person [(person?) short-person-input (< 1) height])
+(desc tall-person-bobby [(tall-person?) tall-person-bobby-input (= "bobby") name])
+(desc child [(person?) child-input (< 27) age])
+(desc short-child [(child?) short-child-input (< 0.8) height])
 
 ;; fails:
 
@@ -471,7 +471,7 @@
 ;; You get truth or false: Either Hank is a senior citizen who lives in Holland
 ;; or isn't. 
 
-(object person [:str name country :i age :k sex :n height :b eats-meat])
+(desc person [:str name country :i age :k sex :n height :b eats-meat])
 
 (pred american-meat-eating-child? [(< 10) age (= true) eats-meat (= "USA") country])
 

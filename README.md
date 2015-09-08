@@ -596,6 +596,13 @@ Sometimes you need to ensure that all items in a sequence, such as a vector, exh
 ;; use integer? rather than :i or :int and #(< % 1) not (< 1) --
 ;; anything you could pass normally to Clojure's every-pred function.
 
+;; Alternately, use the simple "t" function (for "type") inside epcoll>, 
+;; which will retrieve the actual function predicate associated with
+;; keyword:
+
+(df intvec [(epcoll> (t :i)) v]
+    ... )
+
 ```
 #### Custom types
 

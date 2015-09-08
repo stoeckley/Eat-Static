@@ -17,43 +17,60 @@
   (contains? #{true false} x))
 
 ;; clojure primitive type checks
-;; quoted for use in macros
+;; including quotations for use in macros
+(def types
+  {:boolean ['is-bool? is-bool?]
+   :fn ['fn? fn?] 
+   :symbol ['symbol? symbol?] 
+   :keyword ['keyword? keyword?]
+   :string ['string? string?]
+   :char ['char? char?]
+   :identity ['identity identity]
+   :map ['map? map?]
+   :vector ['vector? vector?]
+   :set ['set? set?]
+   :list ['list? list?]
+   :number ['number? number?]
+   :ratio ['ratio? ratio?]
+   :float ['float? float?]
+   :integer ['integer? integer?]})
+
 (def type-checks
-  {:bool 'is-bool?
-   :boolean 'is-bool?
-   :b 'is-bool?
-   :fn 'fn? 
-   :sym 'symbol?
-   :symbol 'symbol? 
-   :k 'keyword?
-   :key 'keyword?
-   :keyword 'keyword?
-   :str 'string?
-   :string 'string?
-   :c 'char?
-   :char 'char?
-   :anything 'identity
-   :any 'identity
-   :identity 'identity
-   :m 'map?
-   :map 'map?
-   :v 'vector?
-   :vec 'vector?
-   :vector 'vector?
-   :set 'set?
-   :l 'list?
-   :list 'list?
-   :n 'number?
-   :num 'number?
-   :number 'number?
-   :r 'ratio?
-   :rat 'ratio?
-   :ratio 'ratio?
-   :f 'float?
-   :float 'float?
-   :i 'integer?
-   :int 'integer?
-   :integer 'integer?})
+  {:bool (:boolean types)
+   :boolean (:boolean types)
+   :b (:boolean types)
+   :fn (:fn types)
+   :sym (:symbol types)
+   :symbol (:symbol types)
+   :k (:keyword types)
+   :key (:keyword types)
+   :keyword (:keyword types)
+   :str (:string types)
+   :string (:string types)
+   :c (:char types)
+   :char (:char types)
+   :anything (:identity types)
+   :any (:identity types)
+   :identity (:identity types)
+   :m (:map types)
+   :map (:map types)
+   :v (:vector types)
+   :vec (:vector types)
+   :vector (:vector types)
+   :set (:set types)
+   :l (:list types)
+   :list (:list types)
+   :n (:number types)
+   :num (:number types)
+   :number (:number types)
+   :r (:ratio types)
+   :rat (:ratio types)
+   :ratio (:ratio types)
+   :f (:float types)
+   :float (:float types)
+   :i (:integer types)
+   :int (:integer types)
+   :integer (:integer types)})
 
 (defn throw-text [s]
   (throw (Exception. s)))
@@ -177,7 +194,7 @@
   "Creates the assertion for a single test for a single symbol. Multiple calls will assert the same symbol for multiple different tests. Creates either an assertion statement or a simple function call, depending on whether the function is assertive or a true/false predicate function, non-assertive."
   [f s t is-pred?]
   (if (keyword? f)
-    (if-let [kfn (get type-checks f)]
+    (if-let [kfn (first (get type-checks f))]
       (if is-pred?
         `(~kfn ~s)
         `(assert (~kfn ~s) ~(str t ": Type " kfn " for " s)))
@@ -420,6 +437,13 @@ Optional arguments shown in brackets may be in any order. "))
 (defmacro and> [v & r] (fn*> 'and v r))
 
 (defmacro or> [v & r] (fn*> 'or v r))
+
+(defn t
+  "Gets the actual function associated with a keyword type check, as in the type-checks map up top."
+  [k]
+  (if-let [f (get type-checks k)]
+    (second f)
+    (throw-text (str "Invalid type keyword provided: " k))))
 
 (defmacro g
   "A simple macro to facilitate syntax for pulling out data in nested structured. (g a.b.c) is the same as (get-in a [:b :c]) but provides a bit more of an OOP feel to it. Works on keywords only."

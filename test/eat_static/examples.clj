@@ -655,5 +655,7 @@
 (df intvec [(epcoll> integer?) v]
     )
 
-(df intvec [(epcoll> (t :i)) v]
-   )
+(df intvec [(++ :v (epcoll> (t :i))) v]
+   v )
+
+

@@ -590,6 +590,11 @@ Sometimes you need to ensure that all items in a sequence, such as a vector, exh
 (df intvec [(epcoll> integer?) v]
     ... )
 
+;; enforces that is is indeed a vector also:
+
+(df intvec [(++ :v (epcoll> integer?)) v]
+  ... )
+
 ;; Note that keyword type checks like :int and thread-first-style 
 ;; validation expressions are only available in the top level of
 ;; the arg list, and not inside an expression like epcoll>. Thus,
@@ -600,8 +605,9 @@ Sometimes you need to ensure that all items in a sequence, such as a vector, exh
 ;; which will retrieve the actual function predicate associated with
 ;; keyword:
 
-(df intvec [(epcoll> (t :i)) v]
-    ... )
+(df intvec [(++ :v (epcoll> (t :i))) v]
+  ... )
+
 
 ```
 #### Custom types

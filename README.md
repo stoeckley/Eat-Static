@@ -289,8 +289,8 @@ Comparison with normal Clojure code:
 ;; to do almost the same thing:
 
 (defn out
-      [{:keys [x] :as out-input}]
-      {:pre [(integer? x) (integer? y) (integer? z))]
+      [{:keys [x y z] :as out-input}]
+      {:pre [(integer? x) (integer? y) (integer? z)]
        :post [(integer? %)
               (or (> % 10) (< % -5))]}
               ...)

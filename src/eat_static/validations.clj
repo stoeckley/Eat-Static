@@ -408,10 +408,10 @@ Optional arguments shown in brackets may be in any order. "))
    (let [dfs (map #(symbol (str "make-" %)) r)]
      `(merge ~@(map (fn [x] `(transform-or-map (getor ~x) ~f)) dfs)))))
 
-(defmacro defaults-vec
-  "Takes a series of symbols at run-time and builds a defaults vector based on the default values for all the descriptions those symbols represent."
-  [descs]
-  `(vec (flatten (seq (desc-defaults ~descs identity)))))
+(defmacro blend
+  "Takes a series of symbols at run-time and builds a defaults vector based on the default values for all the descriptions those symbols represent, appends it to a supplied validation list."
+  [descname valids & descs]
+  `(conj '~valids :a (vec (flatten (seq (desc-defaults ~descs identity))))))
 
 (defn- object-build
   [title arglist d p]

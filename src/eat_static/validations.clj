@@ -394,20 +394,29 @@ Optional arguments shown in brackets may be in any order. "))
 
 (defn transform-or-map
   "Takes an :or map and makes it a real map"
-  [m]
-  (into {}
-        (map (fn [[k v]]
-               (when v
-                 [(keyword k) v])) m)))
+  ([m] (transform-or-map m keyword))
+  ([m f]
+   (into {}
+         (map (fn [[k v]]
+                (when v
+                  [(f k) v])) m))))
 
 (defmacro desc-defaults
-  "Takes a series of symbols as previously defined with describe, and builds a map of all merged defaults from all function arg lists"
-  [& r]
-  (let [dfs (map #(symbol (str "make-" %)) r)]
-    `(merge ~@(map (fn [x] `(transform-or-map (getor ~x))) dfs))))
+  "Takes a sequence of symbols as previously defined with describe, and builds a map of all merged defaults from all function arg lists in those symbols' definitions. Optional function will map over the keyword so you can keep the original symbol, or get a keyword, or make a string, etc."
+  ([r] `(desc-defaults ~r keyword))
+  ([r f]
+   (let [dfs (map #(symbol (str "make-" %)) r)]
+     `(merge ~@(map (fn [x] `(transform-or-map (getor ~x) ~f)) dfs)))))
+
+(defmacro defaults-vec
+  "Takes a series of symbols at run-time and builds a defaults vector based on the default values for all the descriptions those symbols represent."
+  [descs]
+  `(vec (flatten (seq (desc-defaults ~descs identity)))))
 
 (defn- object-build
   [title arglist d p]
+  (assert (symbol? title) "Name to describe must be symbol")
+  (assert (vector? arglist) "Second arg to describe must be a vector for the arglist.")
   (let [m (symbol (str title "-input"))
         make-name (symbol (str "make-" title))]
     `(do (~d ~make-name

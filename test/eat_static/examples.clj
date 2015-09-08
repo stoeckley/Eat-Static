@@ -10,7 +10,8 @@
 (ns eat-static.examples
   (:require [eat-static.validations :refer :all]))
 
-;; Examples for the main Readme page of this library
+;; Examples for the main Readme page of this library. See the Readme for
+;; explanations of this code.
 
 (df my-function [a b c] )
 

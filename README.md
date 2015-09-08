@@ -81,7 +81,7 @@ And of course, keys not specified are simply ignored:
 (c my-function :c 4 :a 1 :b 2 :e 5 :f 6)
 
 ;; this provides interesting uses for trait-like behavior, 
-;; describe further below
+;; described further below
 ```
 The syntax savings grows with argument complexity. As soon as you decide that all args are optional with a default value of 0 for each, it becomes:
 
@@ -695,6 +695,19 @@ Constructors and validators:
 ;; creating new descriptions based on existing ones:
 
 (describe baby-child [(child?) baby-child-input (< 2) age])
+
+;; Additionally, the make-child function automatically adds default values
+;; to your map, if they were supplied in the original arg list:
+
+(describe defaults [:i a [b 8 c 9] -z])
+
+(make-defaults {:a 1})
+
+;; returns {:a 1 :b 8 :c 9}
+
+(make-defaults {:a 1 :b 2})
+
+;; returns {:a 1 :b 2 :c 9}
 
 ;; An identical, alternate form is "desc" which is synonymous with "describe"
 

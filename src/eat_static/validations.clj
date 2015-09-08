@@ -382,13 +382,34 @@ Optional arguments shown in brackets may be in any order. "))
   [f & args]
   (list `process-args false 'fn f args))
 
+(defn get-or
+  "Gets the default arg list, if any, for a function-quoted symbol"
+  [sym]
+  (-> sym meta :arglists first first :or))
+
+(defmacro getor
+  "Quotes the symbol and then calls get-or to get the default arg list."
+  [sym]
+  `(get-or #'~sym))
+
+(defn transform-or-map
+  "Takes an :or map and makes it a real map"
+  [m]
+  (into {}
+        (map (fn [[k v]]
+               (when v
+                 [(keyword k) v])) m)))
+
 (defn- object-build
   [title arglist d p]
-  (let [m (symbol (str title "-input"))]
-    `(do (~d ~(symbol (str "make-" title))
+  (let [m (symbol (str title "-input"))
+        make-name (symbol (str "make-" title))]
+    `(do (~d ~make-name
              ~m
              ~(str "Builds and returns a map meeting the " title " requirements")
-             ~arglist ~m)
+             ~arglist
+             (let [defaults# (getor ~make-name)]
+               (merge (transform-or-map defaults#) ~m)))
          (~p ~(symbol (str title "?"))
              ~m
              ~(str "Verifies if the supplied map matches the " title " structure.")

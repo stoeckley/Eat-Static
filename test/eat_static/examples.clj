@@ -663,3 +663,14 @@
 (df person [:str name (sexes) sex] person-input)
 
 ;; The function will only accept a value for "sex" that is :male or :female
+
+
+(describe defaults [:i a [b 8 c 9]])
+
+(make-defaults {:a 1})
+
+;; returns {:a 1 :b 8 :c 9}
+
+(make-defaults {:a 1 :b 2})
+
+;; returns {:a 1 :b 2 :c 9}

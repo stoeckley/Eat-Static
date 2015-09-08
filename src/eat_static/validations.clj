@@ -486,7 +486,7 @@ Optional arguments shown in brackets may be in any order. "))
   "Runs the supplied fns on the value, and requires all to pass."
   [v & r]
   (when (some (complement fn?) r)
-    (throw-text "and> only accept functions"))
+    (throw-text "and> only accepts the test value followed by functions"))
   (if (seq r)
     (if ((first r) v)
       (apply and> v (rest r))
@@ -497,7 +497,7 @@ Optional arguments shown in brackets may be in any order. "))
   "Runs the supplied fns on the value, and requires at least one to pass."
   [v & r]
   (when (some (complement fn?) r)
-    (throw-text "or> only accept functions"))
+    (throw-text "or> only accepts the test value followed by functions"))
   (if (seq r)
     (if ((first r) v)
       true

@@ -64,11 +64,11 @@
   (is (thrown? AssertionError (a {:c {:b 5 :c 4}}))))
 
 (deftest df-output-int-validations
-  (is (df a (:i (or> (< % 0) (< 10 %))
-                (and> (or (= 100 (+ 10 %)) (zero? (- % 20))
+  (is (df a (:i (or> #(< % 0) #(< 10 %))
+                (and> #(or (= 100 (+ 10 %)) (zero? (- % 20))
                           (zero? (- % 5)) (zero? (- % 50))
                           (zero? (- % 200)))
-                      (< % 100)))
+                      #(< % 100)))
           "complex"
           [b] b))
   (is (= 20 (c a :b 20)))
@@ -152,7 +152,7 @@
   (is (false? (c m :a 21 :b 1234567 :d -1)))
   (is (false? (c m :a 20 :b 1234567 :c -0.0 :d -1)))
   (is (false? (c m :a 21 :b 12 :c -0.0 :d -1)))
-  (is (pred m [(or> (= % 5) (= 2.2 %) (= :hi %) (> 1000 %)) a -b c]))
+  (is (pred m [(or> #(= % 5) #(= 2.2 %) #(= :hi %) #(> 1000 %)) a -b c]))
   (is (not (false? (m {:a 5 :b :hi :c 999}))))
   (is (not (false? (m {:a 5 :c 999}))))
   (is (not (false? (m {:a 2.2 :c :hi}))))
@@ -163,7 +163,7 @@
   (is (false? (c m :b :hi :c :hi)))
   (is (false? (c m :b :hi :c 1000)))
   (is (false? (c m :a 5 :b 2000 :c :hi)))
-  (is (pred m [(++ :i (and> (> % 5) (< % 10))) a b -c]))
+  (is (pred m [(++ :i (and> #(> % 5) #(< % 10))) a b -c]))
   (is (not (false? (c m :a 6 :b 6 :c 6))))
   (is (false? (c m :a 6 :b 5 :c 6)))
   (is (false? (c m :a 6 :b 6.0 :c 6))))

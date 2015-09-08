@@ -181,7 +181,7 @@
 ;; This requires the output to be either 0 or 1, and nothing else:
 
 (df zero-or-one
-    ((or> (= 1 %) (= 0 %)))
+    ((or> #(= 1 %) #(= 0 %)))
     [x] )
 
 ;; pred> and or> and other useful validation helpers and described further below
@@ -189,7 +189,7 @@
 ;; This requires the output to be an integer greater than 10
 ;; OR less than -5:
 
-(df out (:i (or> (> % 10) (< % -5)))
+(df out (:i (or> #(> % 10) #(< % -5)))
     [:i x] )
 
 ;; For comparison's sake, here is the normal Clojure way
@@ -264,11 +264,9 @@
 ;; not available for output validation lists.
 
 (df function
-    [(or> (< 2 % 10) (> -2 % -10)) x y])
+    [(or> #(< 2 % 10) #(> -2 % -10)) x y])
 
 ;; x and y must both be between 2 and 10 or between -2 and -10
-
-;; the # symbol is not included (similar to how a :pre map works)
 
 ;; and and> would simply require that all functions are true.
 
@@ -276,7 +274,7 @@
 
 (df int-stuff
     (:i (< 1))
-    [(++ :i (or> (< 2 % 10) (> -2 % -10))) [x y 5]]
+    [(++ :i (or> #(< 2 % 10) #(> -2 % -10))) [x y 5]]
 )
 
 ;; x and y must also be integers between one of these two ranges
@@ -629,12 +627,6 @@
       [(elder-dutch-vegetarian?) husband wife 
        (married?) in])
 
-;; Or, with or> or and>:
-
-(pred old-dutch-vegetarian-spouses?
-      [(elder-dutch-vegetarian?) husband wife 
-       (or> (c married? :wife % :husband husband)) wife])
-
 ;; You call these the same as the above df version:
 
 ;; (c old-dutch-vegetarian-spouses? :wife alice :husband jason)
@@ -656,6 +648,12 @@
     )
 
 (df intvec [(++ :v (epcoll> (t :i))) v]
-   v )
+   v)
 
+;; enforces that the collection passed in contains only integers
+;; or keywords:
 
+(df vari [(or> #(epcoll> % (t :i))       
+               #(epcoll> % (t :k)))
+          v]
+    v)

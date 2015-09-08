@@ -418,33 +418,70 @@ Optional arguments shown in brackets may be in any order. "))
 (def me macroexpand-1)
 
 (defmacro c
+  "Simply removes the layer of curly brackets so named parameters may be called directly. Instead of (somefunc {:a 1}) you can call (c somefunc :a 1)"
   [f & {:keys [] :as a}]
   (assert a (str "No map arguments provided. If none are to be passed, use (" f " {})"))
   `(~f ~a))
 
+(defn ep>
+  "Accepts a value and then tests all predicates supplied after, all of which must pass for a true return."
+  [m & args]
+  ((apply every-pred args) m))
+
 (defn epcoll>
+  "Similar to ep> but tests each item in a collection instead of a single item. Accepts a collection and any number of predicates. Tests that the collection is indeed a collection, and then runs every-pred on it. If used as validation expression, the collection is omitted as per thread-first and real predicate functions are all that you pass."
   ([coll pred]
    (and (coll? coll) (every? pred coll)))
   ([coll pred & preds]
    (epcoll> coll (apply every-pred pred preds))))
 
 (defmacro c>
+  "Re-orders the arguments to the c macro for use in a validation expression. "
   [v f k & ks]
   `(c ~f ~k ~v ~@ks))
 
-(defn ep>
-  [m & args]
-  ((apply every-pred args) m))
-
 (defmacro pred>
+  "Creates and runs an anonymous predfn fn on the first argument, using the supplied argument validation vector."
   [m argl]
   `((predfn ~argl) ~m))
 
-(defn fn*> [op v r] `((fn [x#] ((fn [~'%] (~op ~@r)) x#)) ~v))
+;; These omitted the need for the # around fn expressions, but in so doing,
+;; they limited what you could pass, and were also confusingly different
+;; to how you pass functions to ep> and epcoll>
 
-(defmacro and> [v & r] (fn*> 'and v r))
+;; (defn fn*>
+;;   "Helper for and> and or>"
+;;   [op v r] `((fn [x#] ((fn [~'%] (~op ~@r)) x#)) ~v))
 
-(defmacro or> [v & r] (fn*> 'or v r))
+;; (defmacro and>
+;;   "Accepts a value and a series of real functions that operate on a value. All must pass for the and> to be true."
+;;   [v & r] (fn*> 'and v r))
+
+;; (defmacro or>
+;;   "Like and> but uses or, not and. Only one of the supplied functions must pass."
+;;   [v & r] (fn*> 'or v r))
+
+(defn and>
+  "Runs the supplied fns on the value, and requires all to pass."
+  [v & r]
+  (when (some (complement fn?) r)
+    (throw-text "and> only accept functions"))
+  (if (seq r)
+    (if ((first r) v)
+      (apply and> v (rest r))
+      false)
+    true))
+
+(defn or>
+  "Runs the supplied fns on the value, and requires at least one to pass."
+  [v & r]
+  (when (some (complement fn?) r)
+    (throw-text "or> only accept functions"))
+  (if (seq r)
+    (if ((first r) v)
+      true
+      (apply or> v (rest r)))
+    false))
 
 (defn t
   "Gets the actual function associated with a keyword type check, as in the type-checks map up top."

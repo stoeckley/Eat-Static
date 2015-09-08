@@ -272,7 +272,7 @@ Examples:
 ;; This requires the output to be either 0 or 1, and nothing else:
 
 (df zero-or-one
-    ((or> (= 1 %) (= 0 %)))
+    ((or> #(= 1 %) #(= 0 %)))
     [x] ...)
 
 ;; pred> and or> and other useful validation helpers and described further below
@@ -282,7 +282,7 @@ Comparison with normal Clojure code:
 ;; This requires the output to be an integer greater than 10
 ;; OR less than -5:
 
-(df out (:i (or> (> % 10) (< % -5)))
+(df out (:i (or> #(> % 10) #(< % -5)))
     [:i x y z] ...)
 
 ;; For comparison's sake, here is the normal Clojure way
@@ -422,23 +422,32 @@ Combine validation expressions with ```++```
 ;; not available for output validation lists.
 
 ```
-Writing normal function expressions:
+Writing and providing normal functions:
 
-The above validation expressions like ```(> 1)``` are efficient syntax similar to the thread-first macro expressions, but sometimes you want a bit more flexibility. The **and>** and **or>** validation helpers let you do just that, using ```%``` as in an anonymous function:
+The above validation expressions like ```(> 1)``` are efficient syntax similar to the thread-first macro expressions, but sometimes you want a bit more flexibility. The **and>** and **or>** validation helpers let you do just that by passing any function:
 ```clojure
-[(or> (< 2 % 10) (> -2 % -10)) x y]
+[(or> #(< 2 % 10) #(> -2 % -10)) x y]
 
 ;; x and y must both be between 2 and 10 or between -2 and -10
 
-;; the # symbol is not included (similar to how a :pre map works)
-
 ;; and and> would simply require that all functions are true.
+
+;; Requires x to be an integer or a keyword:
+
+[(or> integer? keyword?) x]
+
+;; use the "t" function (for "type") to use the same keyword 
+;; type specified available in the arg vector:
+
+[(or> (t :i) (t :k)) x]
+
+;; "t" merely returns the predicate associated with the keyword
 
 ;; Any validiation expression can be combined with ++ :
 
 (df int-stuff
     (:i (< 1))
-    [(++ :i (or> (< 2 % 10) (> -2 % -10))) [x y 5]]
+    [(++ :i (or> #(< 2 % 10) #(> -2 % -10))) [x y 5]]
     ... )
 
 ;; x and y must also be integers between one of these two ranges
@@ -597,8 +606,8 @@ Sometimes you need to ensure that all items in a sequence, such as a vector, exh
 
 ;; Note that keyword type checks like :int and thread-first-style 
 ;; validation expressions are only available in the top level of
-;; the arg list, and not inside an expression like epcoll>. Thus,
-;; use integer? rather than :i or :int and #(< % 1) not (< 1) --
+;; the arg list, and not inside an expressions like epcoll>, and>, or> and ep>. 
+;; Thus use integer? rather than :i or :int and use #(< % 1), not (< 1) --
 ;; anything you could pass normally to Clojure's every-pred function.
 
 ;; Alternately, use the simple "t" function (for "type") inside epcoll>, 
@@ -606,6 +615,14 @@ Sometimes you need to ensure that all items in a sequence, such as a vector, exh
 ;; keyword:
 
 (df intvec [(++ :v (epcoll> (t :i))) v]
+  ... )
+
+;; enforces that the collection passed in contains only integers
+;; or keywords:
+
+(df vari [(or> #(epcoll> % (t :i))       
+               #(epcoll> % (t :k)))
+               v] 
   ... )
 
 
@@ -906,9 +923,9 @@ Just as the **c** macro lets you pass named parameters as individual arguments, 
 *> helpers are typically used inside a validation expression of an arg list. They all share the quality that the item you are validating is their first argument, as with -> macro expressions:
 
  * **c>** is like c, but designed for use in an argument validation expression
- * **and>** lets you build normal fn expressions with % as per :pre/:post style
- * **or>** same as and> but only one of the supplied expressions must pass
  * **pred>** is simplified predfn syntax for a validation expression
+ * **and>** accepts predicate or anonymous functions, all of which much pass on the argument
+ * **or>** same as and> but only one of the supplied functions must pass
  * **ep>** builds and calls an every-pred expression; supply one or more functions
  * **epcoll>** tests coll? on argument, and runs ep> on each element
      

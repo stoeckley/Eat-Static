@@ -394,11 +394,19 @@ Optional arguments shown in brackets may be in any order. "))
              ~(str "Verifies if the supplied map matches the " title " structure.")
              ~arglist))))
 
-(defmacro object
+(defmacro describe
   [title arglist]
   (object-build title arglist 'df 'pred))
 
-(defmacro object-
+(defmacro describe-
+  [title arglist]
+  (object-build title arglist 'df- 'pred-))
+
+(defmacro desc
+  [title arglist]
+  (object-build title arglist 'df 'pred))
+
+(defmacro desc-
   [title arglist]
   (object-build title arglist 'df- 'pred-))
 

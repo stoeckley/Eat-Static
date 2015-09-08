@@ -186,14 +186,14 @@
   (is (false? (c m :c {:a 1 :c :hi})))
   (is (false? (c m :c {:a 1 :b 1}))))
 
-(deftest objects-traits
-  (is (object person [:str name :i age :k sex :n height]))
-  (is (object- tall [(> 2) height]))
-  (is (object tall-person [(ep> person? tall?) tall-person-input]))
-  (is (object short-person [(person?) short-person-input (< 1) height]))
-  (is (object tall-person-bobby [(tall-person?) tall-person-bobby-input (= "bobby") name]))
-  (is (object- child [(person?) child-input (< 27) age]))
-  (is (object short-child [(child?) short-child-input (< 0.8) height]))
+(deftest traits
+  (is (desc person [:str name :i age :k sex :n height]))
+  (is (desc- tall [(> 2) height]))
+  (is (desc tall-person [(ep> person? tall?) tall-person-input]))
+  (is (describe short-person [(person?) short-person-input (< 1) height]))
+  (is (describe- tall-person-bobby [(tall-person?) tall-person-bobby-input (= "bobby") name]))
+  (is (desc- child [(person?) child-input (< 27) age]))
+  (is (desc short-child [(child?) short-child-input (< 0.8) height]))
   (is (not (false? (c tall-person? :name "andrew" :sex :m :age 95 :height 2.1))))
   (is (false? (c tall-person? :name "andrew" :sex :m :age 95 :height 2)))
   (is (false? (c tall-person-bobby? :name "bobby" :sex :m :age 7 :height 2)))
@@ -251,7 +251,7 @@
                  :w [{:a 1 :b 2} {:c 5 :a 99 :b -20}]))))
 
 (deftest c>test
-  (is (object person [:str name spouse country]))
+  (is (desc person [:str name spouse country]))
   (is (df married? [(person?) wife husband] (= (:name husband) (:spouse wife))))
   (is (pred dutch? [(person?) dutch?-input (= "netherlands" country)]))
   (is (pred married-dutch? in [(married?) in (dutch?) wife husband]))

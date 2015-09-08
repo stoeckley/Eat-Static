@@ -638,14 +638,14 @@ Constructors and validators:
 
 ;; Note that the df form and the pred form simply have the exact same
 ;; vector-formatted arg list. 
-;; You can accomplish both at once using the object macro:
+;; You can accomplish both at once using the "describe" macro:
 
 ;; Two birds, one stone:
 
-(object child [:str name fav-toy :i age :k education])
+(describe child [:str name fav-toy :i age :k education])
 
 ;; This one-liner generates an assertive constructer called make-child
-;; and a true/false non-assertive validator called child?
+;; and a true/false non-assertive validator called child? 
 
 (def alex
    (make-child {:name "alex" :fav-toy "legos"
@@ -656,24 +656,27 @@ Constructors and validators:
 (child? alex) ;; returns a truthy value
 
 ;; In both functions, the input map is also named child-input should you
-;; wish to use it in the argument vector to (object ...), i.e. for 
-;; creating new objects of existing objects:
+;; wish to use it in the argument vector to (describe ...), i.e. for 
+;; creating new descriptions based on existing ones:
 
-(object baby-child [(child?) baby-child-input (< 2) age])
+(describe baby-child [(child?) baby-child-input (< 2) age])
 
-;; Additionally, object- creates private versions of the constructor and validator
+;; An identical, alternate form is "desc" which is synonymous with "describe"
+
+;; Additionally, describe- and desc- create private versions 
+;; of the constructor and validator
 ```
-Here are a few more examples of quickly generating custom types and traits that are easy to build and validate using the object macro:
+Here are a few more examples of quickly generating custom types and traits that are easy to build and validate using the desceribe macro:
 ```clojure
 ;; the ep> validation helper is explained a bit further below
 
-(object person [:str name :i age :k sex :n height])
-(object tall [(> 2) height])
-(object tall-person [(ep> person? tall?) tall-person-input])
-(object short-person [(person?) short-person-input (< 1) height])
-(object tall-person-bobby [(tall-person?) tall-person-bobby-input (= "bobby") name])
-(object child [(person?) child-input (< 27) age])
-(object short-child [(child?) short-child-input (< 0.8) height])
+(desc person [:str name :i age :k sex :n height])
+(desc tall [(> 2) height])
+(desc tall-person [(ep> person? tall?) tall-person-input])
+(desc short-person [(person?) short-person-input (< 1) height])
+(desc tall-person-bobby [(tall-person?) tall-person-bobby-input (= "bobby") name])
+(desc child [(person?) child-input (< 27) age])
+(desc short-child [(child?) short-child-input (< 0.8) height])
 
 ;; fails:
 
@@ -707,7 +710,7 @@ In the above example, it is unnecessarily verbose to pass hank with a key of ```
 When composing predicates, accessing the full single input map in the arg list (as shown further above) can be quite helpful to avoid unnecessary nesting:
 
 ```clojure
-(object person [:str name country :i age :k sex :n height :b eats-meat])
+(describe person [:str name country :i age :k sex :n height :b eats-meat])
 
 (pred american-meat-eating-child? [(< 10) age (= true) eats-meat (= "USA") country])
 
@@ -886,8 +889,8 @@ Just as the **c** macro lets you pass named parameters as individual arguments, 
  * **pred** for a bodyless, non-assertive defn predicate
  * **pred-** for a defn- equiv of pred
  * **predfn** for an anonymous predicate fn
- * **object** to generate both **make-...** and **...?** df and pred forms, respectively
- * **object-** creates private defn- versions same as object
+ * **describe/desc** to generate both **make-...** and **...?** df and pred forms, respectively
+ * **describe-/desc-** creates private defn- versions same as description
 
 ##### Helpers:
 
@@ -907,7 +910,7 @@ Hopefully, they help you take advantage of Clojure's excellent tools for making 
 
 ### Turning it Off
 
-While the ```pred``` functions are non-assertive, the functions you build with ```df``` and ```object``` throw run-time assertions if arguments are not provided as expected. That's the idea, but eventually you may wish to disable these assertions in production code.
+While the ```pred``` functions are non-assertive, the functions you build with ```df``` and ```describe``` throw run-time assertions if arguments are not provided as expected. That's the idea, but eventually you may wish to disable these assertions in production code.
 
 In Clojure, all asserts can be ignored by setting the global dynamic variable ```*assert*``` to ```false```. You must recompile your code for this to take affect. Any assertive function written with Eat Static, as well as any other asserts you use in your code, including :pre/:post maps, will no longer then throw assertions.
 

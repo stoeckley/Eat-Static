@@ -400,6 +400,12 @@ Optional arguments shown in brackets may be in any order. "))
                (when v
                  [(keyword k) v])) m)))
 
+(defmacro desc-defaults
+  "Takes a series of symbols as previously defined with describe, and builds a map of all merged defaults from all function arg lists"
+  [& r]
+  (let [dfs (map #(symbol (str "make-" %)) r)]
+    `(merge ~@(map (fn [x] `(transform-or-map (getor ~x))) dfs))))
+
 (defn- object-build
   [title arglist d p]
   (let [m (symbol (str title "-input"))

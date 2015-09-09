@@ -382,37 +382,6 @@ Optional arguments shown in brackets may be in any order. "))
   [f & args]
   (list `process-args false 'fn f args))
 
-(defn get-or
-  "Gets the default arg list, if any, for a function-quoted symbol"
-  [sym]
-  (-> sym meta :arglists first first :or))
-
-(defmacro getor
-  "Quotes the symbol and then calls get-or to get the default arg list."
-  [sym]
-  `(get-or #'~sym))
-
-(defn transform-or-map
-  "Takes an :or map and makes it a real map"
-  ([m] (transform-or-map m keyword))
-  ([m f]
-   (into {}
-         (map (fn [[k v]]
-                (when v
-                  [(f k) v])) m))))
-
-(defmacro desc-defaults
-  "Takes a sequence of symbols as previously defined with describe, and builds a map of all merged defaults from all function arg lists in those symbols' definitions. Optional function will map over the keyword so you can keep the original symbol, or get a keyword, or make a string, etc."
-  ([r] `(desc-defaults ~r keyword))
-  ([r f]
-   (let [dfs (map #(symbol (str "make-" %)) r)]
-     `(merge ~@(map (fn [x] `(transform-or-map (getor ~x) ~f)) dfs)))))
-
-(defmacro blend
-  "Takes a series of symbols at run-time and builds a defaults vector based on the default values for all the descriptions those symbols represent, appends it to a supplied validation list."
-  [descname valids & descs]
-  `(conj '~valids :a (vec (flatten (seq (desc-defaults ~descs identity))))))
-
 (defn- object-build
   [title arglist d p]
   (assert (symbol? title) "Name to describe must be symbol")
@@ -445,6 +414,50 @@ Optional arguments shown in brackets may be in any order. "))
 (defmacro desc-
   [title arglist]
   (object-build title arglist 'df- 'pred-))
+
+;; Blending descriptions and automatically including all default values across a series of separate descriptions:
+
+(defn get-or
+  "Gets the default arg list, if any, for a function-quoted symbol"
+  [sym]
+  (-> sym meta :arglists first first :or))
+
+(defmacro getor
+  "Quotes the symbol and then calls get-or to get the default arg list."
+  [sym]
+  `(get-or #'~sym))
+
+(defn transform-or-map
+  "Takes an :or map and makes it a real map"
+  ([m] (transform-or-map m keyword))
+  ([m f]
+   (into {}
+         (map (fn [[k v]]
+                (when v
+                  [(f k) v])) m))))
+
+(defmacro desc-defaults
+  "Takes a sequence of symbols as previously defined with describe, and builds a map of all merged defaults from all function arg lists in those symbols' definitions. Optional function will map over the keyword so you can keep the original symbol, or get a keyword, or make a string, etc. This is a macro since the supplied symbols don't actually resolve to anything; new symbols are generated based on these symbols that point to the actual def'd vars created with a describe expression."
+  ([r] `(desc-defaults ~r keyword))
+  ([r f]
+   (let [dfs (map #(symbol (str "make-" %)) r)]
+     `(merge ~@(map (fn [x] `(transform-or-map (getor ~x) ~f)) dfs)))))
+
+(defmacro blended-arglist
+  "Takes a series of symbols at run-time and builds a defaults vector based on the default values for all the descriptions those symbols represent, appends it to a supplied validation list to automatically build a combined list of defaults in a single vector, along with other validators. This is a vector since the valids vector contains expressions that cannot be evaluated and are parsed later."
+  [valids descs]
+  `(conj '~valids :a (vec (flatten (seq (desc-defaults ~descs identity))))))
+
+(defn blend-fn
+  "Helper for blend macro; is run-time"
+  [descname args]
+  `(describe ~descname ~args))
+
+(defmacro blend
+  "Generates a describe expression that adds all the default values of the supplied previously-described symbols to the arg list for the new describe (as per the describe macro)."
+  [descname valids & descs]
+  `(let [ba# (blended-arglist ~valids ~descs)]
+     (blend-fn '~descname ba#)))
 
 ;; Helper functions and macros
 

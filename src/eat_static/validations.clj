@@ -449,7 +449,7 @@ Optional arguments shown in brackets may be in any order. "))
   `(let [preds# '~(map #(symbol (str % "?")) descs)]
      (conj '~valids
            :any (vec (flatten (seq (desc-defaults ~descs identity))))
-           ;; because list? is used later and a cons does not pass list?
+           ;; because list? is used later and a cons does not pass list? (nor does list* !)
            (into (list) (reverse (cons (symbol "ep>") preds#)))
            (symbol ~(str descname "-input")))))
 

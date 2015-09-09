@@ -444,9 +444,12 @@ Optional arguments shown in brackets may be in any order. "))
      `(merge ~@(map (fn [x] `(transform-or-map (getor ~x) ~f)) dfs)))))
 
 (defmacro blended-arglist
-  "Takes a series of symbols at run-time and builds a defaults vector based on the default values for all the descriptions those symbols represent, appends it to a supplied validation list to automatically build a combined list of defaults in a single vector, along with other validators. This is a vector since the valids vector contains expressions that cannot be evaluated and are parsed later."
-  [valids descs]
-  `(conj '~valids :a (vec (flatten (seq (desc-defaults ~descs identity))))))
+  "Takes a series of symbols at run-time and builds a defaults vector based on the default values for all the descriptions those symbols represent, appends it to a supplied validation list to automatically build a combined list of defaults in a single vector, along with other validators. Also constructs predicate tests for each of the descriptions, and adds that as a requirement to the input map. This is a macro since the valids vector contains expressions that cannot be evaluated and are parsed later."
+  [descname valids descs]
+  `(let [preds# '~(map #(symbol (str % "?")) descs)]
+     (conj '~valids
+           :any (vec (flatten (seq (desc-defaults ~descs identity))))
+           (cons 'ep> preds#) '~(symbol (str descname "-input")))))
 
 (defn blend-fn
   "Helper for blend macro; is run-time"
@@ -456,7 +459,7 @@ Optional arguments shown in brackets may be in any order. "))
 (defmacro blend
   "Generates a describe expression that adds all the default values of the supplied previously-described symbols to the arg list for the new describe (as per the describe macro)."
   [descname valids & descs]
-  `(let [ba# (blended-arglist ~valids ~descs)]
+  `(let [ba# (blended-arglist ~descname ~valids ~descs)]
      (blend-fn '~descname ba#)))
 
 ;; Helper functions and macros

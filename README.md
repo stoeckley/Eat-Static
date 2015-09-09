@@ -836,10 +836,45 @@ When composing predicates, accessing the full single input map in the arg list (
 ;; (pred ...) is typically easier when you combine
 ;; full-map validation with individual element checks
 ```
+#### The blend macro
+
+Now that you have seen ```describe``` and general predicate composition, the final tool for building new type/traits out of existing ones is the ```blend``` macro, which is a special version of ```describe```. 
+
+A ```make-...``` function built with ```describe``` automatically adds any default values specified in the ```describe``` definition, as noted previously. And while you can manually build a combined predicate expression that ensures your new type meets several criteria, it doesn't provide you automatic default values for all the composite types.
+
+```blend``` combines the predicate composition with an overall combined defaults listing behind the scenes, all you must do is specify symbols previously defined with ```describe```:
+
+```clojure
+;; a and b have default values, and q is required:
+(describe ab [:i q [a 1 b 2]])
+;; all must be integers
+
+;; c and d have default values and w is required
+(describe cd [:f w -r :any [c 3 d 4]])
+;; w must be a float, while c and d can by anything
+
+;; e is a required keyword, and ab-cd is both a ab and a cd type
+(blend ab-cd [:k e] ab cd)
+```
+The ```ab-cd``` type (or trait) has all the properties and requirements of the ```ab``` and ```cd``` types, and if you build an ```ab-cd``` type, you will automatically get all of their default values, as well as enforcement on the others, as if you had included ```(ep> ab? cd?)```:
+```clojure
+;;these will fail because required values of the composite types are omitted:
+
+(make-ab-cd {:e :hi})
+(make-ab-cd {:e :hi :w 1.1})
+
+;; but this passes:
+
+(make-ab-cd {:e :hi :w 1.1 :q 55})
+
+;; returned:
+;; {:e :hi, :w 1.1, :q 55, :a 1, :c 3, :b 2, :d 4}
+
+```
+
 #### Relationships between objects:
 ```clojure
-;; Using our person? predicate from above, we can analyze interactions
-;; between maps:
+;; Analyze interactions between maps:
 
 (defn married? 
    [husband wife]

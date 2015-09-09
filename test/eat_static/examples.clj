@@ -674,3 +674,26 @@
 (make-defaults {:a 1 :b 2})
 
 ;; returns {:a 1 :b 2 :c 9}
+
+;; a and b have default values, and q is required:
+(describe ab [:i q [a 1 b 2]])
+;; all must be integers
+
+;; c and d have default values and w is required
+(describe cd [:f w -r :any [c 3 d 4]])
+;; w must be a float, while c and d can by anything
+
+;; e is a required keyword, and ab-cd is both a ab and a cd type
+(blend ab-cd [:k e] ab cd)
+
+;;these will fail because required values of the composite types are omitted:
+
+;;(make-ab-cd {:e :hi})
+;;(make-ab-cd {:e :hi :w 1.1})
+
+;; but this passes:
+
+(make-ab-cd {:e :hi :w 1.1 :q 55})
+
+;; returned:
+;; {:e :hi, :w 1.1, :q 55, :a 1, :c 3, :b 2, :d 4}

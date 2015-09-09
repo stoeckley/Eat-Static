@@ -449,12 +449,16 @@ Optional arguments shown in brackets may be in any order. "))
   `(let [preds# '~(map #(symbol (str % "?")) descs)]
      (conj '~valids
            :any (vec (flatten (seq (desc-defaults ~descs identity))))
-           (cons 'ep> preds#) '~(symbol (str descname "-input")))))
+           ;; because list? is used later and a cons does not pass list?
+           (into (list) (reverse (cons (symbol "ep>") preds#)))
+           (symbol ~(str descname "-input")))))
 
 (defn blend-fn
   "Helper for blend macro; is run-time"
   [descname args]
-  `(describe ~descname ~args))
+   (eval `(describe ~descname ~args))
+   ;;`(describe ~descname ~args)
+  )
 
 (defmacro blend
   "Generates a describe expression that adds all the default values of the supplied previously-described symbols to the arg list for the new describe (as per the describe macro)."

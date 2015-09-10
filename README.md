@@ -302,7 +302,7 @@ The above function could be written as:
 ```clojure
 (defn circle
   [{:keys [radius x y color] :or {color :blue}
-    :as input}]
+    :as circle-input}]
   {:pre [(>= radius 1) (integer? x) (integer? y)
          (#{:blue :white} color)]}
   ...
@@ -324,7 +324,7 @@ You could amend your function in Clojure by doing two things:
 ```clojure
 (defn circle
   [{:keys [radius x y z color] :or {color :blue} ;;added z
-  :as input}]
+  :as circle-input}]
   {:pre [(>= radius 1) (integer? x) (integer? y)
          (#{:blue :white} color)
          (if z (integer? z) true)]} ;;added this line
@@ -1021,6 +1021,7 @@ Just as you can do things in a Clojure pre/post map that make no sense, you coul
 * A validation item in the argument vector affects only those symbols up until the next validation item. If you have ```[:i :n a b c]``` the ```:i``` has no purpose. This is good since often these would confict, i.e. ```[:i :f a b]```. If you need to combine them, use the ```++``` expression.
 * Validation expressions are not functions. They are list expressions, similar to the thread-first ```->``` macro. Don't use functions like ```neg?``` in isolation, use ```(neg?)``` instead.
 * While the vast majority of use cases will provide a meaningful assertion message if a validation fails, occasionally you can write an expression that attempts to do something with nil that instead leads to a null pointer exception instead, which carries no useful message. The assertion is valid based on your specified validation criteria, but the message is not clear.
+* Beware of ```false``` and ```nil```. If you expect to pass nil as a legitimate value to your function, do not make that argument required, as it will enforce it as non-nil. If you expect to pass ```false``` to your function, it is wise to specify the argument as a boolean type, as in some cases a ```false``` value may not pass validation if it is a more general type, such as ```:any```.
 
 
 ### Community

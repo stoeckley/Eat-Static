@@ -19,7 +19,7 @@
 
 ***
 
-##### The Goal
+#### The Goal
 
 Automate several excellent tools in Clojure for writing safer code -- tools you may not use frequently because of the extra syntax overhead. Apply these tools to easy map validation for getting the most out of basic data structures.
 
@@ -42,29 +42,27 @@ Clojure is a dynamic language, and we like it that way. These run-time checks ar
 
 ### Quick Start
 
-A normal function without any validations and default values simply offers a named, unordered arg list with ease:
+A normal ```df``` function definition without any validations and default values simply offers a named, unordered arg list with ease:
 
 ```clojure
 (df my-function [a b c] ...)
 
 ;; instead of:
 
-(defn my-function [{:keys [a b c]}]...)
+(defn my-function [{:keys [a b c] :as my-function-input}]...)
 
 ;; Additionally, the df version makes the keys a,b,c required, 
 ;; unlike the simple defn version which sets them to nil if they are omitted.
 ;; Read on to see how easy it is to change these requirements.
 ```
-The df family of macros simply expand to a ```defn```, ```defn-```, or ```fn``` that takes a single map argument. All the destructuring and assertions are automatically handled.
+The ```df``` family of macros simply expand to a ```defn```, ```defn-```, or ```fn``` that takes a single map argument. All the destructuring and assertions are automatically handled.
 
 Functions created this way with or without these macros are called like this:
 
 ```clojure
 (my-function {:a 1 :b 2 :c 4})
 ```
-All these functions take a single map argument.
-
-This library also adds the option to call it like this:
+This library also adds the option to call it like this, using the ```c``` (for "call") function:
 
 ```clojure
 (c my-function :a 1 :b 2 :c 4)
@@ -76,7 +74,7 @@ Of course, the key/value arguments may be presented in any order:
 (c my-function :c 4 :a 1 :b 2) ; same as above
 ```
 
-And of course, keys not specified are simply ignored:
+And of course, keys not specified are simply ignored by the run-time assertions, but still available on the overall ```:as``` map:
 
 ```clojure
 (c my-function :c 4 :a 1 :b 2 :e 5 :f 6)
@@ -91,24 +89,13 @@ The syntax savings grows with argument complexity. As soon as you decide that al
 
 ;; instead of:
 
-(defn my-function [{:keys [a b c] :or {a 0 b 0 c 0}}] ...)
-```
-Any symbol inside a vector is an optional argument, and you can assign the same default to many optionals at once.
-
-More and more syntax is saved as argument requirements increase. If you want to capture the entire map as a local:
-
-```clojure
-(df my-function [[a b c 0]] ...)
-
-;; Same as above, no change necessary.
-;; The map is already implicitly available in the body.
-;; (More details below).
-
-;; instead of:
-
 (defn my-function [{:keys [a b c] :or {a 0 b 0 c 0}
-                    :as input}] ...) ;; added :as local
+                                  :as my-function-input}] ...)
 ```
+Any symbol inside a vector is an optional argument, and you can assign the same default to many optionals at once. (*optional* here does not mean the same thing as in a language like Swift.)
+
+More and more syntax is saved as argument requirements increase. 
+
 #### Type Checks
 Next, you want to ensure that ```a``` ```b``` and ```c``` are only integers:
 
@@ -124,13 +111,14 @@ Next, you want to ensure that ```a``` ```b``` and ```c``` are only integers:
 ;; Equivalent:
 
 (defn my-function [{:keys [a b c] :or {a 0 b 0 c 0}
-                    :as input}]
+                    :as my-function-input}]
                    {:pre [(integer? a) (integer? b) (integer? c)]}
                     ...)
 
 ;; In reality, the df macro is implemented as assert calls, 
 ;; not a :pre/:post map, to offer specific error messages
 ;; and to handle other features described below.
+;; You can freely add your own :pre/:post map to a df if desired
 
 ```
 Here are a few more basic examples:

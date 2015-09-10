@@ -473,11 +473,17 @@ Optional arguments shown in brackets may be in any order. "))
 
 (def me macroexpand-1)
 
-(defmacro c
+(defn c
   "Simply removes the layer of curly brackets so named parameters may be called directly. Instead of (somefunc {:a 1}) you can call (c somefunc :a 1)"
   [f & {:keys [] :as a}]
   (assert a (str "No map arguments provided. If none are to be passed, use (" f " {})"))
-  `(~f ~a))
+  (f a))
+
+#_(defmacro c
+    "Simply removes the layer of curly brackets so named parameters may be called directly. Instead of (somefunc {:a 1}) you can call (c somefunc :a 1)"
+    [f & {:keys [] :as a}]
+    (assert a (str "No map arguments provided. If none are to be passed, use (" f " {})"))
+    `(~f ~a))
 
 (defn ep>
   "Accepts a value and then tests all predicates supplied after, all of which must pass for a true return."

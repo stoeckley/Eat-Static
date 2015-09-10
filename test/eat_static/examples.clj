@@ -17,7 +17,8 @@
 
 ;; instead of:
 
-(defn my-function [{:keys [a b c]}])
+(defn my-function [{:keys [a b c] :as my-function-input}] )
+
 
 ;; Additionally, the df version makes the keys a,b,c required, 
 ;; unlike the simple defn version which sets them to nil if they are omitted.
@@ -33,7 +34,8 @@
 
 ;; instead of:
 
-(defn my-function [{:keys [a b c] :or {a 0 b 0 c 0}}] )
+(defn my-function [{:keys [a b c] :or {a 0 b 0 c 0}
+                    :as my-function-input}] )
 
 (df my-function [[a b c 0]] )
 
@@ -44,7 +46,7 @@
 ;; instead of:
 
 (defn my-function [{:keys [a b c] :or {a 0 b 0 c 0}
-                    :as input}] ) ;; added :as local
+                    :as my-function-input}] ) ;; added :as local
 
 (df my-function [:int [a b c 0]] )
 
@@ -57,7 +59,7 @@
 ;; Equivalent:
 
 (defn my-function [{:keys [a b c] :or {a 0 b 0 c 0}
-                    :as input}]
+                    :as my-function-input}]
                    {:pre [(integer? a) (integer? b) (integer? c)]}
                     )
 

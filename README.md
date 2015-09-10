@@ -53,7 +53,9 @@ A normal ```df``` function definition without any validations and default values
 
 ;; Additionally, the df version makes the keys a,b,c required, 
 ;; unlike the simple defn version which sets them to nil if they are omitted.
-;; Read on to see how easy it is to change these requirements.
+
+;; Read on to see how easy it is to change these requirements, as well as
+;; how to offer custom names to items such as the :as map
 ```
 The ```df``` family of macros simply expand to a ```defn```, ```defn-```, or ```fn``` that takes a single map argument. All the destructuring and assertions are automatically handled.
 
@@ -159,7 +161,7 @@ You have some flexibility in what you supply to the function definition:
 
 (df my-function in
  [a b c]
- ;; do something with input-map...
+ ;; do something with "in" ...
  )
 
 ;; This allows you to access any parameter in the function call, 

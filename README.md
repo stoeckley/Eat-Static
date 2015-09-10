@@ -444,7 +444,7 @@ The above validation expressions like ```(> 1)``` are efficient syntax similar t
 ;; x and y must also be integers between one of these two ranges
 
 ;; and> and or> mean the same thing if you just use a single
-;; anonymous function expression
+;; function within
 
 ;; standard Clojure equivalent of int-stuff:
 
@@ -462,7 +462,7 @@ Attempting to call functions with improper arguments yields useful exceptions in
 
 Additionally, your own custom :pre/:post map can be used in the function normally, if desired.
 
-##### Simple enums
+#### Simple enums
 
 Since sets are functions, this simple technique can be re-used everywhere you need a value to be only one of a particular set of options:
 

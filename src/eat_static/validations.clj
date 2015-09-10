@@ -281,7 +281,8 @@
                        ;; (comment "in: " ~arg-analysis)
                        ;; (comment "out: " ~arg-outs)
                        ;; (comment "outputted:" ~outputted)
-                       ~@(build-asserts outputted false m true return)
+                       ~@(when @use-assertions
+                           (build-asserts outputted false m true return))
                        ~return)))
                  ()))))
 

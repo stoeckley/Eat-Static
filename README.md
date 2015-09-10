@@ -965,6 +965,7 @@ Just as the **c** macro lets you pass named parameters as individual arguments, 
  * **predfn** for an anonymous predicate fn
  * **describe/desc** to generate both **make-...** and **...?** df and pred forms, respectively
  * **describe-/desc-** creates private defn- versions same as description
+ * **blend** is a special ```describe``` that blends default values and automatically creates a composite predicate based on other types defined with ```describe```
 
 ##### Helpers:
 

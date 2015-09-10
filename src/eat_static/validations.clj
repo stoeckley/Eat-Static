@@ -480,6 +480,7 @@ Optional arguments shown in brackets may be in any order. "))
   (assert a (str "No map arguments provided. If none are to be passed, use (" f " {})"))
   (f a))
 
+;; old version of c was a macro, which was unnecessary
 #_(defmacro c
     "Simply removes the layer of curly brackets so named parameters may be called directly. Instead of (somefunc {:a 1}) you can call (c somefunc :a 1)"
     [f & {:keys [] :as a}]

@@ -1014,7 +1014,7 @@ Just as you can do things in a Clojure pre/post map that make no sense, you coul
 * If you use a local in your function body, but specify that local as optional with no default value, then it is entirely possible that you will get a null pointer exception if you haven't first checked that it could be nil and act appropriately. i.e. ```(df mult [-b] (* b 1))``` does exactly this with ```(mult {})```, since you cannot multiply nil as a number.
 * The library will let you try to assign multiple default values to the same symbol in different default value vectors. Only one will be used, of course, and it is not defined which one it will be. You would not likely ever do this except by accident.
 * The libary will not let you specify a symbol as both required and optional.
-* If you wish to specify all defaults in the same default vector for beauty's sake, but the args have different types, use ```:any``` before the vector to mix default types: ```(describe aa [:i -a :f -b :any [a 1 b 4.4]])``` If ```:any``` is omitted, then you'd be trailing the ```:f``` type validator for these defaults, requiring ```a``` to be both an integer and a float! 
+* If you wish to specify all defaults in the same default vector for beauty's sake, but the args have different types, use ```:any``` before the vector to mix default types: ```(describe aa [:i -a :f -b :any [a 1 b 4.4]])``` If ```:any``` is omitted, then you'd be trailing the ```:f``` type validator for these defaults, requiring ```a``` to be both an integer and a float! Don't worry -- one validation like ```:any``` does not cancel another like ```:f```, so the type of ```a``` and ```b``` is still enforced.
 
 ##### Validation
 
@@ -1027,3 +1027,7 @@ Just as you can do things in a Clojure pre/post map that make no sense, you coul
 ### Community
 
 Issues, feedback, pull requests all welcome. Many thanks.
+
+
+
+Copyright 2015 Balcony Studio

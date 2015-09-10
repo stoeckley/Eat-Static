@@ -632,7 +632,7 @@ Sometimes you need to ensure that all items in a sequence, such as a vector, exh
 ```
 #### Custom types
 
-Constructors and validators:
+Constructors and validators using ```describe```:
 
 ```clojure
 ;; You could make a robust "person" object using a constructor built
@@ -660,7 +660,7 @@ Constructors and validators:
 
 ;; Verifies a map is a "person" object:
 
-(pred person? [eats-meat :str name [spouse] country :i age :k education])
+(pred person? [:bool eats-meat :str name [spouse] country :i age :k education])
 
 ;; Note that the df form and the pred form simply have the exact same
 ;; vector-formatted arg list. 
@@ -676,8 +676,6 @@ Constructors and validators:
 (def alex
    (make-child {:name "alex" :fav-toy "legos"
                 :age 8 :education :primary}))
-
-;; (this is a contrived example; you probably wouldn't store alex in a def)
 
 (child? alex) ;; returns a truthy value
 
@@ -705,7 +703,7 @@ Constructors and validators:
 ;; Additionally, describe- and desc- create private versions 
 ;; of the constructor and validator
 ```
-Here are a few more examples of quickly generating custom types and traits that are easy to build and validate using the desceribe macro:
+Here are a few more examples of quickly generating custom types and traits that are easy to build and validate using the describe macro:
 ```clojure
 ;; the ep> validation helper is explained a bit further below
 

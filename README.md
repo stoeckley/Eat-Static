@@ -918,7 +918,9 @@ The ```ab-cd``` type (or trait) has all the properties and requirements of the `
 ;; This function returns true or false as long as we pass in person
 ;; objects. If we lifted the elder-dutch-vegetarian? checks into the
 ;; arg list as well, it would *require* them to be true, which is not
-;; the obvious goal of this function. But read on...
+;; the obvious goal of this function. Alternately, we could use pred,
+;; but that would not enforce that you called this predicate with actual
+;; person types, so your choice depends on the type of safety you want.
 ```
 ##### The **c>** macro
 Just as the **c** macro lets you pass named parameters as individual arguments, the **c>** macro does the same, but re-arranges the arg order slighly to allow for idiomatic usage inside one of the validation expressions of an argument list:

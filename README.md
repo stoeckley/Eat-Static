@@ -1031,4 +1031,4 @@ Issues, feedback, pull requests all welcome. Many thanks.
 
 
 
-Copyright 2015 Balcony Studio
+Copyright 2015 Balcony Studio, the Netherlands

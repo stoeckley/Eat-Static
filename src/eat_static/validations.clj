@@ -480,24 +480,40 @@ Optional arguments shown in brackets may be in any order. "))
   (assert a (str "No map arguments provided. If none are to be passed, use (" f " {})"))
   (f a))
 
-;; old version of c was a macro, which was unnecessary
-#_(defmacro c
-    "Simply removes the layer of curly brackets so named parameters may be called directly. Instead of (somefunc {:a 1}) you can call (c somefunc :a 1)"
-    [f & {:keys [] :as a}]
-    (assert a (str "No map arguments provided. If none are to be passed, use (" f " {})"))
-    `(~f ~a))
-
 (defn ep>
   "Accepts a value and then tests all predicates supplied after, all of which must pass for a true return."
   [m & args]
   ((apply every-pred args) m))
 
+(defn epcollection
+  "Used by ep*> functions."
+  [coll collpred preds]
+  (and (collpred coll) (every? (apply every-pred preds) coll)))
+
 (defn epcoll>
   "Similar to ep> but tests each item in a collection instead of a single item. Accepts a collection and any number of predicates. Tests that the collection is indeed a collection, and then runs every-pred on it. If used as validation expression, the collection is omitted as per thread-first and real predicate functions are all that you pass."
-  ([coll pred]
-   (and (coll? coll) (every? pred coll)))
-  ([coll pred & preds]
-   (epcoll> coll (apply every-pred pred preds))))
+  [coll & preds]
+  (epcollection coll coll? preds))
+
+(defn epv>
+  "Like epcoll> but tests specifically for a vector type of collection."
+  [coll & preds]
+  (epcollection coll vector? preds))
+
+(defn epl>
+  "Like epcoll> but tests specifically for a list type of collection."
+  [coll & preds]
+  (epcollection coll list? preds))
+
+(defn eps>
+  "Like epcoll> but tests specifically for a set type of collection."
+  [coll & preds]
+  (epcollection coll set? preds))
+
+(defn epm>
+  "Like epcoll> but tests specifically for a map type of collection. This is likely to be used the least, since the other pred* functions are better for dealing with maps."
+  [coll & preds]
+  (epcollection coll map? preds))
 
 (defmacro c>
   "Re-orders the arguments to the c macro for use in a validation expression. "
@@ -526,7 +542,7 @@ Optional arguments shown in brackets may be in any order. "))
 ;;   [v & r] (fn*> 'or v r))
 
 (defn and>
-  "Runs the supplied fns on the value, and requires all to pass."
+  "Runs the supplied fns on the value, and requires all to pass. Tends to be synonmous with usage of ep>"
   [v & r]
   (when (some (complement fn?) r)
     (throw-text "and> only accepts the test value followed by functions"))

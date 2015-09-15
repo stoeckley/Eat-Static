@@ -65,7 +65,7 @@
 
 (deftest df-output-int-validations
   (is (df a (:i (or> #(< % 0) #(< 10 %))
-                (and> #(or (= 100 (+ 10 %)) (zero? (- % 20))
+                (ep> #(or (= 100 (+ 10 %)) (zero? (- % 20))
                           (zero? (- % 5)) (zero? (- % 50))
                           (zero? (- % 200)))
                       #(< % 100)))
@@ -163,7 +163,7 @@
   (is (false? (c m :b :hi :c :hi)))
   (is (false? (c m :b :hi :c 1000)))
   (is (false? (c m :a 5 :b 2000 :c :hi)))
-  (is (pred m [(++ :i (and> #(> % 5) #(< % 10))) a b -c]))
+  (is (pred m [(++ :i (ep> #(> % 5) #(< % 10))) a b -c]))
   (is (not (false? (c m :a 6 :b 6 :c 6))))
   (is (false? (c m :a 6 :b 5 :c 6)))
   (is (false? (c m :a 6 :b 6.0 :c 6))))
@@ -189,7 +189,7 @@
 (deftest traits
   (is (desc person [:str name :i age :k sex :n height]))
   (is (desc- tall [(> 2) height]))
-  (is (desc tall-person [(ep> person? tall?) tall-person-input]))
+  (is (desc tall-person [(and> person? tall?) tall-person-input]))
   (is (describe short-person [(person?) short-person-input (< 1) height]))
   (is (describe- tall-person-bobby [(tall-person?) tall-person-bobby-input (= "bobby") name]))
   (is (desc- child [(person?) child-input (< 27) age]))

@@ -650,7 +650,13 @@
     )
 
 (df intvec [(++ :v (epcoll> (t :i))) v]
-   v)
+    v)
+
+(df intvec [(epv> (t :i)) v]
+    v)
+
+(df intvecl [(epl> (t :i)) v]
+    v)
 
 ;; enforces that the collection passed in contains only integers
 ;; or keywords:

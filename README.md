@@ -415,13 +415,16 @@ Combine validation expressions with ```++```
 ```
 Writing and providing normal functions:
 
-The above validation expressions like ```(> 1)``` are efficient syntax similar to the thread-first macro expressions, but sometimes you want a bit more flexibility. The **and>** and **or>** validation helpers let you do just that by passing any function:
+The above validation expressions like ```(> 1)``` are efficient syntax similar to the thread-first macro expressions, but sometimes you want a bit more flexibility. The ```or>```, ```and>``` and ```ep>``` validation helpers let you do just that by passing any function:
 ```clojure
 [(or> #(< 2 % 10) #(> -2 % -10)) x y]
 
 ;; x and y must both be between 2 and 10 or between -2 and -10
 
 ;; and and> would simply require that all functions are true.
+;; ep> uses Clojure's every-pred to combine the predicate functions
+;; into a single predicate. In nearly all cases, ep> and and> should
+;; be synonmous, only the implementation is different.
 
 ;; Requires x to be an integer or a keyword:
 
@@ -443,7 +446,7 @@ The above validation expressions like ```(> 1)``` are efficient syntax similar t
 
 ;; x and y must also be integers between one of these two ranges
 
-;; and> and or> mean the same thing if you just use a single
+;; ep>, and> and or> mean the same thing if you just use a single
 ;; function within
 
 ;; standard Clojure equivalent of int-stuff:
@@ -607,6 +610,16 @@ Sometimes you need to ensure that all items in a sequence, such as a vector, exh
 (df intvec [(++ :v (epcoll> integer?)) v]
   ... )
 
+;; For cases like this, more specific versions of epcoll> automatically
+;; use a more restrictive collection type in the check, so you don't have to
+;; explicitly add the :v --
+
+;; epv> will test that it is a vector before running the args on each item
+;; epl> requires a list
+;; eps> tests for a set
+;; epm> tests for a map, though the other map validation functions described
+;; in this document are likely to be better choices for a map collection
+
 ;; Note that keyword type checks like :int and thread-first-style 
 ;; validation expressions are only available in the top level of
 ;; the arg list, and not inside an expressions like epcoll>, and>, or> and ep>. 
@@ -617,7 +630,9 @@ Sometimes you need to ensure that all items in a sequence, such as a vector, exh
 ;; which will retrieve the actual function predicate associated with
 ;; keyword:
 
-(df intvec [(++ :v (epcoll> (t :i))) v]
+;; same as above:
+
+(df intvec [(epv> (t :i)) v]
   ... )
 
 ;; enforces that the collection passed in contains only integers
@@ -705,8 +720,6 @@ Constructors and validators using ```describe```:
 ```
 Here are a few more examples of quickly generating custom types and traits that are easy to build and validate using the describe macro:
 ```clojure
-;; the ep> validation helper is explained a bit further below
-
 (desc person [:str name :i age :k sex :n height])
 (desc tall [(> 2) height])
 (desc tall-person [(ep> person? tall?) tall-person-input])
@@ -802,7 +815,7 @@ When composing predicates, accessing the full single input map in the arg list (
 (pred elder-dutch-vegetarian? person
       [((every-pred person? is-senior? is-vegetarian? is-dutch?)) person])
 
-;; Another helper ep> simplifies this:
+;; ep> simplifies this:
 
 (pred elder-dutch-vegetarian? person
       [(ep> person? is-senior? is-vegetarian? is-dutch?) person])
@@ -976,11 +989,15 @@ Just as the **c** macro lets you pass named parameters as individual arguments, 
 
  * **c>** is like c, but designed for use in an argument validation expression
  * **pred>** is simplified predfn syntax for a validation expression
- * **and>** accepts predicate or anonymous functions, all of which much pass on the argument
+ * **and>** accepts predicate or anonymous functions, all of which much pass on the argument; fundamentally same use as ep>
  * **or>** same as and> but only one of the supplied functions must pass
  * **ep>** builds and calls an every-pred expression; supply one or more functions
  * **epcoll>** tests coll? on argument, and runs ep> on each element
-     
+ * **epv>** like epcoll> but uses vector? before running the args on each item
+ * **epl>** like epcoll> but uses list?
+ * **eps>** like epcoll> but uses set?
+ * **epm>** like epcoll> but users map?
+
 Hopefully, they help you take advantage of Clojure's excellent tools for making your code safer and easier.
 
 ### Turning it Off

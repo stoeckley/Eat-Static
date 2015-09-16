@@ -282,7 +282,9 @@
   (is (not (false? (dudes2? {:cool-factor :hi}))))
   (is (not (false? (dudes2? {:cool-factor :amazing :guy {:age 20} :guy2 {}})))))
 
-;; clojure.test, a macro-based library, has some difficulty testing other complex macros without use of eval and macroexpand
+;; clojure.test, a macro-based library, has some difficulty testing other complex macros
+;; without use of eval and macroexpand. Perhaps this is because the blend macro uses eval,
+;; unlike all other macros in Eat Static.
 (deftest blended
   (is (desc ab [:i [a 5 b 6]]))
   (is (desc cd [:f [c d 1.1]]))

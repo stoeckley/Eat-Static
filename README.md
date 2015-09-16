@@ -726,7 +726,17 @@ Map constructors and validators using ```describe```:
 
 ;; returns {:a 1 :b 2 :c 9}
 
-;; An identical, alternate form is "desc" which is synonymous with "describe"
+;; You can optionally provide the prefix and suffix used for the make function
+;; and predicate, respectively; either you provide both, or neither:
+
+(describe baby-child [(child?) baby-child-input (< 2) age] make- ?)
+
+;; it is not necessary to enclose the options in quotes
+
+;; A nearly identical form of "describe" is "desc". It is shorter to type
+;; and does not accept optional names for the two functions it creates. 
+;; Using "desc" forces consistency on the naming conventions, which is important
+;; if you use the "blend" macro described further below.
 
 ;; Additionally, describe- and desc- create private versions 
 ;; of the constructor and validator
@@ -853,11 +863,11 @@ When composing predicates, accessing the full single input map in the arg list (
 ```
 #### The blend macro
 
-Now that you have seen ```describe``` and general predicate composition, the final tool for building new type/traits out of existing ones is the ```blend``` macro, which is a special version of ```describe```. 
+Now that you have seen ```describe```, ```desc``` and general predicate composition, the final tool for building new type/traits out of existing ones is the ```blend``` macro, which is a special version of ```describe```. 
 
-A ```make-...``` function built with ```describe``` automatically adds any default values specified in the ```describe``` definition, as noted previously. And while you can manually build a combined predicate expression that ensures your new type meets several criteria, it doesn't provide you automatic default values for all the composite types.
+A ```make-...``` function built with ```describe``` or ```desc``` automatically adds any default values specified in the definition, as noted previously. And while you can manually build a combined predicate expression that ensures your new type meets several criteria, it doesn't provide you automatic default values for all the composite types.
 
-```blend``` combines the predicate composition with an overall combined defaults listing behind the scenes, all you must do is specify symbols previously defined with ```describe```:
+```blend``` combines the predicate composition with an overall combined defaults listing behind the scenes, all you must do is specify symbols previously defined with ```describe``` or ```desc```:
 
 ```clojure
 ;; a and b have default values, and q is required:
@@ -865,8 +875,11 @@ A ```make-...``` function built with ```describe``` automatically adds any defau
 ;; all must be integers
 
 ;; c and d have default values and w is required
-(describe cd [:f w -r :any [c 3 d 4]])
+(desc cd [:f w -r :any [c 3 d 4]])
 ;; w must be a float, while c and d can by anything
+
+;; blend can use any functions defined using the standard "make-..." and "...?"
+;; naming convention outlined above
 
 ;; e is a required keyword, and ab-cd is both a ab and a cd type
 (blend ab-cd [:k e] ab cd)

@@ -384,30 +384,35 @@ Optional arguments shown in brackets may be in any order. "))
   (list `process-args false 'fn f args))
 
 (defn- object-build
-  [title arglist d p]
-  (assert (symbol? title) "Name to describe must be symbol")
-  (assert (vector? arglist) "Second arg to describe must be a vector for the arglist.")
-  (let [m (symbol (str title "-input"))
-        make-name (symbol (str "make-" title))]
-    `(do (~d ~make-name
-             ~m
-             ~(str "Builds and returns a map meeting the " title " requirements")
-             ~arglist
-             (let [defaults# (getor ~make-name)]
-               (merge (transform-or-map defaults#) ~m)))
-         (~p ~(symbol (str title "?"))
-             ~m
-             ~(str "Verifies if the supplied map matches the " title " structure.")
-             ~arglist))))
+  ([title arglist d p]
+   (object-build title arglist d p "make-" "?"))
+  ([title arglist d p prefixmake suffixpred]
+   (assert (symbol? title) "Name to describe must be symbol")
+   (assert (vector? arglist) "Second arg to describe must be a vector for the arglist.")
+   (let [m (symbol (str title "-input"))
+         make-name (symbol (str prefixmake title))]
+     `(do (~d ~make-name
+              ~m
+              ~(str "Builds and returns a map meeting the " title " requirements")
+              ~arglist
+              (let [defaults# (getor ~make-name)]
+                (merge (transform-or-map defaults#) ~m)))
+          (~p ~(symbol (str title suffixpred))
+              ~m
+              ~(str "Verifies if the supplied map matches the " title " structure.")
+              ~arglist)))))
 
 (defmacro describe
-  [title arglist]
-  (object-build title arglist 'df 'pred))
+  [title arglist & decorate]
+  (apply object-build title arglist 'df 'pred decorate))
 
 (defmacro describe-
-  [title arglist]
-  (object-build title arglist 'df- 'pred-))
+  [title arglist & decorate]
+  (apply object-build title arglist 'df- 'pred- decorate))
 
+;; desc does not accept optional changes to the named created functions.
+;; this forces consistency on naming conventions, and makes it possible
+;; do do things with the blend macro 
 (defmacro desc
   [title arglist]
   (object-build title arglist 'df 'pred))
@@ -457,7 +462,7 @@ Optional arguments shown in brackets may be in any order. "))
 (defn blend-fn
   "Helper for blend macro; is run-time"
   [descname args]
-   (eval `(describe ~descname ~args))
+   (eval `(desc ~descname ~args))
    ;;`(describe ~descname ~args)
   )
 

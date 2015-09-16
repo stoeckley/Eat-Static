@@ -596,3 +596,4 @@ Optional arguments shown in brackets may be in any order. "))
   [sym]
   (let [n (symbol (str "make-" sym))]
     `(transform-or-map (getor ~n))))
+

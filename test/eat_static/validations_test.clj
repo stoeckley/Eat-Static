@@ -263,3 +263,8 @@
   (is (false? (married-dutch? {:c {:wife christine :husband bobby}})))
   (is (not (false? (c married-dutch-c? :wife christine :husband andrew ))))
   (is (false? (married-dutch-c? {:c {:wife christine :husband bobby}}))))
+
+(deftest defaults
+  (is (desc dude [:i [age (+ 10 15)]]))
+  (is (desc dudes [[guy (d dude) guy2 (d dude)]]))
+  (is (= {:guy {:age 25} :guy2 {:age 25}}) (d dudes)))

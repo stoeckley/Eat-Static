@@ -470,6 +470,8 @@ Optional arguments shown in brackets may be in any order. "))
    ;;`(describe ~descname ~args)
   )
 
+;; The blend macro's implementation is the only tool in this file that makes explicit
+;; use of Clojure's eval, in two places, for those who are interested in that sort of thing.
 (defmacro blend
   "Generates a describe expression that adds all the default values of the supplied previously-described symbols to the arg list for the new describe (as per the describe macro)."
   [descname valids & descs]

@@ -590,7 +590,7 @@ Optional arguments shown in brackets may be in any order. "))
     `(get-in ~l ~(vec (map keyword r)))))
 
 (defmacro d
-  "Returns the minimum default map (which could be emtpy) for a type defined with desc"
+  "Returns the minimum default map (which could be empty) for a type defined with desc"
   [sym]
   (let [n (symbol (str "make-" sym))]
-    `(~n {})))
+    `(transform-or-map (getor ~n))))

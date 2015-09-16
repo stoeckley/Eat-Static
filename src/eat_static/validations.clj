@@ -178,7 +178,7 @@
                   result assigns)))
 
       :else (if is-output?
-              (throw-text "Output validation list list contained an element that is not a keyword or list.")
+              (throw-text "Output validation list contained an element that is not a keyword or list.")
               (throw-text "Arg list contained an element that is not a symbol, vector, keyword, or list.")))))
 
 (defn- arg-split
@@ -265,7 +265,11 @@
         {:keys [opt req defaults]} arg-analysis]
     `(~begin ~@(if (= 'fn begin) [f] [f docstring])
              [{:keys ~(vec (concat opt req))
-               :or ~(apply hash-map (flatten defaults)) :as ~m}]
+               :as ~m
+               :or
+               ;;~(apply hash-map (flatten defaults)) 
+               ~(reduce #(assoc % (first %2) (second %2)) {} defaults)}
+              ]
              ~@(if (or is-pred? @use-assertions)
                  (apply list* (or pre# `(comment "No pre or post map provided"))
                         (if is-pred?
@@ -440,7 +444,7 @@ Optional arguments shown in brackets may be in any order. "))
    (into {}
          (map (fn [[k v]]
                 (when v
-                  [(f k) v])) m))))
+                  [(f k) (eval v)])) m))))
 
 (defmacro desc-defaults
   "Takes a sequence of symbols as previously defined with describe, and builds a map of all merged defaults from all function arg lists in those symbols' definitions. Optional function will map over the keyword so you can keep the original symbol, or get a keyword, or make a string, etc. This is a macro since the supplied symbols don't actually resolve to anything; new symbols are generated based on these symbols that point to the actual def'd vars created with a describe expression."
@@ -585,4 +589,8 @@ Optional arguments shown in brackets may be in any order. "))
         r (rest a)]
     `(get-in ~l ~(vec (map keyword r)))))
 
-
+(defmacro d
+  "Returns the minimum default map (which could be emtpy) for a type defined with desc"
+  [sym]
+  (let [n (symbol (str "make-" sym))]
+    `(~n {})))

@@ -546,6 +546,7 @@ Optional arguments shown in brackets may be in any order. "))
 ;;   "Like and> but uses or, not and. Only one of the supplied functions must pass."
 ;;   [v & r] (fn*> 'or v r))
 
+
 ;;and> in most/all cases is going to be synonymous with ep>
 (defn and>
   "Runs the supplied fns on the value, and requires all to pass. Tends to be synonmous with usage of ep>"

@@ -666,6 +666,12 @@
           v]
     v)
 
+
+;; lifting the type out as its own function:
+(defn vec-of-ints [x] (epv> x (t :i)))
+(df many-vecs [(vec-of-ints) a b c] [a b c])
+
+
 (def sexes #{:male :female})
 
 (df person [:str name (sexes) sex] person-input)

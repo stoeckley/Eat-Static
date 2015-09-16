@@ -644,6 +644,7 @@ Sometimes you need to ensure that all items in a sequence, such as a vector, exh
   ... )
 
 ```
+##### Simple functional types
 If you want to create and re-use a particular "type" such as the vector of integers demonstrated above, just lift it out into its own function:
 ```clojure
 (defn vec-of-ints [x] (epv> x (t :i))) 
@@ -655,7 +656,9 @@ Now you can just use this as the specifier for a type of function argument:
 ;; many-vecs is a function whose parameters of a,b,c
 ;; must all be vectors of integers.
 ```
-#### Custom types
+#### Custom aggregate types
+
+In addition to the simple techniques above for defining a custom "type", Eat Static provides a couple of useful macros for rounding out the picture of a specification for an aggregate map.
 
 Map constructors and validators using ```describe```:
 

@@ -707,6 +707,8 @@ Map constructors and validators using ```describe```:
 
 (child? alex) ;; returns a truthy value
 
+;; Function bodies are not passed to describe
+
 ;; In both functions, the input map is also named child-input should you
 ;; wish to use it in the argument vector to (describe ...), i.e. for 
 ;; creating new descriptions based on existing ones:
@@ -729,7 +731,10 @@ Map constructors and validators using ```describe```:
 ;; You can optionally provide the prefix and suffix used for the make function
 ;; and predicate, respectively; either you provide both, or neither:
 
-(describe baby-child [(child?) baby-child-input (< 2) age] make- ?)
+(describe baby-child [(child?) baby-child-input (< 2) age] new- "")
+
+;; This generates new-baby-child as the make function, and baby-child as the
+;; predicate function.
 
 ;; it is not necessary to enclose the options in quotes
 

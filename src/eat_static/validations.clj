@@ -406,13 +406,25 @@ Optional arguments shown in brackets may be in any order. "))
               ~(str "Verifies if the supplied map matches the " title " structure.")
               ~arglist)))))
 
+(defn describe-build
+  "This intermediate step does not exist for desc since it does not provide the option to name the function created. This step simply asserts that you have done so correctly."
+  [title arglist d p [prefixmake suffixpred :as decorate]]
+  (when (seq decorate)
+    (assert (= 2 (count decorate))
+            "Describe requires both or neither the prefix and suffix names after the arg vector.")
+    (assert (or (symbol? prefixmake) (string? prefixmake))
+            "Prefix for make function name to describe must be symbol or string.")
+    (assert (or (symbol? suffixpred) (string? suffixpred))
+            "Suffix for predicate function name to describe must be symbol or string."))
+  (apply object-build title arglist d p decorate))
+
 (defmacro describe
   [title arglist & decorate]
-  (apply object-build title arglist 'df 'pred decorate))
+  (describe-build title arglist 'df 'pred decorate))
 
 (defmacro describe-
   [title arglist & decorate]
-  (apply object-build title arglist 'df- 'pred- decorate))
+  (describe-build title arglist 'df- 'pred- decorate))
 
 ;; desc does not accept optional changes to the named created functions.
 ;; this forces consistency on naming conventions, and makes it possible

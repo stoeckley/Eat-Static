@@ -269,7 +269,7 @@
   (is (desc dudes [(dude?) [guy (d dude) guy2 (d dude)]]))
   (is (desc dudes-easy [[guy (d dude) guy2 (d dude)]]))
   (is (= {:guy {:age 25} :guy2 {:age 25}}) (d dudes))
-  (is (desc dudes2 [[guy (d dude) guy2 (d dude)] :k cool-factor]))
+  (is (describe dudes2 [[guy (d dude) guy2 (d dude)] :k cool-factor]))
   (is (thrown? AssertionError (c make-dudes2 :a 57)))
   (is (thrown? AssertionError (make-dudes {:guy {:age 25} :guy2 {:age 25}})))
   (is (= {:guy {:age 25} :guy2 {:age 25}} (make-dudes-easy {})))
@@ -283,15 +283,34 @@
   (is (not (false? (dudes2? {:cool-factor :amazing :guy {:age 20} :guy2 {}})))))
 
 ;; clojure.test, a macro-based library, has some difficulty testing other complex macros
-;; without use of eval and macroexpand. Perhaps this is because the blend macro uses eval,
+;; without use of eval. Perhaps this is because the blend macro uses eval,
 ;; unlike all other macros in Eat Static.
 (deftest blended
   (is (desc ab [:i [a 5 b 6]]))
   (is (desc cd [:f [c d 1.1]]))
   (is (= {:a 5 :b 6} (make-ab {})))
   (is (blend abcd [:k [cool :great]] cd ab))
-  (is (= {:a 5 :b 6 :c 1.1 :d 1.1 :cool :great} (eval (macroexpand '(d abcd)))))
-  (is (= {:a 5 :b 6 :c 1.1 :d 1.1 :cool :great} (eval (macroexpand '(make-abcd {})))))
-  (is (= (eval (macroexpand '(make-abcd {}))) (eval (macroexpand '(d abcd)))))
+  (is (= {:a 5 :b 6 :c 1.1 :d 1.1 :cool :great} (eval '(d abcd))))
+  (is (= {:a 5 :b 6 :c 1.1 :d 1.1 :cool :great} (eval '(make-abcd {}))))
+  (is (= (eval '(make-abcd {})) (eval '(d abcd))))
   (is (blend abcdr [:i q :k [cool :great]] cd ab))
-  (is (thrown? AssertionError (eval (macroexpand '(make-abcdr {}))))))
+  (is (thrown? AssertionError (eval '(make-abcdr {})))))
+
+(deftest describe-options
+  (is (describe person [:i age]))
+  (is (desc child [(person?) child-input (< 20) age]))
+  (is (c child? :age 2))
+  (is (false? (c child? :ags 4)))
+  (is (= {:age 3} (make-child {:age 3})))
+  (is (thrown? AssertionError (make-child {:age 30})))
+  (is (thrown? AssertionError (make-child {:ages 2})))
+  (is (describe baby-child [(child?) baby-child-input :b in-diapers] "new-" ??))
+  (is (describe baby-child2 [(child?) baby-child2-input :b in-diapers] n- "??"))
+  (is (describe baby-child3 [(child?) baby-child3-input :b in-diapers] "n-" ""))
+  (is (thrown? AssertionError (new-baby-child {:age 3})))
+  (is (thrown? AssertionError (new-baby-child {:age 3 :in-diapers :true})))
+  (is (= {:in-diapers true :age 3} (new-baby-child {:age 3 :in-diapers true})))
+  (is (false? (baby-child?? {:age 100 :in-diapers true})))
+  (is (baby-child?? {:age 1 :in-diapers false}))
+  (is (baby-child2?? (n-baby-child2 {:age 1 :in-diapers false})))
+  (is (baby-child3 (n-baby-child3 {:age 1 :in-diapers false}))))

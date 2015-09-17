@@ -437,6 +437,11 @@
 
 (desc baby-child [(child?) baby-child-input (< 2) age])
 
+;; optionally naming the two functions generated:
+
+(describe baby-child [(child?) baby-child-input (< 2) age] new- "")
+
+
 ;; Additionally, describe- creates private versions of the constructor and validator
 
 ;; the ep> validation helper is explained a bit further below

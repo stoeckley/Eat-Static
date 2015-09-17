@@ -549,23 +549,6 @@ Optional arguments shown in brackets may be in any order. "))
   [m argl]
   `((predfn ~argl) ~m))
 
-;; These omitted the need for the # around fn expressions, but in so doing,
-;; they limited what you could pass, and were also confusingly different
-;; to how you pass functions to ep> and epcoll>
-
-;; (defn fn*>
-;;   "Helper for and> and or>"
-;;   [op v r] `((fn [x#] ((fn [~'%] (~op ~@r)) x#)) ~v))
-
-;; (defmacro and>
-;;   "Accepts a value and a series of real functions that operate on a value. All must pass for the and> to be true."
-;;   [v & r] (fn*> 'and v r))
-
-;; (defmacro or>
-;;   "Like and> but uses or, not and. Only one of the supplied functions must pass."
-;;   [v & r] (fn*> 'or v r))
-
-
 ;;and> in most/all cases is going to be synonymous with ep>
 (defn and>
   "Runs the supplied fns on the value, and requires all to pass. Tends to be synonmous with usage of ep>"

@@ -707,7 +707,8 @@ Map constructors and validators using ```describe```:
 
 (child? alex) ;; returns a truthy value
 
-;; Function bodies are not passed to describe
+;; Function bodies, custom input map names and docstrings
+;; are not passed to describe.
 
 ;; In both functions, the input map is also named child-input should you
 ;; wish to use it in the argument vector to (describe ...), i.e. for 
@@ -735,8 +736,6 @@ Map constructors and validators using ```describe```:
 
 ;; This generates new-baby-child as the make function, and baby-child as the
 ;; predicate function.
-
-;; it is not necessary to enclose the options in quotes
 
 ;; A nearly identical form of "describe" is "desc". It is shorter to type
 ;; and does not accept optional names for the two functions it creates, using the

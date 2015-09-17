@@ -487,6 +487,7 @@ Optional arguments shown in brackets may be in any order. "))
 (defmacro blend
   "Generates a describe expression that adds all the default values of the supplied previously-described symbols to the arg list for the new describe (as per the describe macro)."
   [descname valids & descs]
+  (assert descs "Blend requires at least one previously described name after its arg list.")
   `(let [ba# (blended-arglist ~descname ~valids ~descs)]
      (blend-fn '~descname ba#)))
 

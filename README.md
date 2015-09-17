@@ -739,7 +739,8 @@ Map constructors and validators using ```describe```:
 ;; it is not necessary to enclose the options in quotes
 
 ;; A nearly identical form of "describe" is "desc". It is shorter to type
-;; and does not accept optional names for the two functions it creates. 
+;; and does not accept optional names for the two functions it creates, using the
+;; standard make- and ..? function names.
 ;; Using "desc" forces consistency on the naming conventions, which is important
 ;; if you use the "blend" macro described further below.
 

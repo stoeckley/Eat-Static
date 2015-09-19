@@ -300,10 +300,10 @@
   (is (blend abcdr [:i q :k [cool :great]] cd ab))
   (is (thrown? AssertionError (eval '(make-abcdr {}))))
   (is (= [{:a 5 :b 6}{:a 5 :b 6}{:a 5 :b 6}] (dv ab 3)))
-  (is (= (dv cdab 2) [{:g {:p :any, :a 5, :b 6}, :d 1.1, :c 1.1, :a 5, :b 6}
-                      {:g {:p :any, :a 5, :b 6}, :d 1.1, :c 1.1, :a 5, :b 6}]))
-  (is (= (vmake cdab {:yo :man} 2) [{:yo :man :g {:p :any, :a 5, :b 6}, :d 1.1, :c 1.1, :a 5, :b 6}
-                      {:g {:p :any, :a 5, :b 6} :yo :man, :d 1.1, :c 1.1, :a 5, :b 6}])))
+  (is (= (eval '(dv cdab 2)) [{:g {:p :any, :a 5, :b 6}, :d 1.1, :c 1.1, :a 5, :b 6}
+                        {:g {:p :any, :a 5, :b 6}, :d 1.1, :c 1.1, :a 5, :b 6}]))
+  (is (= (eval '(vmake cdab {:yo :man} 2)) [{:yo :man :g {:p :any, :a 5, :b 6}, :d 1.1, :c 1.1, :a 5, :b 6}
+                                      {:g {:p :any, :a 5, :b 6} :yo :man, :d 1.1, :c 1.1, :a 5, :b 6}])))
 
 (deftest describe-options
   (is (describe person [:i age]))

@@ -2,18 +2,19 @@
 
 #### Easy run-time type-checking and validation of Clojure maps and functions
 
-##### A single vector DSL that joins many features in one place for *quickly*:
-* Making type checks on whole maps, specific k/v pairs, or function arguments easily
-* Specifying and validating function return types
-* Building intricate map constructors & validators with one line of code
-* Constructing complex functional predicates on the fly
-* Building custom types on demand
-* Composing existing types into new composite types easily
-* Writing functions that accept named, unordered parameters
-* Specifying function arguments as required or optional
-* Providing default values for optional arguments
-* Grouping :pre/:post style conditions
-* Leveraging trait-like behavior from basic Clojure maps
+##### A single vector DSL that joins many features in one place to *quickly*:
+* Make type checks on whole maps, specific k/v pairs, or function arguments easily
+* Specify and validate function return types
+* Build intricate map constructors & validators with one line of code
+* Construct complex functional predicates on the fly
+* Build custom types on demand
+* Compose existing types into new composite types easily
+* Generate default maps based on simple inheritance 
+* Write functions that accept named, unordered parameters
+* Specify function arguments as required or optional
+* Provide default values for optional arguments
+* Group :pre/:post style conditions
+* Leverage trait-like behavior from basic Clojure maps
 
 ... and doing these tasks with *very* minimal syntax.
 

@@ -57,9 +57,9 @@ A normal ```df``` function definition without any validations and default values
 ;; Read on to see how easy it is to change these requirements, as well as
 ;; how to offer custom names to items such as the :as map
 ```
-The ```df``` family of macros simply expand to a ```defn```, ```defn-```, or ```fn``` that takes a single map argument. All the destructuring and assertions are automatically handled.
+The ```df``` family of tools simply expand to a ```defn```, ```defn-```, or ```fn``` that takes a single map argument. All the destructuring and assertions are automatically handled.
 
-Functions created this way with or without these macros are called like this:
+Functions created this way with or without these are called like this:
 
 ```clojure
 (my-function {:a 1 :b 2 :c 4})
@@ -117,7 +117,7 @@ Next, you want to ensure that ```a``` ```b``` and ```c``` are only integers:
                    {:pre [(integer? a) (integer? b) (integer? c)]}
                     ...)
 
-;; In reality, the df macro is implemented as assert calls, 
+;; In reality, df is implemented as assert calls, 
 ;; not a :pre/:post map, to offer specific error messages
 ;; and to handle other features described below.
 ;; You can freely add your own :pre/:post map to a df if desired
@@ -532,7 +532,7 @@ Finally, for completeness, you can create an anonymous predicate function with `
 (df foo [((predfn [a b])) mymap] ...)
 
 ;; When using predfn as an ad-hoc test inside a validation expression like this,
-;; you can simplify with the pred> macro, which removes a layer of parens:
+;; you can simplify with pred> which removes a layer of parens:
 
 (df foo [(pred> [a b]) mymap] ...)
 
@@ -658,7 +658,7 @@ Now you can just use this as the specifier for a type of function argument:
 ```
 #### Custom aggregate types
 
-In addition to the simple techniques above for defining a custom "type", Eat Static provides a couple of useful macros for rounding out the picture of a specification for an aggregate map.
+In addition to the simple techniques above for defining a custom "type", Eat Static provides a couple of useful tools for rounding out the picture of a specification for an aggregate map.
 
 Map constructors and validators using ```describe```:
 
@@ -692,7 +692,7 @@ Map constructors and validators using ```describe```:
 
 ;; Note that the df form and the pred form simply have the exact same
 ;; vector-formatted arg list. 
-;; You can accomplish both at once using the "describe" macro:
+;; You can accomplish both at once using "describe":
 
 ;; Two birds, one stone:
 
@@ -741,12 +741,12 @@ Map constructors and validators using ```describe```:
 ;; and does not accept optional names for the two functions it creates, using the
 ;; standard make- and ..? function names.
 ;; Using "desc" forces consistency on the naming conventions, which is important
-;; if you use the "blend" macro described further below.
+;; if you use "blend" described further below.
 
 ;; Additionally, describe- and desc- create private versions 
 ;; of the constructor and validator
 ```
-Here are a few more examples of quickly generating custom types and traits that are easy to build and validate using the describe macro:
+Here are a few more examples of quickly generating custom types and traits that are easy to build and validate using describe:
 ```clojure
 (desc person [:str name :i age :k sex :n height])
 (desc tall [(> 2) height])
@@ -866,9 +866,9 @@ When composing predicates, accessing the full single input map in the arg list (
 ;; (pred ...) is typically easier when you combine
 ;; full-map validation with individual element checks
 ```
-#### The blend macro
+#### Blend
 
-Now that you have seen ```describe```, ```desc``` and general predicate composition, the final tool for building new type/traits out of existing ones is the ```blend``` macro, which is a special version of ```describe```. 
+Now that you have seen ```describe```, ```desc``` and general predicate composition, the final tool for building new type/traits out of existing ones is ```blend``` which is a special version of ```describe```. 
 
 A ```make-...``` function built with ```describe``` or ```desc``` automatically adds any default values specified in the definition, as noted previously. And while you can manually build a combined predicate expression that ensures your new type meets several criteria, it doesn't provide you automatic default values for all the composite types.
 
@@ -966,8 +966,8 @@ The ```ab-cd``` type (or trait) has all the properties and requirements of the `
 ;; but that would not enforce that you called this predicate with actual
 ;; person types, so your choice depends on the type of safety you want.
 ```
-##### The **c>** macro
-Just as the **c** macro lets you pass named parameters as individual arguments, the **c>** macro does the same, but re-arranges the arg order slighly to allow for idiomatic usage inside one of the validation expressions of an argument list:
+##### **c>** 
+Just as ```c``` lets you pass named parameters as individual arguments, ```c>``` does the same, but re-arranges the arg order slighly to allow for idiomatic usage inside one of the validation expressions of an argument list:
 ```clojure
 ;; Alternative:
 
@@ -1016,7 +1016,7 @@ Just as the **c** macro lets you pass named parameters as individual arguments, 
  * **++** combines validation expressions in the arg vector so all must pass
  * **c** to call fns without squiggly braces
 
-*> helpers are typically used inside a validation expression of an arg list. They all share the quality that the item you are validating is their first argument, as with -> macro expressions:
+*> helpers are typically used inside a validation expression of an arg list. They all share the quality that the item you are validating is their first argument, as with ```->``` macro expressions:
 
  * **c>** is like c, but designed for use in an argument validation expression
  * **pred>** is simplified predfn syntax for a validation expression
@@ -1053,7 +1053,7 @@ Just as you can do things in a Clojure pre/post map that make no sense, you coul
 
 ##### General tidbits
 
-* Remember, all the functions created with this library take a single argument, a map, and the parameters are named. The **c** macro helps make this idiomatic. The benefits are huge, but it might take a bit to remember this as you start using the library.
+* Remember, all the functions created with this library take a single argument, a map, and the parameters are named. The ```c``` tool helps make this idiomatic. The benefits are huge, but it might take a bit to remember this as you start using the library.
 * Remember, these are run-time checks, not static compilation checks. We like the dynamic nature of Clojure and have no intention of interfering with that. Reach for this run-time safety when you need it.
 
 ##### Default and optional values

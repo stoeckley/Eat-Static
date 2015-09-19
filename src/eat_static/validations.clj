@@ -609,6 +609,7 @@ Optional arguments shown in brackets may be in any order. "))
   "t is for type-check
   Gets the actual function associated with a keyword type check, as in the type-checks map up top."
   [k]
+  (assert (keyword? k) "t accepts a keyword only, as per the type-checks map in validations.clj.")
   (if-let [f (get type-checks k)]
     (second f)
     (throw-text (str "Invalid type keyword provided: " k))))
@@ -617,29 +618,39 @@ Optional arguments shown in brackets may be in any order. "))
   "d is for defaults
   Returns the minimum default map (which could be empty) for a type defined with desc"
   [sym]
+  (assert (symbol? sym) "The sole arg to d must be a symbol.")
   (let [n (symbol (str @make-prefix sym))]
     `(transform-or-map (getor ~n))))
 
 (defmacro dv
   "defaults vector: creates a vector of identical default maps"
   [sym n]
+  (assert (symbol? sym) "First arg to dv must be a symbol.")
+  (assert (integer? n) "last arg to dv must be an integer")
   `(mapv (fn [_#] (d ~sym)) (range ~n)))
 
 (defmacro vmake
   "a vector of make- on a symbol. takes a symbol (minus make-, like the d and dv macros) and a map of args, which can be empty, and a number of items."
   [sym m n]
+  (assert (symbol? sym) "First arg to vmake must be a symbol.")
+  (assert (map? m) "Second arg to vmake must be a map.")
+  (assert (integer? n) "last arg to vmake must be an integer")
   (let [s (symbol (str @make-prefix sym))]
     `(mapv (fn [_#] (~s ~m)) (range ~n))))
 
 (defmacro make
   "Looks up the prefix for make- functions and uses it on the symbol"
   [sym map]
+  (assert (symbol? sym) "First arg to make must be a symbol.")
+  (assert (map? map) "Last arg to make must be a map.")
   (let [s (symbol (str @make-prefix sym))]
     `(~s ~map)))
 
 (defmacro is?
   "The partner to make, finds the proper predicate based on the set suffix."
   [sym map]
+  (assert (symbol? sym) "First arg to is? must be a symbol.")
+  (assert (map? map) "Last arg to is? must be a map.")
   (let [s (symbol (str sym @pred-suffix))]
     `(~s ~map)))
 

@@ -926,7 +926,7 @@ Now that you have seen ```describe```, ```desc``` and general predicate composit
 
 A ```make-...``` function built with ```describe``` or ```desc``` automatically adds any default values specified in the definition, as noted previously. And while you can manually build a combined predicate expression that ensures your new type meets several criteria, it doesn't provide you automatic default values for all the composite types.
 
-```blend``` combines the predicate composition with an overall combined defaults listing behind the scenes, all you must do is specify symbols previously defined with ```describe``` or ```desc```:
+```blend``` combines the predicate composition (so you don't need to reference the input map) with an overall combined defaults listing behind the scenes. All you must do is specify symbols previously defined with ```describe``` or ```desc```:
 
 ```clojure
 ;; a and b have default values, and q is required:
@@ -945,7 +945,7 @@ A ```make-...``` function built with ```describe``` or ```desc``` automatically 
 ;; e is a required keyword, and ab-cd is both a ab and a cd type
 (blend ab-cd [:k e] ab cd)
 ```
-The ```ab-cd``` type (or trait) has all the properties and requirements of the ```ab``` and ```cd``` types, and if you build an ```ab-cd``` type, you will automatically get all of their default values, as well as enforcement on the others, as if you had included ```(ep> ab? cd?)```:
+The ```ab-cd``` type (or trait) has all the properties and requirements of the ```ab``` and ```cd``` types, and if you build an ```ab-cd``` type, you will automatically get all of their default values, as well as enforcement on all required parameters, as if you had included ```(ep> ab? cd?)```:
 ```clojure
 ;;these will fail because required values of the composite types are omitted:
 
@@ -960,6 +960,10 @@ The ```ab-cd``` type (or trait) has all the properties and requirements of the `
 ;; {:e :hi, :w 1.1, :q 55, :a 1, :c 3, :b 2, :d 4}
 
 ```
+Another application of this tool is to create specific "sub-classed" default versions of types by supplying a default value in ```blend``` for a previously described required parameter.
+
+##### inheritance -- which type gets the control?
+
 If you are blending "types" that all have the same named parameter as a default, the order you pass to ```blend``` matters, and precedence is given to those at the end of the list, as if you were defining an inheritance tree:
 ```clojure
 (desc red-rectangle [:n [width 5 height 3] :k [color :red]])

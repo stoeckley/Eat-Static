@@ -1179,13 +1179,13 @@ Just as ```c``` lets you pass named parameters as individual arguments, ```c>```
  * **d** returns a map of all default values available on a symbol created with ```desc``` or ```blend```
  * **dv** like ```d``` but creates a vector of default maps
  * **vmake** like ```dv``` but accepts additional args to merge onto the default map repeated in the vector
-
+ * **make** and **is?** allow you to access the factory and predicate versions of symbols described by ```desc``` and ```blend``` without knowing the naming scheme
 
 Hopefully, they help you take advantage of Clojure's excellent tools for making your code safer and easier.
 
 ### Turning it Off
 
-While the ```pred``` functions are non-assertive, the functions you build with ```df``` and ```describe``` throw run-time assertions if arguments are not provided as expected. That's the idea, but eventually you may wish to disable these assertions in production code.
+While the ```pred``` functions are non-assertive, the functions you build with ```df``` and the factory parts of ```describe```, ```desc``` and ```blend``` ("make-"... ) throw run-time assertions if arguments are not provided as expected. That's the idea, but eventually you may wish to disable these assertions in production code.
 
 In Clojure, all asserts can be ignored by setting the global dynamic variable ```*assert*``` to ```false```. You must recompile your code for this to take affect. Any assertive function written with Eat Static, as well as any other asserts you use in your code, including :pre/:post maps, will no longer then throw assertions.
 

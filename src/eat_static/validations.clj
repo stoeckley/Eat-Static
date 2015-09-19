@@ -97,6 +97,8 @@
   (reset! pred-suffix "?")
   (println "Eat Static: New names for generated functions have been set to defaults."))
 
+;; Helpers used when parsing the macros:
+
 (defn- is-pre-or-post
   "Determines if the first form provided in a function body is a :pre/:post map."
   [m]
@@ -114,6 +116,8 @@
   (if (is-optional x)
     (symbol (apply str (rest (str x))))
     x))
+
+;; The parsing of macros:
 
 (defn- place-symbol
   "Places the symbol in various contexts, such as whether it is a required or optional function argument, and any type checks and/or other tests it must pass when the function is called."
@@ -408,6 +412,8 @@ Optional arguments shown in brackets may be in any order. "))
 (defmacro dfn
   [f & args]
   (list `process-args false 'fn f args))
+
+;; Describe and Blend helpers:
 
 (defn- object-build
   ([title arglist d p]

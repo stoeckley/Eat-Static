@@ -746,7 +746,9 @@
 ;; which gets priority.
 
 ;; of course, you can make a blue square too:
-(blend blue-square [[color :blue]] red-rectangle square)
+(blend blue-square [[color :blue]] square)
+
+(make-blue-square {})
 
 ;; returns {:width 5, :height 5, :color :blue}
 

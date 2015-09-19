@@ -987,12 +987,16 @@ If you are blending "types" that all have the same named parameter as a default,
 ;; which gets priority.
 
 ;; of course, you can make a blue square too:
-(blend blue-square [[color :blue]] red-rectangle square)
+(blend blue-square [[color :blue]] square)
 
 (make-blue-square {})
 
 ;; returns {:width 5, :height 5, :color :blue}
+```
+If you stored functions as defaults, then this would let you decide which of the blended items gets the proper implementation for the same named function, much like inheritance in standard OO.
 
+Worth noting:
+```clojure
 ;; these are particularly loose definitions, and thus
 ;; the predicates are quite forgiving, as we are dealing
 ;; with default values:
@@ -1017,7 +1021,6 @@ If you are blending "types" that all have the same named parameter as a default,
 
 ;; Having default values can be useful for many situations, as you shall see below.
 ```
-If you stored functions as defaults, then this would let you decide which of the blended items gets the proper implementation for the same named function, much like inheritance in standard OO.
 
 ##### Quickly generating default maps
 

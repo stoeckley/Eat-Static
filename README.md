@@ -992,6 +992,28 @@ If you are blending "types" that all have the same named parameter as a default,
 (make-blue-square {})
 
 ;; returns {:width 5, :height 5, :color :blue}
+
+;; these are particularly loose definitions, and thus
+;; the predicates are quite forgiving, as we are dealing
+;; with default values:
+
+(red-square? (make-blue-square {}))
+;; returns true
+
+;; To make it more restrictive:
+
+(blend red-square [(= :red) color] square)
+
+;; Now it isn't loose with the color requirement,
+;; however, because color is a required paramter,
+;; it does not appear in the defaults for red-square,
+;; should you blend red-square into something else.
+
+;; This is easily fixed by:
+
+(blend red-square [(= :red) [color :red]] square)
+
+;; Now the color has a default value as well as a specific enforcement.
 ```
 If you stored functions as defaults, then this would let you decide which of the blended items gets the proper implementation for the same named function, much like inheritance in standard OO.
 

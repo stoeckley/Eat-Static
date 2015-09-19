@@ -209,8 +209,8 @@
               (throw-text "Output validation list contained an element that is not a keyword or list.")
               (throw-text "Arg list contained an element that is not a symbol, vector, keyword, or list.")))))
 
-(defn- arg-split
-  "Splits and analyzes the vector of function arguments or the list of output validations."
+(defn arg-split
+  "Splits and analyzes the vector of function arguments or the list of output validations. Return is the symbol name of the output from the fn."
   [args input-map is-output? return]
   (dissoc
    (reduce (arg-split-fn input-map is-output? return)
@@ -497,11 +497,17 @@ Optional arguments shown in brackets may be in any order. "))
      `(merge ~@(map (fn [x] `(transform-or-map (getor ~x) ~f)) dfs)))))
 
 (defmacro blended-arglist
-  "Takes a series of symbols at run-time and builds a defaults vector based on the default values for all the descriptions those symbols represent, appends it to a supplied validation list to automatically build a combined list of defaults in a single vector, along with other validators. Also constructs predicate tests for each of the descriptions, and adds that as a requirement to the input map. This is a macro since the valids vector contains expressions that cannot be evaluated and are parsed later."
+  "Takes a series of symbols at run-time and builds a defaults vector based on the default values for all the descriptions those symbols represent, but removing any required symbols in the arg vector, and appends it to a supplied validation list to automatically build a combined list of defaults in a single vector, along with other validators. Also constructs predicate tests for each of the descriptions, and adds that as a requirement to the input map. This is a macro since the valids vector contains expressions that cannot be evaluated and are parsed later."
   [descname valids descs]
-  `(let [preds# '~(map #(symbol (str % @pred-suffix)) descs)]
+  `(let [preds# '~(map #(symbol (str % @pred-suffix)) descs)
+         defaults# (desc-defaults ~descs identity)
+         argsplit# (arg-split '~valids (gensym) false (gensym))
+         required# (:req argsplit#)
+         optional# (:opt argsplit#)
+         blended-defaults# (apply dissoc defaults# required#)
+         blended-defaults# (apply dissoc blended-defaults# optional#)]
      (conj '~valids
-           :any (vec (flatten (seq (desc-defaults ~descs identity))))
+           :any (vec (flatten (seq blended-defaults#)))
            ;; because list? is used later and a cons does not pass list? (nor does list* !)
            (into (list) (reverse (cons (symbol "ep>") preds#)))
            (symbol ~(str descname "-input")))))

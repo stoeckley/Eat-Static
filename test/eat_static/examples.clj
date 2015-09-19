@@ -817,6 +817,8 @@
 
 (make-factory-output {:cars (dv car 2)})
 
+(def new-white-cars (vmake car {:color :white :age 1} 5))
+
 
 (set-describe-names! "front" "back")
 

@@ -1089,6 +1089,7 @@ Just as you can do things in a Clojure pre/post map that make no sense, you coul
 
 ##### General tidbits
 
+* Some of the concepts here, especially ```blend```, share some similarities to object-oriented programming. But the predicates created by these functions are not like a type check in other languages. There is a difference between a minimum-acceptable combination of parameters and a full-fledged "object" with all desired parameters. When you specify parameters as optional with default values, the predicate allows them to be excluded entirely. Therefore, it is often preferable to use the ```make-``` version of a blended description on a map first, before using it, rather than assuming that a map that passes a predicate test has all the data you need.
 * Remember, all the functions created with this library take a single argument, a map, and the parameters are named. The ```c``` tool helps make this idiomatic. The benefits are huge, but it might take a bit to remember this as you start using the library.
 * Remember, these are run-time checks, not static compilation checks. We like the dynamic nature of Clojure and have no intention of interfering with that. Reach for this run-time safety when you need it.
 

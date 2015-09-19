@@ -1070,6 +1070,12 @@ If you want to store "objects" as map parameters, this is also useful:
   {:age 0, :make "GM"}
   {:age 0, :make "GM"}
   {:age 0, :make "GM"}]}
+
+;; or maybe the factory only made two cars, just override the default:
+
+(make-factory-output {:cars (dv car 2)})
+
+;; of course, providing default values is not appropriate in all situations
 ```
 If you want to tweak the defaults or supply the required parameters, just use the ordinary ```make-``` version with any additional or overridden parameters, or use ```vmake``` to make a vector of makes with the same tweaks:
 ```clojure

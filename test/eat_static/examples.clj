@@ -815,6 +815,8 @@
   {:age 0, :make "GM"}
   {:age 0, :make "GM"}]}
 
+(make-factory-output {:cars (dv car 2)})
+
 
 (set-describe-names! "front" "back")
 

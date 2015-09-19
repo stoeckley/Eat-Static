@@ -7,8 +7,10 @@
 ;;  the terms of this license.
 ;;  You must not remove this notice, or any other, from this software.
 
-(ns ^{:author "Andrew Stoeckley at Balcony Studio, the Netherlands"
+(ns
+    ^{:author "Andrew Stoeckley at Balcony Studio, the Netherlands"
       :doc "Eat Static is a library for the quick validation of Clojure maps and functions, offering easy safety checks for input, output and rapid generation of custom types and traits. See the main Github page or the Readme.md file in the root of this distribution for comprehensive walkthrough of the library's usage and features."}
+
   eat-static.validations)
 
 (defn is-bool?

@@ -10,6 +10,8 @@
 (ns eat-static.examples
   (:require [eat-static.validations :refer :all]))
 
+(default-describe-names!)
+
 ;; Examples for the main Readme page of this library. See the Readme for
 ;; explanations of this code.
 
@@ -809,3 +811,6 @@
 
 frontfb
 fbback
+
+;; setting it back to defaults
+(default-describe-names!)

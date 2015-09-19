@@ -784,3 +784,28 @@
   {:age 0, :make "GM"}
   {:age 0, :make "GM"}
   {:age 0, :make "GM"}]}
+
+
+(set-describe-names! "front" "back")
+
+(desc fb [:k q w e [r :whatever]])
+
+(make fb {:q :ui :w :w :e :e})
+;; allows you to forget the naming scheme that is set
+
+;;(is? fb *1)
+
+(d fb)
+;; returns {:r :whatever}
+;; getting defaults is described further below
+
+;; these two functions return unresolved symbol errors, 
+;; since the naming scheme has changed:
+
+;;make-fb
+;;fb?
+
+;; however these two now exist instead:
+
+frontfb
+fbback

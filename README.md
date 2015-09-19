@@ -754,7 +754,54 @@ Map constructors and validators using ```describe```:
 ;; Additionally, describe- and desc- create private versions 
 ;; of the constructor and validator
 ```
-Here are a few more examples of quickly generating custom types and traits that are easy to build and validate using describe:
+##### A note on function names
+
+```describe```, ```desc``` and ```blend``` (explained below) generate 2 functions, a "factory" with ```df``` that validates a map before usage, using assertions, and a predicate that provides true/false verification that a map meets the described criteria. These are separate bonafide functions that have their own def'd name. As shown above, ```describe``` gives you the option of controlling how they are named, while ```desc``` and ```blend``` do not. Several of the features of Eat Static rely on a consistent naming scheme behind the scenes, and you can override the ```make-``` and ```...?``` prefix and suffix used throughout the library if you wish, which will change how function names are defined, and update other tools that need to peek at these generated functions:
+
+```set-describe-names! [prefix suffix]```
+
+This will accept two strings used in place of the ```make-``` prefix and the ```?``` suffix used in factory and predicate functions.
+
+```slim-describe-names! []```
+
+This sets the make prefix to ```+``` and leaves an empty predicate suffix, such that a type named ```child``` is created with ```(+child ...)``` and checked as ```(child ...)```.
+
+```default-describe-names! []```
+
+This sets the prefix and suffix back to the defaults of ```make-``` and ```?```.
+
+Additionally, instead of calling the def'd functions directly, you can use the ```make``` and ```is?``` tools to do the same tasks you'd normally do by calling the functions directly, regardless of how those functions' prefix and suffix are named:
+
+```clojure
+(set-describe-names! "front" "back")
+
+(desc fb [:k q w e [r :whatever]])
+
+(make fb {:q :ui :w :w :e :e})
+;; allows you to forget the naming scheme that is set
+
+(is? fb *1)
+
+(d fb)
+;; returns {:r :whatever}
+;; getting defaults is described further below
+
+;; these two functions return unresolved symbol errors, 
+;; since the naming scheme has changed:
+
+make-fb
+fb?
+
+;; however these two now exist instead:
+
+frontfb
+fbback
+```
+Or, you can simply never change the describe names, never provide naming options to ```describe``` or just always use ```desc``` and ```blend```, and then none of these tools are necessary. But the flexibility exists to control exactly how functions are ultimately named in your namespace.
+
+##### A few more trait examples:
+
+Based on what has been shown thus far, here are a few more examples of quickly generating custom types and traits that are easy to build and validate using ```desc```:
 ```clojure
 (desc person [:str name :i age :k sex :n height])
 (desc tall [(> 2) height])
@@ -989,7 +1036,18 @@ If you want to store "objects" as map parameters, this is also useful:
   {:age 0, :make "GM"}
   {:age 0, :make "GM"}]}
 ```
+If you want to tweak the defaults, just use the ordinary ```make-``` version as shown above with any additional or overridden parameters, or use ```vmake``` to make a vector of makes with the same tweaks:
+```clojure
+(def new-white-cars (vmake car {:color :white} 5))
 
+;;returns:
+
+[{:color :white, :age 0, :make "GM"}
+ {:color :white, :age 0, :make "GM"}
+ {:color :white, :age 0, :make "GM"}
+ {:color :white, :age 0, :make "GM"}
+ {:color :white, :age 0, :make "GM"}]
+```
 #### Relationships between objects:
 ```clojure
 ;; Analyze interactions between maps:
@@ -1096,12 +1154,11 @@ Just as ```c``` lets you pass named parameters as individual arguments, ```c>```
  * **describe-/desc-** creates private defn- versions same as description
  * **blend** is a special ```describe``` that blends default values and automatically creates a composite predicate based on other types defined with ```describe```
 
-##### Helpers:
+##### Validation helpers:
 
  * **++** combines validation expressions in the arg vector so all must pass
- * **c** to call fns without squiggly braces
 
-*> helpers are typically used inside a validation expression of an arg list. They all share the quality that the item you are validating is their first argument, as with ```->``` macro expressions:
+*> helpers are typically used inside a validation expression of an arg list, though could be used stand-alone for convenience. They all share the quality that the item you are validating is their first argument, as with ```->``` macro expressions:
 
  * **c>** is like c, but designed for use in an argument validation expression
  * **pred>** is simplified predfn syntax for a validation expression
@@ -1113,6 +1170,15 @@ Just as ```c``` lets you pass named parameters as individual arguments, ```c>```
  * **epl>** like epcoll> but uses list?
  * **eps>** like epcoll> but uses set?
  * **epm>** like epcoll> but users map?
+
+##### Other conveniences
+
+ * **c** to call fns without squiggly braces
+ * **t** to get a primitive type check associated with a keyword, i.e. :i for an integer? check
+ * **d** returns a map of all default values available on a symbol created with ```desc``` or ```blend```
+ * **dv** like ```d``` but creates a vector of default maps
+ * **vmake** like ```dv``` but accepts additional args to merge onto the default map repeated in the vector
+
 
 Hopefully, they help you take advantage of Clojure's excellent tools for making your code safer and easier.
 

@@ -75,6 +75,28 @@
 (defn throw-text [s]
   (throw (Exception. s)))
 
+;; prefix, suffix and describe-names affect how generated functions are named
+
+(def make-prefix (atom "make-"))
+(def pred-suffix (atom "?"))
+
+(defn set-describe-names! [prefix suffix]
+  (assert (string? prefix) "Prefix must be a string")
+  (assert (string? suffix) "Suffix must be a string")
+  (reset! make-prefix prefix)
+  (reset! pred-suffix suffix)
+  (println "Eat Static: New names for generated functions have been set."))
+
+(defn slim-describe-names! []
+  (reset! make-prefix "+")
+  (reset! pred-suffix "")
+  (println "Eat Static: New names for generated functions have been set."))
+
+(defn default-describe-names! []
+  (reset! make-prefix "make-")
+  (reset! pred-suffix "?")
+  (println "Eat Static: New names for generated functions have been set to defaults."))
+
 (defn- is-pre-or-post
   "Determines if the first form provided in a function body is a :pre/:post map."
   [m]
@@ -389,7 +411,7 @@ Optional arguments shown in brackets may be in any order. "))
 
 (defn- object-build
   ([title arglist d p]
-   (object-build title arglist d p "make-" "?"))
+   (object-build title arglist d p @make-prefix @pred-suffix))
   ([title arglist d p prefixmake suffixpred]
    (assert (symbol? title) "Name to describe must be symbol")
    (assert (vector? arglist) "Second arg to describe must be a vector for the arglist.")
@@ -462,13 +484,13 @@ Optional arguments shown in brackets may be in any order. "))
   "Takes a sequence of symbols as previously defined with describe, and builds a map of all merged defaults from all function arg lists in those symbols' definitions. Optional function will map over the keyword so you can keep the original symbol, or get a keyword, or make a string, etc. This is a macro since the supplied symbols don't actually resolve to anything; new symbols are generated based on these symbols that point to the actual def'd vars created with a describe expression."
   ([r] `(desc-defaults ~r keyword))
   ([r f]
-   (let [dfs (map #(symbol (str "make-" %)) r)]
+   (let [dfs (map #(symbol (str @make-prefix %)) r)]
      `(merge ~@(map (fn [x] `(transform-or-map (getor ~x) ~f)) dfs)))))
 
 (defmacro blended-arglist
   "Takes a series of symbols at run-time and builds a defaults vector based on the default values for all the descriptions those symbols represent, appends it to a supplied validation list to automatically build a combined list of defaults in a single vector, along with other validators. Also constructs predicate tests for each of the descriptions, and adds that as a requirement to the input map. This is a macro since the valids vector contains expressions that cannot be evaluated and are parsed later."
   [descname valids descs]
-  `(let [preds# '~(map #(symbol (str % "?")) descs)]
+  `(let [preds# '~(map #(symbol (str % @pred-suffix)) descs)]
      (conj '~valids
            :any (vec (flatten (seq (desc-defaults ~descs identity))))
            ;; because list? is used later and a cons does not pass list? (nor does list* !)
@@ -582,6 +604,38 @@ Optional arguments shown in brackets may be in any order. "))
     (second f)
     (throw-text (str "Invalid type keyword provided: " k))))
 
+(defmacro d
+  "d is for defaults
+  Returns the minimum default map (which could be empty) for a type defined with desc"
+  [sym]
+  (let [n (symbol (str @make-prefix sym))]
+    `(transform-or-map (getor ~n))))
+
+(defmacro dv
+  "defaults vector: creates a vector of identical default maps"
+  [sym n]
+  `(mapv (fn [_#] (d ~sym)) (range ~n)))
+
+(defmacro vmake
+  "a vector of make- on a symbol. takes a symbol (minus make-, like the d and dv macros) and a map of args, which can be empty, and a number of items."
+  [sym m n]
+  (let [s (symbol (str @make-prefix sym))]
+    `(mapv (fn [_#] (~s ~m)) (range ~n))))
+
+(defmacro make
+  "Looks up the prefix for make- functions and uses it on the symbol"
+  [sym map]
+  (let [s (symbol (str @make-prefix sym))]
+    `(~s ~map)))
+
+(defmacro is?
+  "The partner to make, finds the proper predicate based on the set suffix."
+  [sym map]
+  (let [s (symbol (str sym @pred-suffix))]
+    `(~s ~map)))
+
+;; Helpers to access and use nested associated data
+
 (defmacro g
   "g is for get
   A simple macro to facilitate syntax for pulling out data in nested structured. (g a.b.c) is the same as (get-in a [:b :c]) but provides a bit more of an OOP feel to it. Works on keywords only."
@@ -591,20 +645,10 @@ Optional arguments shown in brackets may be in any order. "))
         r (rest a)]
     `(get-in ~l ~(vec (map keyword r)))))
 
-(defmacro d
-  "d is for defaults
-  Returns the minimum default map (which could be empty) for a type defined with desc"
-  [sym]
-  (let [n (symbol (str "make-" sym))]
-    `(transform-or-map (getor ~n))))
-
-(defmacro dv
-  "defaults vector: creates a vector of identical default maps"
-  [sym n]
-  `(mapv (fn [_#] (d ~sym)) (range ~n)))
-
+;; This one is really not that useful; better to use "g"
 (defn f
   "f is for function
   Accepts a keyword for a function parameter of a map, the map, and any args for the function, and calls it."
   [fun obj & args]
   (apply (get obj fun (constantly nil)) args))
+

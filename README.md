@@ -937,9 +937,58 @@ If you are blending "types" that all have the same named parameter as a default,
 ;; of course, you can make a blue square too:
 (blend blue-square [[color :blue]] red-rectangle square)
 
+(make-blue-square {})
+
 ;; returns {:width 5, :height 5, :color :blue}
 ```
 If you stored functions as defaults, then this would let you decide which of the blended items gets the proper implementation for the same named function, much like inheritance in standard OO.
+
+##### Quickly generating default maps
+
+If all you want is a map of all the default values for a described or blended type, you can use ```d``` (for "defaults") and ```dv``` to get a vector of those defaults:
+
+```clojure
+(desc baby-white-kitty [:k [color :white] :i [age 0] :b [likes-milk true]])
+
+(d baby-white-kitty)
+
+;; returns {:color :white, :age 0, :likes-milk true}
+
+(def feline-litter (dv baby-white-kitty 5))
+
+;; contains 5 baby white kitties
+
+[{:color :white, :age 0, :likes-milk true}
+ {:color :white, :age 0, :likes-milk true}
+ {:color :white, :age 0, :likes-milk true}
+ {:color :white, :age 0, :likes-milk true}
+ {:color :white, :age 0, :likes-milk true}]
+ ```
+This is particularly useful if your type descriptions contain only default values for all parameters; then you can quickly generate baseline objects that will pass all predicates, if that is appropriate.
+
+If you want to store "objects" as map parameters, this is also useful:
+```clojure
+(desc car [:i [age 0] :str [make "GM"]])
+
+(desc new-car-purchase [:str store (car?) [new-car (d car)]])
+
+(c make-new-car-purchase :store "Al's Car Shop")
+
+;; returns {:store "Al's Car Shop", :new-car {:age 0, :make "GM"}}
+
+(desc factory-output [(epv> car?) [cars (dv car 5)]])
+
+(make-factory-output {})
+
+;; returns: 
+
+{:cars
+ [{:age 0, :make "GM"}
+  {:age 0, :make "GM"}
+  {:age 0, :make "GM"}
+  {:age 0, :make "GM"}
+  {:age 0, :make "GM"}]}
+```
 
 #### Relationships between objects:
 ```clojure

@@ -296,7 +296,10 @@
   (is (= {:a 5 :b 6 :c 1.1 :d 1.1 :cool :great} (eval '(make-abcd {}))))
   (is (= (eval '(make-abcd {})) (eval '(d abcd))))
   (is (blend abcdr [:i q :k [cool :great]] cd ab))
-  (is (thrown? AssertionError (eval '(make-abcdr {})))))
+  (is (thrown? AssertionError (eval '(make-abcdr {}))))
+  (is (= [{:a 5 :b 6}{:a 5 :b 6}{:a 5 :b 6}] (dv ab 3)))
+  (is (= (dv cdab 2) [{:g {:p :any, :a 5, :b 6}, :d 1.1, :c 1.1, :a 5, :b 6}
+                      {:g {:p :any, :a 5, :b 6}, :d 1.1, :c 1.1, :a 5, :b 6}])))
 
 (deftest describe-options
   (is (describe person [:i age]))
@@ -318,3 +321,4 @@
   (is (baby-child3 (n-baby-child3 {:age 1 :in-diapers false})))
   (is (= {:age 2 :in-diapers true :h 1 :k :hi :j "yo" :l {:a 1}}
          (n-baby-child3 {:age 2 :in-diapers true}))))
+

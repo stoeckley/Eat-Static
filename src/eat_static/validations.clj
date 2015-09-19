@@ -598,6 +598,11 @@ Optional arguments shown in brackets may be in any order. "))
   (let [n (symbol (str "make-" sym))]
     `(transform-or-map (getor ~n))))
 
+(defmacro dv
+  "defaults vector: creates a vector of identical default maps"
+  [sym n]
+  `(mapv (fn [_#] (d ~sym)) (range ~n)))
+
 (defn f
   "f is for function
   Accepts a keyword for a function parameter of a map, the map, and any args for the function, and calls it."

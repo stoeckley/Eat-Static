@@ -747,3 +747,40 @@
 (blend blue-square [[color :blue]] red-rectangle square)
 
 ;; returns {:width 5, :height 5, :color :blue}
+
+(desc baby-white-kitty [:k [color :white] :i [age 0] :b [likes-milk true]])
+
+(d baby-white-kitty)
+
+;; returns {:color :white, :age 0, :likes-milk true}
+
+(def feline-litter (dv baby-white-kitty 5))
+
+;; contains 5 baby white kitties
+
+[{:color :white, :age 0, :likes-milk true}
+ {:color :white, :age 0, :likes-milk true}
+ {:color :white, :age 0, :likes-milk true}
+ {:color :white, :age 0, :likes-milk true}
+ {:color :white, :age 0, :likes-milk true}]
+
+(desc car [:i [age 0] :str [make "GM"]])
+
+(desc new-car-purchase [:str store (car?) [new-car (d car)]])
+
+(c make-new-car-purchase :store "Al's Car Shop")
+
+;; returns {:store "Al's Car Shop", :new-car {:age 0, :make "GM"}}
+
+(desc factory-output [(epv> car?) [cars (dv car 5)]])
+
+(make-factory-output {})
+
+;; returns: 
+
+{:cars
+ [{:age 0, :make "GM"}
+  {:age 0, :make "GM"}
+  {:age 0, :make "GM"}
+  {:age 0, :make "GM"}
+  {:age 0, :make "GM"}]}

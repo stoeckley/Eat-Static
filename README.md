@@ -1011,7 +1011,10 @@ Worth noting:
 ;; Now it isn't loose with the color requirement,
 ;; however, because color is a required paramter,
 ;; it does not appear in the defaults for red-square,
-;; should you blend red-square into something else.
+;; should you blend red-square into something else, like
+;; a tiny-red-square where you want to keep the color as
+;; a default value, but still ensure that the predicate test
+;; for tiny-red-square requires the color to be red.
 
 ;; This is easily fixed by:
 

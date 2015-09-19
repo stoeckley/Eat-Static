@@ -1014,6 +1014,8 @@ If you are blending "types" that all have the same named parameter as a default,
 (blend red-square [(= :red) [color :red]] square)
 
 ;; Now the color has a default value as well as a specific enforcement.
+
+;; Having default values can be useful for many situations, as you shall see below.
 ```
 If you stored functions as defaults, then this would let you decide which of the blended items gets the proper implementation for the same named function, much like inheritance in standard OO.
 

@@ -800,7 +800,7 @@ fbback
 ```
 Or, you can simply never change the describe names, never provide naming options to ```describe``` or just always use ```desc``` and ```blend```, and then none of these tools are necessary. But the flexibility exists to control exactly how functions are ultimately named in your namespace.
 
-##### A few more trait examples:
+#### A few more trait examples
 
 Based on what has been shown thus far, here are a few more examples of quickly generating custom types and traits that are easy to build and validate using ```desc```:
 ```clojure
@@ -816,8 +816,6 @@ Based on what has been shown thus far, here are a few more examples of quickly g
 
 (make-short-child {:name "andrew" :age 12 :height 1.5 :sex :m})
 ```
-#### Combining traits
-
 Predicates are great for building trait validation, where a data structure must meet different criteria at different times, depending on the traits of interest:
 
 ```clojure
@@ -879,7 +877,7 @@ When composing predicates, accessing the full single input map in the arg list (
 ;; All we did is make "kid" the name of the full input map instead.
 ;; Now you can pass the map directly.
 ```
-##### A few more trait examples:
+And a few more examples:
 ```clojure
 (pred is-dutch? [(= "netherlands") country])
 
@@ -938,6 +936,8 @@ A ```make-...``` function built with ```describe``` or ```desc``` automatically 
 ;; c and d have default values and w is required
 (desc cd [:f w -r :any [c 3 d 4]])
 ;; w must be a float, while c and d can by anything
+
+;; desc and describe are synonymous in the above definitions
 
 ;; blend can use any functions defined using the standard "make-..." and "...?"
 ;; naming convention outlined above

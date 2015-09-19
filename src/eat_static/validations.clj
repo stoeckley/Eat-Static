@@ -273,9 +273,9 @@
              ~@(if (or is-pred? @use-assertions)
                  (apply list* (or pre# `(comment "No pre or post map provided"))
                         (if is-pred?
-                          `(((and ~@(apply list*
-                                           (all-validations
-                                            req f arg-analysis is-pred? m return)))))
+                          `(((boolean (and ~@(apply list*
+                                            (all-validations
+                                             req f arg-analysis is-pred? m return))))))
                           (all-validations req f arg-analysis is-pred? m return)))
                  `((comment "Assertions are turned off.")))
              ~@(if (not is-pred?) 
@@ -499,13 +499,15 @@ Optional arguments shown in brackets may be in any order. "))
 (def me macroexpand-1)
 
 (defn c
-  "Simply removes the layer of curly brackets so named parameters may be called directly. Instead of (somefunc {:a 1}) you can call (c somefunc :a 1)"
+  "c is for call
+  Simply removes the layer of curly brackets so named parameters may be called directly. Instead of (somefunc {:a 1}) you can call (c somefunc :a 1)"
   [f & {:keys [] :as a}]
   (assert a (str "No map arguments provided. If none are to be passed, use (" f " {})"))
   (f a))
 
 (defn ep>
-  "Accepts a value and then tests all predicates supplied after, all of which must pass for a true return."
+  "ep is for every-pred
+  Accepts a value and then tests all predicates supplied after, all of which must pass for a true return."
   [m & args]
   ((apply every-pred args) m))
 
@@ -573,14 +575,16 @@ Optional arguments shown in brackets may be in any order. "))
     false))
 
 (defn t
-  "Gets the actual function associated with a keyword type check, as in the type-checks map up top."
+  "t is for type-check
+  Gets the actual function associated with a keyword type check, as in the type-checks map up top."
   [k]
   (if-let [f (get type-checks k)]
     (second f)
     (throw-text (str "Invalid type keyword provided: " k))))
 
 (defmacro g
-  "A simple macro to facilitate syntax for pulling out data in nested structured. (g a.b.c) is the same as (get-in a [:b :c]) but provides a bit more of an OOP feel to it. Works on keywords only."
+  "g is for get
+  A simple macro to facilitate syntax for pulling out data in nested structured. (g a.b.c) is the same as (get-in a [:b :c]) but provides a bit more of an OOP feel to it. Works on keywords only."
   [s]
   (let [a (clojure.string/split (str s) #"[.]")
         l (symbol (first a))
@@ -588,8 +592,14 @@ Optional arguments shown in brackets may be in any order. "))
     `(get-in ~l ~(vec (map keyword r)))))
 
 (defmacro d
-  "Returns the minimum default map (which could be empty) for a type defined with desc"
+  "d is for defaults
+  Returns the minimum default map (which could be empty) for a type defined with desc"
   [sym]
   (let [n (symbol (str "make-" sym))]
     `(transform-or-map (getor ~n))))
 
+(defn f
+  "f is for function
+  Accepts a keyword for a function parameter of a map, the map, and any args for the function, and calls it."
+  [fun obj & args]
+  (apply (get obj fun (constantly nil)) args))

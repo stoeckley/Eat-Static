@@ -677,6 +677,12 @@
 (df many-vecs [(vec-of-ints) a b c] [a b c])
 
 
+(pred kitty [:k color :i age :b likes-milk])
+
+(defn bunch-o-kitties [ks] (epv> ks kitty))
+
+(df feed-kitties [(bunch-o-kitties) cats] cats )
+
 (def sexes #{:male :female})
 
 (df person [:str name (sexes) sex] person-input)
@@ -716,3 +722,28 @@
 
 ;; returned:
 ;; {:e :hi, :w 1.1, :q 55, :a 1, :c 3, :b 2, :d 4}
+
+(desc red-rectangle [:n [width 5 height 3] :k [color :red]])
+
+(desc square [:n [width 5 height 5]])
+
+;; makes a red square from a red rectangle
+(blend red-square [] red-rectangle square)
+
+(make-red-square {})
+
+;;returns {:width 5, :height 5, :color :red}
+
+;; however, if the order to blend is reversed:
+(blend red-square [] square red-rectangle)
+
+(make-red-square {})
+
+;; returns {:color :red, :width 5, :height 3}
+;; not a square! because the final blended item was a rectangle,
+;; which gets priority.
+
+;; of course, you can make a blue square too:
+(blend blue-square [[color :blue]] red-rectangle square)
+
+;; returns {:width 5, :height 5, :color :blue}

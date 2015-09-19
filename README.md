@@ -656,6 +656,14 @@ Now you can just use this as the specifier for a type of function argument:
 ;; many-vecs is a function whose parameters of a,b,c
 ;; must all be vectors of integers.
 ```
+Here is a way to describe a kitty cat, and a bunch of them, and then a function to feed them, making sure you don't accidentally try to feed a dog, and ensuring your pet shop doesn't have a monster instead of a kitty lurking somewhere:
+```clojure
+(pred kitty [:k color :i age :b likes-milk])
+
+(defn bunch-o-kitties [ks] (epv> ks kitty))
+
+(df feed-kitties [(bunch-o-kitties) cats] ... )
+```
 #### Custom aggregate types
 
 In addition to the simple techniques above for defining a custom "type", Eat Static provides a couple of useful tools for rounding out the picture of a specification for an aggregate map.
@@ -904,6 +912,34 @@ The ```ab-cd``` type (or trait) has all the properties and requirements of the `
 ;; {:e :hi, :w 1.1, :q 55, :a 1, :c 3, :b 2, :d 4}
 
 ```
+If you are blending "types" that all have the same named parameter as a default, the order you pass to ```blend``` matters, and precedence is given to those at the end of the list, as if you were defining an inheritance tree:
+```clojure
+(desc red-rectangle [:n [width 5 height 3] :k [color :red]])
+
+(desc square [:n [width 5 height 5]])
+
+;; makes a red square from a red rectangle
+(blend red-square [] red-rectangle square)
+
+(make-red-square {})
+
+;;returns {:width 5, :height 5, :color :red}
+
+;; however, if the order to blend is reversed:
+(blend red-square [] square red-rectangle)
+
+(make-red-square {})
+
+;; returns {:color :red, :width 5, :height 3}
+;; not a square! because the final blended item was a rectangle,
+;; which gets priority.
+
+;; of course, you can make a blue square too:
+(blend blue-square [[color :blue]] red-rectangle square)
+
+;; returns {:width 5, :height 5, :color :blue}
+```
+If you stored functions as defaults, then this would let you decide which of the blended items gets the proper implementation for the same named function, much like inheritance in standard OO.
 
 #### Relationships between objects:
 ```clojure

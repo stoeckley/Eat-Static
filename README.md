@@ -480,6 +480,8 @@ Since sets are functions, this simple technique can be re-used everywhere you ne
 
 ### Custom types, traits, and the pred form
 
+In Eat Static, custom types and traits are merely **functions**.
+
 We can think of a custom "type" as restrictions on the contents of an entire map, including the types of its elements, and a custom "trait" as specific requirements for part of a map's contents. But technically, this is merely a conceptual difference as they are tested the same way and refer here to nothing more than easy analysis and categorization of a map's composite data.
 
 Terminology like type, class, trait, and object tends to vary in the industry, and here we do not refer to them in an OO context; we do not discuss mutable state that is married to functions that act on it (though you could certainly store a function in a map -- that's up to you). We use these terms loosely and sometimes interchangeably below.
@@ -999,7 +1001,7 @@ Worth noting:
 ```clojure
 ;; these are particularly loose definitions, and thus
 ;; the predicates are quite forgiving, as we are dealing
-;; with default values:
+;; with default values on optional parameters:
 
 (red-square? (make-blue-square {}))
 ;; returns true
@@ -1020,12 +1022,122 @@ Worth noting:
 
 (blend red-square [(= :red) [color :red]] square)
 
-;; Now the color has a default value as well as a specific enforcement. However, you
-;; have now turned color into something akin to a "final" field with the validation expression; 
-;; any other value of color will not pass validation, included in blended "sub-classes."
+;; Now the color has a default value as well as a specific enforcement. 
+;; However, you have now turned color into something akin to a "final" field
+;; with the validation expression; any other value of color will not pass 
+;; validation, included in blended "sub-classes."
 
 ;; Having default values can be useful for many situations, as you shall see below.
 ```
+##### Final fields
+
+Some simple syntax sugar exists to do this, but first a few thoughts.
+
+A final field in OO terms is a parameter that can no longer be overridden by a sub-class. In Eat Static, the notion of types is controlled entirely by predicate functions, and therefore introducing a predicate that requires specific equality is a way to ensure that a parameter set to any other value by any other blended form does not pass the type check.
+
+You saw above one way to ensure this:
+
+```(blend red-square [(= :red) [color :red]] square)```
+
+That validation of ```(= :red)``` does not go away just because ```color``` might be assigned to a different keyword, either in a call to ```make-red-square``` or ```red-square?``` or in similar calls to other blended forms based on ```red-square```. It is there permanently and must be ```:red```. However, as a default value, you can create other blended forms that pay no attention to the color, and they automatically get this parameter and value:
+
+``` clojure
+(blend tiny-red-square [#{:f (< 1)} [size 0.01]] red-square)
+
+(make-tiny-red-square {})
+
+;; returns {:size 0.01, :color :red, :width 5, :height 5}
+```
+If you try to validate a green square:
+```clojure
+
+(tiny-red-square? {:size 0.01 :color :green}) ;; false
+
+(tiny-red-square? {:size 0.01 :color :red}) ;; true
+
+(tiny-red-square? {:size 0.01}) ;; true
+(tiny-red-square? {}) ;; true
+
+;; these last two are true because there is a default value for :color
+;; and :size up the inheritance tree, which is rather useful. of course,
+;; to actually get them, call make- on the map first.
+```
+Now you create another class:
+```clojure
+(blend tiny-green-square [[color :green]] tiny-red-square)
+```
+You make one:
+```clojure
+(make-tiny-green-square {})
+
+;;returns {:color :green, :size 0.01, :width 5, :height 5}
+```
+All well and good, you think, until you try to validate that it is what you think it is:
+```clojure
+(tiny-green-square? (make-tiny-green-square {}))
+
+;; false
+```
+The item's default value conflicts with a "final" field. Eat Static allows you to make whatever map you want when values are marked as optional, with or without default values. But sometimes, you want more than a default, you want guaranteed validation on it as well as providing the convenience of letting it tag along throughout an inheritance chain. The ```(= :red)``` does just that, but it is verbose to mention the ```:red``` twice, as well as the equality expression, just to generate this behavior.
+
+**Inside an argument vector, a map may be used to assign default values and "final" status to any argument, while still keeping them optional:**
+
+```(blend red-square [{color :red}] square)```
+
+This will accomplish the same as the above. Any ```red-square``` map, including derivatives built from other blends of a ```red-square```, will ensure the color is red to pass validation (if you first create the map with the ```make-``` tool so any defaults are added).
+
+This works with any type of value, including other blended items (which expand to the predicate rather than an equality expression), and many may be specified at once:
+
+```clojure
+
+(blend red-square-1 [{width 1 height 1}] red-square)
+
+(desc two-red-square-1 [{one red-square-1 two red-square-1}])
+
+(make-red-square-1 {})
+
+;; returns {:width 1, :height 1, :color :red}
+
+(make-two-red-square-1 {})
+
+;; returns:
+
+{:one {:width 1, :height 1, :color :red},
+ :two {:width 1, :height 1, :color :red}}
+
+(two-red-square-1? {:one {:width 1, :height 2, :color :red},
+                    :two {:width 1, :height 1, :color :red}})
+;; false
+
+;; this fails, even though width and height were optional parameters:
+(def some-square (make-red-square-1 {:width 2 :height 2}))
+
+;; this is fine:
+(def john-square (make-red-square-1 {:owner "John"}))
+
+;; is {:owner "John", :width 1, :height 1, :color :red}
+
+;; remember, these are still optional values:
+
+(red-square-1? {:a 2 :b 3})
+;; true
+
+(red-square-1? {:a 2 :b 3 :color :green})
+;; false
+
+;; usually use a make- tool to get all the features of a type:
+
+(make-red-square-1 {:a 2 :b 3})
+
+;; returns
+{:a 2, :b 3, :width 1, :height 1, :color :red}
+```
+This "final field" behavior when using a map in the arg list is different than a vector of default values in the following ways:
+
+* Unlike a default vector, any validation expressions preceding the map have no effect on the parameters in the map.
+* You cannot assign multiple parameters to the same default value in a map as you can in a default vector.
+* Validation expressions are automatically created to require the values of the named parameters to be equal to the specified value or, if the value is a symbol, pass a predicate named on the symbol, as defined previously in a ```desc``` or ```blend```
+
 
 ##### Quickly generating default maps
 
@@ -1048,7 +1160,7 @@ If all you want is a map of all the default values for a described or blended ty
  {:color :white, :age 0, :likes-milk true}
  {:color :white, :age 0, :likes-milk true}]
  ```
-This is particularly useful if your type descriptions contain only default values for all parameters; then you can quickly generate baseline objects that will pass all predicates, if that is appropriate.
+This is particularly useful if your type descriptions contain only default values for all parameters (whether defined in default vectors or in final field maps); then you can quickly generate baseline objects that will pass all predicates, if that is appropriate.
 
 If you want to store "objects" as map parameters, this is also useful:
 ```clojure
@@ -1199,7 +1311,7 @@ Just as ```c``` lets you pass named parameters as individual arguments, ```c>```
 
 ##### Validation helpers:
 
- * **#{}** (Clojure set) combines validation expressions in the arg vector so all must pass
+ * **#{ }** (Clojure set) combines validation expressions in the arg vector so all must pass
 
 *> helpers are typically used inside a validation expression of an arg list, though could be used stand-alone for convenience. They all share the quality that the item you are validating is their first argument, as with ```->``` macro expressions:
 

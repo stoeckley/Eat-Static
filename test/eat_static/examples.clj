@@ -777,6 +777,78 @@
 ;; Now the color has a default value as well as a specific enforcement.
 
 
+(blend tiny-red-square [#{:f (< 1)} [size 0.01]] red-square)
+
+(make-tiny-red-square {})
+
+;; returns {:size 0.01, :color :red, :width 5, :height 5}
+
+(tiny-red-square? {:size 0.01 :color :green}) ;; false
+
+(tiny-red-square? {:size 0.01 :color :red}) ;; true
+
+(tiny-red-square? {:size 0.01}) ;; true
+(tiny-red-square? {}) ;; true
+
+;; these last two are true because there is a default value for :color
+;; and :size up the inheritance tree, which is rather useful. of course,
+;; to actually get them, call make- on the map first.
+
+(blend tiny-green-square [[color :green]] tiny-red-square)
+
+(make-tiny-green-square {})
+
+;;returns {:color :green, :size 0.01, :width 5, :height 5}
+
+(tiny-green-square? (make-tiny-green-square {}))
+
+;; false
+
+(blend red-square [{color :red}] square)
+
+
+(blend red-square-1 [{width 1 height 1}] red-square)
+
+(desc two-red-square-1 [{one red-square-1 two red-square-1}])
+
+(make-red-square-1 {})
+
+;; returns {:width 1, :height 1, :color :red}
+
+(make-two-red-square-1 {})
+
+;; returns:
+
+{:one {:width 1, :height 1, :color :red},
+ :two {:width 1, :height 1, :color :red}}
+
+(two-red-square-1? {:one {:width 1, :height 2, :color :red},
+                    :two {:width 1, :height 1, :color :red}})
+;; false
+
+;; this fails, even though width and height were optional parameters:
+;; (def some-square (make-red-square-1 {:width 2 :height 2}))
+
+;; this is fine:
+(def john-square (make-red-square-1 {:owner "John"}))
+
+;; is {:owner "John", :width 1, :height 1, :color :red}
+
+;; remember, these are still optional values:
+
+(red-square-1? {:a 2 :b 3})
+;; true
+
+(red-square-1? {:a 2 :b 3 :color :green})
+;; false
+
+;; usually use a make- tool to get all the features of a type:
+
+(make-red-square-1 {:a 2 :b 3})
+
+;; returns
+{:a 2, :b 3, :width 1, :height 1, :color :red}
+
 
 (desc baby-white-kitty [:k [color :white] :i [age 0] :b [likes-milk true]])
 

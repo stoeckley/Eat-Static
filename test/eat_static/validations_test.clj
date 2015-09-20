@@ -328,13 +328,13 @@
 
 (deftest default-settings-maps
   (is (desc deff [{x 6 l :red}]))
-  (is (false? (deff? 5)))
-  (is (false? (deff? {})))
-  (is (false? (is? deff {})))
+  ;; (is (false? (deff? 5))) ;; tests written before change to make map args optional, not required
+  ;; (is (false? (deff? {})))
+  ;; (is (false? (is? deff {})))
   (is (false? (deff? {:l :blue :x 2})))
   (is (false? (deff? {:l :blue})))
-  (is (false? (deff? {:l :red})))
-  (is (false? (deff? {:x 6})))
+  ;; (is (false? (deff? {:l :red})))
+  ;; (is (false? (deff? {:x 6})))
   (is (= (make-deff (merge (d deff) {:h 1})) {:h 1 :l :red :x 6}))
   (is (deff? (d deff)))
   (is (desc tree [:i x {d deff}]))
@@ -347,6 +347,6 @@
   (is (= {:x 33 :d {:x 6 :l :red}} (make-tree {:x 33 :d {:x 6 :l :red}})))
   (is (= {:x 33 :d {:x 6 :l :red}} (make-tree {:x 33 :d (d deff)})))
   (is (tree? {:x 0 :d (d deff)}))
-  (is (false? (tree? {:x 22})))
+  (is (tree? {:x 22}))
   (is (df j [x [y 8]] [x y j-input]))
   (is (= (j {:x 5}) [5 8 {:x 5}])))

@@ -9,7 +9,7 @@
 * Construct complex functional predicates on the fly
 * Build custom types on demand
 * Compose existing types into new composite types easily
-* Generate default maps based on simple inheritance 
+* Generate default maps based on simple inheritance, with final field support
 * Write functions that accept named, unordered parameters
 * Specify function arguments as required or optional
 * Provide default values for optional arguments
@@ -1020,7 +1020,9 @@ Worth noting:
 
 (blend red-square [(= :red) [color :red]] square)
 
-;; Now the color has a default value as well as a specific enforcement.
+;; Now the color has a default value as well as a specific enforcement. However, you
+;; have now turned color into something akin to a "final" field with the validation expression; 
+;; any other value of color will not pass validation, included in blended "sub-classes."
 
 ;; Having default values can be useful for many situations, as you shall see below.
 ```

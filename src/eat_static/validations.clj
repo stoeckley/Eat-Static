@@ -125,7 +125,7 @@
   "Places the symbol in various contexts, such as whether it is a required or optional function argument, and any type checks and/or other tests it must pass when the function is called."
   [ass place sym input-map return & {:keys [process remain]}]
   (let [l (:lastfn ass)
-        place2 (if (= :map place) :req place)
+        place2 (if (= :map place) :opt place)
         put #(cond
                (= sym input-map) (update-in % [%2] conj sym)
 

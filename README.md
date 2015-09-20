@@ -1025,7 +1025,7 @@ Worth noting:
 ;; Now the color has a default value as well as a specific enforcement. 
 ;; However, you have now turned color into something akin to a "final" field
 ;; with the validation expression; any other value of color will not pass 
-;; validation, included in blended "sub-classes."
+;; validation, including in blended "sub-classes."
 
 ;; Having default values can be useful for many situations, as you shall see below.
 ```
@@ -1044,24 +1044,23 @@ That validation of ```(= :red)``` does not go away just because ```color``` migh
 However, as a default value, you can create other blended forms that pay no attention to the color, and they automatically get this parameter and value:
 
 ``` clojure
-(blend tiny-red-square [#{:f (< 1)} [size 0.01]] red-square)
+(blend tiny-red-square [#{:f (< 1)} [width height 0.01]] red-square)
 
 (make-tiny-red-square {})
 
-;; returns {:size 0.01, :color :red, :width 5, :height 5}
+;; returns {:width 0.01, :height 0.01, :color :red}
 ```
 If you try to validate a green square:
 ```clojure
 
-(tiny-red-square? {:size 0.01 :color :green}) ;; false
+(tiny-red-square? {:color :green}) ;; false
 
-(tiny-red-square? {:size 0.01 :color :red}) ;; true
+(tiny-red-square? {:color :red}) ;; true
 
-(tiny-red-square? {:size 0.01}) ;; true
 (tiny-red-square? {}) ;; true
 
-;; these last two are true because there is a default value for :color
-;; and :size up the inheritance tree, which is rather useful. of course,
+;; this last one is true because there is a default value for :color
+;; up the inheritance tree, which is rather useful. of course,
 ;; to actually get them, call make- on the map first.
 ```
 Now you create another class:
@@ -1072,7 +1071,7 @@ You make one:
 ```clojure
 (make-tiny-green-square {})
 
-;;returns {:color :green, :size 0.01, :width 5, :height 5}
+;;returns {:color :green, :width 0.01, :height 0.01}
 ```
 All well and good, you think, until you try to validate that it is what you think it is:
 ```clojure

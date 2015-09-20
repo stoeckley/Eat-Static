@@ -330,19 +330,32 @@
         arg-outs (arg-split output m true return)
         arg-outs (update-in arg-outs [:output-validations]
                             concat (:output-validations arg-analysis))
-        {:keys [opt req defaults]} arg-analysis]
+        {:keys [opt req defaults]} arg-analysis
+        ormap (reduce #(assoc % (first %2) (second %2)) {} defaults)]
     `(~begin ~@(if (= 'fn begin) [f] [f docstring])
              [{:keys ~(vec (concat opt req))
                :as ~m
-               :or ~(reduce #(assoc % (first %2) (second %2)) {} defaults)}]
-             ~@(if (or is-pred? @use-assertions)
-                 (apply list* (or pre# `(comment "No pre or post map provided"))
-                        (if is-pred?
-                          `(((boolean (and ~@(apply list*
-                                            (all-validations
-                                             req f arg-analysis is-pred? m return))))))
-                          (all-validations req f arg-analysis is-pred? m return)))
-                 `((comment "Assertions are turned off.")))
+               :or ~ormap}]
+             ~(or pre# `(comment "No pre or post map provided"))
+             ;; ~@(if (or is-pred? @use-assertions)
+             ;;     (apply list* 
+             ;;            (if is-pred?
+             ;;              `(((boolean (and ~@(apply list*
+             ;;                                        (all-validations
+             ;;                                         req f arg-analysis is-pred? m return))))))
+             ;;              (all-validations req f arg-analysis is-pred? m return)))
+             ;;     `((comment "Assertions are turned off.")))
+             (let [~m (if (map? ~m)
+                        (merge ~(into {} (for [[k v] ormap] [(keyword k) v])) ~m)
+                        ~m)]
+               ~@(if (or is-pred? @use-assertions)
+                   (apply list* 
+                          (if is-pred?
+                            `(((boolean (and ~@(apply list*
+                                                      (all-validations
+                                                       req f arg-analysis is-pred? m return))))))
+                            (all-validations req f arg-analysis is-pred? m return)))
+                   `((comment "Assertions are turned off."))))
              ~@(if (not is-pred?) 
                  (let [b (if pre# (rest body) body)
                        outputted (transform-output-validations arg-outs return)]
@@ -353,7 +366,8 @@
                        ~@(when @use-assertions
                            (build-asserts outputted false m true return))
                        ~return)))
-                 ()))))
+                 () ; splices nothing, and empty space
+                 ))))
 
 (defn- throw-arity-exception []
   (throw-text "Invalid parameters. Available arities:

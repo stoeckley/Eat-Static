@@ -777,35 +777,34 @@
 ;; Now the color has a default value as well as a specific enforcement.
 
 
-(blend tiny-red-square [#{:f (< 1)} [size 0.01]] red-square)
+(blend tiny-red-square [#{:f (< 1)} [width height 0.01]] red-square)
 
 (make-tiny-red-square {})
 
-;; returns {:size 0.01, :color :red, :width 5, :height 5}
+;; returns {:width 0.01, :height 0.01, :color :red}
 
-(tiny-red-square? {:size 0.01 :color :green}) ;; false
+(tiny-red-square? {:color :green}) ;; false
 
-(tiny-red-square? {:size 0.01 :color :red}) ;; true
+(tiny-red-square? {:color :red}) ;; true
 
-(tiny-red-square? {:size 0.01}) ;; true
 (tiny-red-square? {}) ;; true
 
-;; these last two are true because there is a default value for :color
-;; and :size up the inheritance tree, which is rather useful. of course,
+;; this last one is true because there is a default value for :color
+;; up the inheritance tree, which is rather useful. of course,
 ;; to actually get them, call make- on the map first.
+
 
 (blend tiny-green-square [[color :green]] tiny-red-square)
 
-(make-tiny-green-square {})
-
-;;returns {:color :green, :size 0.01, :width 5, :height 5}
-
-(tiny-green-square? (make-tiny-green-square {}))
+;; fail:
+;; (make-tiny-green-square {})
+;; (tiny-green-square? (make-tiny-green-square {}))
 
 ;; false
 
-(blend red-square [{color :red}] square)
+;; final field maps:
 
+(blend red-square [{color :red}] square)
 
 (blend red-square-1 [{width 1 height 1}] red-square)
 

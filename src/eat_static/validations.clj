@@ -125,6 +125,7 @@
   "Places the symbol in various contexts, such as whether it is a required or optional function argument, and any type checks and/or other tests it must pass when the function is called."
   [ass place sym input-map return & {:keys [process remain]}]
   (let [l (:lastfn ass)
+        place2 (if (= :map place) :req place)
         put #(cond
                (= sym input-map) (update-in % [%2] conj sym)
 
@@ -137,7 +138,7 @@
                    (and (= :req place) (some #{sym} (:opt ass))))
                (throw-text (str "Symbol " sym " cannot be both optional and required."))
                
-               :else (-> % (update-in [place] conj sym)
+               :else (-> % (update-in [place2] conj sym)
                          (update-in [%2] conj sym)))]
     (cond (= :finished process) ass
           process (-> ass (put process)
@@ -177,7 +178,7 @@
                       `(= ~value))]
       (-> %
           (assoc :lastfn predicate)
-          (place-symbol :opt (first %2) input-map return)))
+          (place-symbol :map (first %2) input-map return)))
    result arg))
 
 (defn parse-default-settings-map
@@ -292,13 +293,18 @@
             (assert-locals f l (:req argsplits) is-pred? input-map is-output? return))
           (dissoc argsplits :req :opt :no-fn :defaults :output-validations)))
 
+(defn- req-test
+  "the quoted expression for testing that required symbols have been provided in the actual input map."
+  [req input-map]
+  `(empty? (filter nil? (map #(get ~input-map %) ~(mapv keyword req)))))
+
 (defn- all-validations
   "Asserts, if necessary, that all required parameters are provided by the caller, then builds the validation and type checks for each parameter."
   [req f arg-analysis is-pred? input-map return]
   (if is-pred?
-    [`(empty? (filter nil? ~(vec req)))
+    [(req-test req input-map)
      (build-asserts arg-analysis is-pred? input-map false return)]
-    [`(assert (empty? (filter nil? ~(vec req)))
+    [`(assert ~(req-test req input-map)
               (str "Required named arguments to "
                    ~(clojure.string/upper-case (str f))
                    " missing."))

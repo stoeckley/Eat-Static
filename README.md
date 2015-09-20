@@ -1212,6 +1212,8 @@ If you want to tweak the defaults or supply the required parameters, just use th
  {:color :white, :age 0, :make "GM"}
  {:color :white, :age 0, :make "GM"}]
 ```
+Note that ```d``` and ```dv``` are merely calling ```make``` with an empty map; if the described symbol has required parameters, these two calls will assertively alert you. If you really want to get a map of defaults without regards to any other requirements on the described symbol, use ```danger```... Because its results are only a subset of a type's possible requirements, it should not be used much.
+
 #### Relationships between objects:
 ```clojure
 ;; Analyze interactions between maps:

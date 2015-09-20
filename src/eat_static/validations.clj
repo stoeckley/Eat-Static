@@ -337,14 +337,6 @@
                :as ~m
                :or ~ormap}]
              ~(or pre# `(comment "No pre or post map provided"))
-             ;; ~@(if (or is-pred? @use-assertions)
-             ;;     (apply list* 
-             ;;            (if is-pred?
-             ;;              `(((boolean (and ~@(apply list*
-             ;;                                        (all-validations
-             ;;                                         req f arg-analysis is-pred? m return))))))
-             ;;              (all-validations req f arg-analysis is-pred? m return)))
-             ;;     `((comment "Assertions are turned off.")))
              (let [~m (if (map? ~m)
                         (merge ~(into {} (for [[k v] ormap] [(keyword k) v])) ~m)
                         ~m)]
@@ -366,7 +358,7 @@
                        ~@(when @use-assertions
                            (build-asserts outputted false m true return))
                        ~return)))
-                 () ; splices nothing, and empty space
+                 () ; splices nothing, an empty space
                  ))))
 
 (defn- throw-arity-exception []

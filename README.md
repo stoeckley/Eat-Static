@@ -1168,7 +1168,7 @@ If all you want is a map of all the default values for a described or blended ty
  {:color :white, :age 0, :likes-milk true}
  {:color :white, :age 0, :likes-milk true}
  {:color :white, :age 0, :likes-milk true}]
- ```
+```
 This is particularly useful if your type descriptions contain only default values for all parameters (whether defined in default vectors or in final field maps); then you can quickly generate baseline objects that will pass all predicates, if that is appropriate.
 
 If you want to store "objects" as map parameters, this is also useful:

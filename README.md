@@ -1039,7 +1039,9 @@ You saw above one way to ensure this:
 
 ```(blend red-square [(= :red) [color :red]] square)```
 
-That validation of ```(= :red)``` does not go away just because ```color``` might be assigned to a different keyword, either in a call to ```make-red-square``` or ```red-square?``` or in similar calls to other blended forms based on ```red-square```. It is there permanently and must be ```:red```. However, as a default value, you can create other blended forms that pay no attention to the color, and they automatically get this parameter and value:
+That validation of ```(= :red)``` does not go away just because ```color``` might be assigned to a different keyword, either in a call to ```make-red-square``` or ```red-square?``` or in similar calls to other blended forms based on ```red-square```. It is there permanently and must be ```:red```. You can also think of this as setting a constant for color -- even though we are not actually storing any state. 
+
+However, as a default value, you can create other blended forms that pay no attention to the color, and they automatically get this parameter and value:
 
 ``` clojure
 (blend tiny-red-square [#{:f (< 1)} [size 0.01]] red-square)

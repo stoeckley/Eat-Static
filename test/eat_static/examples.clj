@@ -756,7 +756,7 @@
 
 ;; these are particularly loose definitions, and thus
 ;; the predicates are quite forgiving, as we are dealing
-;; with default values:
+;; with default values only without much validation:
 
 (red-square? (make-blue-square {}))
 ;; returns true
@@ -799,8 +799,6 @@
 ;; fail:
 ;; (make-tiny-green-square {})
 ;; (tiny-green-square? (make-tiny-green-square {}))
-
-;; false
 
 ;; final field maps:
 
@@ -900,9 +898,8 @@
 
 ;;(is? fb *1)
 
-(d fb)
+(danger fb)
 ;; returns {:r :whatever}
-;; getting defaults is described further below
 
 ;; these two functions return unresolved symbol errors, 
 ;; since the naming scheme has changed:

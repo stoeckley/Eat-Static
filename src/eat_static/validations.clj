@@ -663,13 +663,33 @@ Optional arguments shown in brackets may be in any order. "))
     (second f)
     (throw-text (str "Invalid type keyword provided: " k))))
 
-(defmacro d
-  "d is for defaults
-  Returns the minimum default map (which could be empty) for a type defined with desc"
+(defmacro make
+  "Looks up the prefix for make- functions and uses it on the symbol"
+  [sym map]
+  (assert (symbol? sym) "First arg to make must be a symbol.")
+  (assert (map? map) "Last arg to make must be a map.")
+  (let [s (symbol (str @make-prefix sym))]
+    `(~s ~map)))
+
+(defmacro is?
+  "The partner to make, finds the proper predicate based on the set suffix."
+  [sym map]
+  (assert (symbol? sym) "First arg to is? must be a symbol.")
+  (assert (map? map) "Last arg to is? must be a map.")
+  (let [s (symbol (str sym @pred-suffix))]
+    `(~s ~map)))
+
+(defmacro danger
+  "Returns the default map (which could be empty) for a type defined with desc, without validating the defaults against other aspects of the type's creation (validation expressions, blended type requirements, etc)"
   [sym]
   (assert (symbol? sym) "The sole arg to d must be a symbol.")
   (let [n (symbol (str @make-prefix sym))]
     `(transform-or-map (getor ~n))))
+
+(defmacro d
+  "d is for defaults. Returns all defaults available for a symbol, like calling make with an empty map. Will validate all defaults as well."
+  [sym]
+  `(make ~sym {}))
 
 (defmacro dv
   "defaults vector: creates a vector of identical default maps"
@@ -686,22 +706,6 @@ Optional arguments shown in brackets may be in any order. "))
   (assert (integer? n) "last arg to vmake must be an integer")
   (let [s (symbol (str @make-prefix sym))]
     `(mapv (fn [_#] (~s ~m)) (range ~n))))
-
-(defmacro make
-  "Looks up the prefix for make- functions and uses it on the symbol"
-  [sym map]
-  (assert (symbol? sym) "First arg to make must be a symbol.")
-  (assert (map? map) "Last arg to make must be a map.")
-  (let [s (symbol (str @make-prefix sym))]
-    `(~s ~map)))
-
-(defmacro is?
-  "The partner to make, finds the proper predicate based on the set suffix."
-  [sym map]
-  (assert (symbol? sym) "First arg to is? must be a symbol.")
-  (assert (map? map) "Last arg to is? must be a map.")
-  (let [s (symbol (str sym @pred-suffix))]
-    `(~s ~map)))
 
 ;; Helpers to access and use nested associated data
 

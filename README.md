@@ -1001,7 +1001,8 @@ Worth noting:
 ```clojure
 ;; these are particularly loose definitions, and thus
 ;; the predicates are quite forgiving, as we are dealing
-;; with default values on optional parameters:
+;; with default values on optional parameters without
+;; much extra validation:
 
 (red-square? (make-blue-square {}))
 ;; returns true
@@ -1023,9 +1024,15 @@ Worth noting:
 (blend red-square [(= :red) [color :red]] square)
 
 ;; Now the color has a default value as well as a specific enforcement. 
+;; Whenever you use the make- tool on red-square, a red color is automatically
+;; supplied due to the default value provided.
+
 ;; However, you have now turned color into something akin to a "final" field
 ;; with the validation expression; any other value of color will not pass 
-;; validation, including in blended "sub-classes."
+;; validation, including in blended "sub-classes." This is appropraite here, 
+;; since anything "derived" from a red-square should probably still be red.
+;; The choice with how to restrict values for parameters thus allows a 
+;; lot of flexibility for differing scenarios.
 
 ;; Having default values can be useful for many situations, as you shall see below.
 ```
@@ -1039,7 +1046,7 @@ You saw above one way to ensure this:
 
 ```(blend red-square [(= :red) [color :red]] square)```
 
-That validation of ```(= :red)``` does not go away just because ```color``` might be assigned to a different keyword, either in a call to ```make-red-square``` or ```red-square?``` or in similar calls to other blended forms based on ```red-square```. It is there permanently and must be ```:red```. You can also think of this as setting a constant for color -- even though we are not actually storing any state. 
+That validation of ```(= :red)``` does not go away just because ```color``` might be assigned to a different keyword, either in a call to ```make-red-square``` or ```red-square?``` or in similar calls to other blended forms based on ```red-square```. It is there permanently and must be ```:red```. You can also think of this as setting or requring a constant for color -- even though we are not actually storing any state. 
 
 However, as a default value, you can create other blended forms that pay no attention to the color, and they automatically get this parameter and value:
 

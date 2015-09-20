@@ -337,17 +337,17 @@
                :as ~m
                :or ~ormap}]
              ~(or pre# `(comment "No pre or post map provided"))
-             (let [~m (if (map? ~m)
-                        (merge ~(into {} (for [[k v] ormap] [(keyword k) v])) ~m)
-                        ~m)]
-               ~@(if (or is-pred? @use-assertions)
-                   (apply list* 
-                          (if is-pred?
-                            `(((boolean (and ~@(apply list*
-                                                      (all-validations
-                                                       req f arg-analysis is-pred? m return))))))
-                            (all-validations req f arg-analysis is-pred? m return)))
-                   `((comment "Assertions are turned off."))))
+             ~(if (or is-pred? @use-assertions)
+                `(let [~m (if (map? ~m)
+                            (merge ~(into {} (for [[k v] ormap] [(keyword k) v])) ~m)
+                            ~m)]
+                   ~@(apply list* 
+                            (if is-pred?
+                              `(((boolean (and ~@(apply list*
+                                                        (all-validations
+                                                         req f arg-analysis is-pred? m return))))))
+                              (all-validations req f arg-analysis is-pred? m return))))
+                `(comment "Eat Static assertions are turned off."))
              ~@(if (not is-pred?) 
                  (let [b (if pre# (rest body) body)
                        outputted (transform-output-validations arg-outs return)]

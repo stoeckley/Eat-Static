@@ -1067,19 +1067,15 @@ Now you create another class:
 ```clojure
 (blend tiny-green-square [[color :green]] tiny-red-square)
 ```
-You make one:
+You try to make one:
 ```clojure
 (make-tiny-green-square {})
+;; this fails
 
-;;returns {:color :green, :width 0.01, :height 0.01}
+(make-tiny-green-square {:color :red})
+;; this passes
 ```
-All well and good, you think, until you try to validate that it is what you think it is:
-```clojure
-(tiny-green-square? (make-tiny-green-square {}))
-
-;; false
-```
-The item's default value conflicts with a "final" field. Eat Static allows you to make whatever map you want when values are marked as optional, with or without default values. But sometimes, you want more than a default, you want guaranteed validation on it as well as providing the convenience of letting it tag along throughout an inheritance chain. The ```(= :red)``` does just that, but it is verbose to mention the ```:red``` twice, as well as the equality expression, just to generate this behavior.
+The item's default value conflicts with the "final" field created by the ```red-square``` equality expression ```(= :red)```, which is two "parents" up. The equality expression is for when you want more than just a default value and desire guaranteed validation on it, while keeping the convenience of letting it tag along throughout an inheritance chain. The ```(= :red)``` does just that, but it is verbose to mention the ```:red``` twice, as well as the equality expression, just to generate this behavior.
 
 **Inside an argument vector, a map may be used to assign default values and "final" status to any argument, while still keeping them optional:**
 
@@ -1094,6 +1090,11 @@ This works with any type of value, including other blended items (which expand t
 (blend red-square-1 [{width 1 height 1}] red-square)
 
 (desc two-red-square-1 [{one red-square-1 two red-square-1}])
+
+;; in this example, 'one' and 'two' are not locked into any map,
+;; just maps that pass the red-square-1? predicate, which requires
+;; width and height to be 1, as well as the color to be red. Other
+;; parameters have no effect.
 
 (make-red-square-1 {})
 
@@ -1116,7 +1117,7 @@ This works with any type of value, including other blended items (which expand t
 ;; this is fine:
 (def john-square (make-red-square-1 {:owner "John"}))
 
-;; is {:owner "John", :width 1, :height 1, :color :red}
+;; = {:owner "John", :width 1, :height 1, :color :red}
 
 ;; remember, these are still optional values:
 

@@ -149,6 +149,34 @@
                                     :remain (next l))
           :else (put ass l))))
 
+(defn parse-defaults
+  "Parses a bunch of default values, as per the design of a vector in the arg list. Used in the overall reduction fn. Arg is the actual defaults seq, result is the final reduction result."
+  [result arg input-map return]
+  (let [vs (reverse arg)
+        assigns (loop [v nil process vs r {}]
+                  (if (seq process)
+                    (if (not (symbol? (first process)))
+                      (recur (first process) (rest process) r)
+                      (if (#{input-map return} (first process))
+                        (throw-text "Full input map or output value cannot be optional.")
+                        (recur v (rest process)
+                               (assoc r (first process) v))))
+                    r))]
+    (reduce (fn [r [s default]]
+              (-> r (place-symbol :opt (symbol-root s) input-map return)
+                  (update-in [:defaults] conj [(symbol-root s) default])))
+            result assigns)))
+
+(defn parse-default-settings-map
+  "Parses the special map tool in an arg list, which assigns defaults like a vector does, but also assigns a validation fn. If the value supplied for a symbol is another symbol, the default assigned is the default map of that symbol, as if that symbol was build with describe/blend, and the validation is the predicate created previously. If it not a symbol, then the value is validated with (= value) and assigned as normal."
+  [result arg input-map return]
+  (assert (every? symbol? (keys arg)) (throw-text "Symbols are the only keys in a default-setting map."))
+  (let [defaults (reduce #(conj % (first %2) (second %2)) []
+                         (for [[k v] arg]
+                           [k (if (symbol? v) `(d ~v) v)]))]
+    (-> result
+        (parse-defaults defaults input-map return))))
+
 (defn- arg-split-fn
   "This is the reduction function used when looking at all the forms provided in a function definition's argument vector, or an output validation list. It places symbols into their required contexts."
   [input-map is-output? return]
@@ -190,27 +218,12 @@
       (if is-output?
         (throw-text
          "Output validations always operate on the function's return value, and no other symbols or default vectors may be named.")
-        (let [vs (reverse arg)
-              assigns (loop [v nil process vs r {}]
-                        (if (seq process)
-                          (if (not (symbol? (first process)))
-                            (recur (first process) (rest process) r)
-                            (if (#{input-map return} (first process))
-                              (throw-text "Full input map or output value cannot be optional.")
-                              (recur v (rest process)
-                                     (assoc r (first process) v))))
-                          r))]
-          (reduce (fn [r [s default]]
-                    (-> r (place-symbol :opt (symbol-root s) input-map return)
-                        (update-in [:defaults] conj [(symbol-root s) default])))
-                  result assigns)))
+        (parse-defaults result arg input-map return))
 
-      ;; (map? arg)
-      ;; (do (assert (not (or is-output? (= input-map sym) (= return sym)))
-      ;;             (throw-text "Full input map or output return values cannot be optional, therefore cannot be used in a default-setting map."))
-      ;;     (let [k (first (first arg))
-      ;;           v (second (first arg))]
-      ;;       (assert (symbol? k) (throw-text "Symbol must be the only key in default-setting map."))))
+      (map? arg)
+      (do (assert (not is-output?)
+                  (throw-text "Output return cannot be optional, therefore cannot be used in a default-setting map."))
+          (parse-default-settings-map result arg input-map return))
       
       :else (if is-output?
               (throw-text "Output validation list contained an element that is not a keyword or list.")
@@ -301,10 +314,7 @@
     `(~begin ~@(if (= 'fn begin) [f] [f docstring])
              [{:keys ~(vec (concat opt req))
                :as ~m
-               :or
-               ;;~(apply hash-map (flatten defaults)) 
-               ~(reduce #(assoc % (first %2) (second %2)) {} defaults)}
-              ]
+               :or ~(reduce #(assoc % (first %2) (second %2)) {} defaults)}]
              ~@(if (or is-pred? @use-assertions)
                  (apply list* (or pre# `(comment "No pre or post map provided"))
                         (if is-pred?

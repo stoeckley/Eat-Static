@@ -15,20 +15,6 @@
 
 (default-describe-names!)
 
-(deftest df-output-int
-  (is (df a (:i) [b] (* b 2)))
-  (is (df b (:i) [c] (int (* 2.0 c))))
-  (is (thrown? AssertionError (c a :b 1.2)))
-  (is (thrown? AssertionError (c a :b -123.0)))
-  (is (thrown? AssertionError (a {:b 1.2})))
-  (is (thrown? AssertionError (c a :b 1.2)))
-  (is (thrown? AssertionError (c a :c 1.2)))
-  (is (thrown? AssertionError (c a :c 1)))
-  (is (= 10 (c a :b 5)))
-  (is (= 10 (c a :b (int 5.9))))
-  (is (= 20 (a {:b 10})))
-  (is (= 40 (c b :c 20.1))))
-
 (deftest df-output-keys
   (is (df a ((:b)) [c] c))
   (is (= {:b 5} (c a :c {:b 5})))
@@ -65,6 +51,20 @@
   (is (thrown? AssertionError (a {:c {:b 15 :c :hi}})))
   (is (thrown? AssertionError (a {:c {:b 5 :c 4}}))))
 
+(deftest df-output-int
+  (is (df a (:i) [b] (* b 2)))
+  (is (df b (:i) [c] (int (* 2.0 c))))
+  (is (thrown? AssertionError (c a :b 1.2)))
+  (is (thrown? AssertionError (c a :b -123.0)))
+  (is (thrown? AssertionError (a {:b 1.2})))
+  (is (thrown? AssertionError (c a :dd 1)))
+  (is (thrown? AssertionError (c a :c 1.2)))
+  (is (thrown? AssertionError (c a :c 1)))
+  (is (= 10 (c a :b 5)))
+  (is (= 10 (c a :b (int 5.9))))
+  (is (= 20 (a {:b 10})))
+  (is (= 40 (c b :c 20.1))))
+
 (deftest df-output-int-validations
   (is (df a (:i (or> #(< % 0) #(< 10 %))
                 (ep> #(or (= 100 (+ 10 %)) (zero? (- % 20))
@@ -95,8 +95,15 @@
   (is (= 9 (c a :b 3))))
 
 (deftest df-input-float-default
+  (is (df as in [(pred> [:i [a 4.5]]) in]))
+  (is (df as2 [(pred> [:i [a 4.5]]) as-input]))
+  (is (thrown? AssertionError (as {})))
+  (is (thrown? AssertionError (as2 {})))
   (is (df a "testing float" [:f [b 2.2 c 3.3 ]] (+ b c)))
   (is (df b bin "testing opt" [:f -c] (if c (* 2 c))))
+  (is (df cc  [:f [b 2 c 3.3 ]] (+ b c)))
+  (is (thrown? AssertionError (cc {:c 2.2})))
+  (is (= 5.0 (c cc :b 2.0 :c 3.0)))
   (is (= 5.5 (a {})))
   (is (= 5.5 (a {:something :else})))
   (is (= 4.4 (a {:b 1.1 :z 0})))
@@ -144,6 +151,15 @@
   (is (false? (c m :a 1 :b 1.0 :c 1 :d {1 2} :e true :f [:a] :g 1)))
   (is (false? (c m :a 1 :b 1.0 :c :hi :d {1 2} :e true :f [:a])))
   (is (false? (c m :a 1.0 :b 1.0 :c :hi :d {1 2} :e true :f [:a] :g 1))))
+
+(deftest default-conflicts
+  (is (desc aaa [:i -j]))
+  (is (not (false? (aaa? {}))))
+  (is (not (false? (aaa? {:j 44}))))
+  (is (false? (aaa? {:j 44.1})))
+  (is (desc baa [:i -j [i 9.1]]))
+  (is (not (false? (baa? {:j 1 :i 4}))))
+  (is (false? (baa? {:j 1}))))
 
 (deftest pred-validations
   (is (pred m [#{:i :n (> 20)} a b :f c -d]))
@@ -328,14 +344,10 @@
 
 (deftest default-settings-maps
   (is (desc deff [{x 6 l :red}]))
-  ;; (is (false? (deff? 5))) ;; tests written before change to make map args optional, not required
-  ;; (is (false? (deff? {})))
-  ;; (is (false? (is? deff {})))
   (is (false? (deff? {:l :blue :x 2})))
   (is (false? (deff? {:l :blue})))
-  ;; (is (false? (deff? {:l :red})))
-  ;; (is (false? (deff? {:x 6})))
   (is (= (make-deff (merge (d deff) {:h 1})) {:h 1 :l :red :x 6}))
+  (is (= (make-deff {:h 1}) {:h 1 :l :red :x 6}))
   (is (deff? (d deff)))
   (is (desc tree [:i x {d deff}]))
   (is (= (d tree) {:d {:x 6, :l :red}} ))
@@ -345,7 +357,7 @@
   (is (= {:x 33 :d {:x 6 :l :red}} (make-tree {:x 33 :d (d deff)})))
   (is (thrown? AssertionError (make-tree {:x 1 :d {:x 7 :l :red}})))
   (is (= {:x 33 :d {:x 6 :l :red}} (make-tree {:x 33 :d {:x 6 :l :red}})))
-  (is (= {:x 33 :d {:x 6 :l :red}} (make-tree {:x 33 :d (d deff)})))
+  (is (= {:x 33 :d {:aa :yo :x 6 :l :red}} (make-tree {:x 33 :d {:aa :yo :x 6 :l :red}})))
   (is (tree? {:x 0 :d (d deff)}))
   (is (tree? {:x 22}))
   (is (df j [x [y 8]] [x y j-input]))

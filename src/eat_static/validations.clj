@@ -349,14 +349,10 @@
                               (all-validations req f arg-analysis is-pred? m return))))
                 `(comment "Eat Static assertions are turned off."))
              ~@(if (not is-pred?) 
-                 (let [b (if pre# (rest body) body)
-                       outputted (transform-output-validations arg-outs return)]
+                 (let [b (if pre# (rest body) body)]
                    `((let [~return (do ~@b)]
-                       ;; (comment "in: " ~arg-analysis)
-                       ;; (comment "out: " ~arg-outs)
-                       ;; (comment "outputted:" ~outputted)
                        ~@(when @use-assertions
-                           (build-asserts outputted false m true return))
+                           (build-asserts (transform-output-validations arg-outs return) false m true return))
                        ~return)))
                  () ; splices nothing, an empty space
                  ))))

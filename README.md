@@ -1177,6 +1177,9 @@ If you want to store "objects" as map parameters, this is also useful:
 
 (desc new-car-purchase [:str store (car?) [new-car (d car)]])
 
+;; equivalent to:
+(desc new-car-purchase [:str store {new-car car}])
+
 (c make-new-car-purchase :store "Al's Car Shop")
 
 ;; returns {:store "Al's Car Shop", :new-car {:age 0, :make "GM"}}

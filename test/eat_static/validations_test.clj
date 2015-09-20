@@ -57,7 +57,7 @@
   (is (= {:b 1 :c 1 :z 6} (c a :c {:z 6}))))
 
 (deftest df-output-keys-nested-validations
-  (is (df a ((pred> [(++ :i (< 10)) b :k c])) "complex" ain [c] c))
+  (is (df a ((pred> [#{:i (< 10)} b :k c])) "complex" ain [c] c))
   (is (= {:b 5 :c :hi} (c a :c {:b 5 :c :hi})))
   (is (thrown? AssertionError (a {:b :hi})))
   (is (thrown? AssertionError (c a :c 7)))
@@ -146,7 +146,7 @@
   (is (false? (c m :a 1.0 :b 1.0 :c :hi :d {1 2} :e true :f [:a] :g 1))))
 
 (deftest pred-validations
-  (is (pred m [(++ :i :n (> 20)) a b :f c -d]))
+  (is (pred m [#{:i :n (> 20)} a b :f c -d]))
   (is (not (false? (c m :a 21 :b 1234567 :c -0.0))))
   (is (not (false? (c m :a 21 :b 1234567 :c -0.0 :d -111.111111))))
   (is (false? (c m :a 21 :b 1234567 :c -0.0 :d -1)))
@@ -165,7 +165,7 @@
   (is (false? (c m :b :hi :c :hi)))
   (is (false? (c m :b :hi :c 1000)))
   (is (false? (c m :a 5 :b 2000 :c :hi)))
-  (is (pred m [(++ :i (ep> #(> % 5) #(< % 10))) a b -c]))
+  (is (pred m [#{:i (ep> #(> % 5) #(< % 10))} a b -c]))
   (is (not (false? (c m :a 6 :b 6 :c 6))))
   (is (false? (c m :a 6 :b 5 :c 6)))
   (is (false? (c m :a 6 :b 6.0 :c 6))))
@@ -178,7 +178,7 @@
   (is (false? (c m :c {:a 1})))
   (is (false? (c m :c {:a 1 :c :hi})))
   (is (false? (c m :c {:a 1 :b 1})))
-  (is (pred m [(pred> [(++ (< 10) :i) a :k b -z -v [e f g]]) c]))
+  (is (pred m [(pred> [#{(< 10) :i} a :k b -z -v [e f g]]) c]))
   (is (not (false? (c m :c {:a 1 :b :h :z :h :v :hh :g :h}))))
   (is (not (false? (c m :c {:a 1 :b :apples}))))
   (is (not (false? (c m :d [1 2] :c {:b :hi :a -100 :c {:h :hello}}))))

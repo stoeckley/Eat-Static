@@ -402,16 +402,16 @@ Creating specific validation expressions for :pre-style checks uses syntax simil
 ;; inside validation forms like (>= 1) which may
 ;; use keywords for other purposes.
 ```
-Combine validation expressions with ```++```
+Combine validation expressions with a set:
 ```clojure
-[(++ :i (> 1)) x y z]
+[#{:i (> 1)} x y z]
 
 ;; x, y, z must all be integers greater than 1
 
 ;; Note: You may have noticed earlier that output validation lists
 ;; automatically require all expressions to pass for the single return
-;; value, therefore they operate like ++. Thus, ++ is unnecessary and
-;; not available for output validation lists.
+;; value, therefore they operate like a set implicitly.
+;; Thus, using a set is unnecessary and not available for output validation lists.
 
 ```
 Writing and providing normal functions:
@@ -438,11 +438,11 @@ The above validation expressions like ```(> 1)``` are efficient syntax similar t
 
 ;; "t" merely returns the predicate associated with the keyword
 
-;; Any validiation expression can be combined with ++ :
+;; Any validiation expression can be combined with a set:
 
 (df int-stuff
     (:i (< 1))
-    [(++ :i (or> #(< 2 % 10) #(> -2 % -10))) [x y 5]]
+    [#{:i (or> #(< 2 % 10) #(> -2 % -10))} [x y 5]]
     ... )
 
 ;; x and y must also be integers between one of these two ranges
@@ -608,7 +608,7 @@ Sometimes you need to ensure that all items in a sequence, such as a vector, exh
 
 ;; enforces that is is indeed a vector also:
 
-(df intvec [(++ :v (epcoll> integer?)) v]
+(df intvec [#{:v (epcoll> integer?)} v]
   ... )
 
 ;; For cases like this, more specific versions of epcoll> automatically
@@ -1009,7 +1009,7 @@ Worth noting:
 (blend red-square [(= :red) color] square)
 
 ;; Now it isn't loose with the color requirement,
-;; however, because color is a required paramter,
+;; however, because color is a required parameter,
 ;; it does not appear in the defaults for red-square,
 ;; should you blend red-square into something else, like
 ;; a tiny-red-square where you want to keep the color as
@@ -1197,7 +1197,7 @@ Just as ```c``` lets you pass named parameters as individual arguments, ```c>```
 
 ##### Validation helpers:
 
- * **++** combines validation expressions in the arg vector so all must pass
+ * **#{}** (Clojure set) combines validation expressions in the arg vector so all must pass
 
 *> helpers are typically used inside a validation expression of an arg list, though could be used stand-alone for convenience. They all share the quality that the item you are validating is their first argument, as with ```->``` macro expressions:
 
@@ -1260,7 +1260,7 @@ Just as you can do things in a Clojure pre/post map that make no sense, you coul
 
 ##### Validation
 
-* A validation item in the argument vector affects only those symbols up until the next validation item. If you have ```[:i :n a b c]``` the ```:i``` has no purpose. This is good since often these would confict, i.e. ```[:i :f a b]```. If you need to combine them, use the ```++``` expression.
+* A validation item in the argument vector affects only those symbols up until the next validation item. If you have ```[:i :n a b c]``` the ```:i``` has no purpose. This is good since often these would confict, i.e. ```[:i :f a b]```. If you need to combine them, use a set of expressions.
 * Validation expressions are not functions. They are list expressions, similar to the thread-first ```->``` macro. Don't use functions like ```neg?``` in isolation, use ```(neg?)``` instead, unless you are already inside an expression, like and>, in which case you must use an ordinary function.
 * While the vast majority of use cases will provide a meaningful assertion message if a validation fails, occasionally you can write an expression that attempts to do something with nil that instead leads to a null pointer exception instead, which carries no useful message. The assertion is valid based on your specified validation criteria, but the message is not clear.
 * Beware of ```false``` and ```nil```. If you expect to pass nil as a legitimate value to your function, do not make that argument required, as it will enforce it as non-nil. If you expect to pass ```false``` to your function, it is wise to specify the argument as a boolean type, as in some cases a ```false``` value may not pass validation if it is a more general type, such as ```:any```.

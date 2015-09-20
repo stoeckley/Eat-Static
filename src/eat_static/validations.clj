@@ -154,14 +154,14 @@
   [input-map is-output? return]
   (fn [result arg]
     (cond
-      (and (list? arg) (= '++ (first arg)))
-      (do (assert (not is-output?) "A function's output validation list already acts like ++ and thus ++ should not be used.")
-          (assert (every? (fn [x] (or (keyword? x) (list? x))) (rest arg)) "++ only accepts keywords or lists as validators.")
-          (assert (< 1 (count (rest arg)))
-                  "++ only makes sense with at least two validators after it. Otherwise, use the validator directly in isolation.")
+      (set? arg)
+      (do (assert (not is-output?) "A function's output validation list already acts like a set of validations thus a set should not be used.")
+          (assert (every? (fn [x] (or (keyword? x) (list? x))) arg) "A set only accepts keywords or lists as validators.")
+          (assert (< 1 (count arg))
+                  "A set only makes sense with at least two validators after it. Otherwise, use the validator directly in isolation.")
           (if is-output?
-            (update-in result [:output-validations] conj (vec (rest arg)))
-            (assoc result :lastfn (vec (rest arg)))))
+            (update-in result [:output-validations] conj (vec arg))
+            (assoc result :lastfn (vec arg))))
 
       (or (list? arg) (keyword? arg))
       (if is-output?
@@ -179,7 +179,7 @@
 
           (= return sym)
           (let [l (:lastfn result)]
-            (if (vector? l)
+            (if (vector? l) ; will be vector if a set was used in the arg expression
               (reduce #(update-in % [:output-validations] conj %2)
                       result l)
               (update-in result [:output-validations] conj l)))
@@ -205,6 +205,13 @@
                         (update-in [:defaults] conj [(symbol-root s) default])))
                   result assigns)))
 
+      ;; (map? arg)
+      ;; (do (assert (not (or is-output? (= input-map sym) (= return sym)))
+      ;;             (throw-text "Full input map or output return values cannot be optional, therefore cannot be used in a default-setting map."))
+      ;;     (let [k (first (first arg))
+      ;;           v (second (first arg))]
+      ;;       (assert (symbol? k) (throw-text "Symbol must be the only key in default-setting map."))))
+      
       :else (if is-output?
               (throw-text "Output validation list contained an element that is not a keyword or list.")
               (throw-text "Arg list contained an element that is not a symbol, vector, keyword, or list.")))))

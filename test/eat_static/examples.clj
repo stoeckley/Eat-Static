@@ -258,14 +258,14 @@
 ;; use keywords for other purposes.
 
 (df function
-    [(++ :i (> 1)) x y z])
+    [#{:i (> 1)} x y z])
 
 ;; x, y, z must all be integers greater than 1
 
 ;; Note: You may have noticed earlier that output validation lists
 ;; automatically require all expressions to pass for the single return
-;; value, therefore they operate like ++. Thus, ++ is unnecessary and
-;; not available for output validation lists.
+;; value, therefore they operate like a set implicitly.
+;; Thus, using a set is unnecessary and not available for output validation lists.
 
 (df function
     [(or> #(< 2 % 10) #(> -2 % -10)) x y])
@@ -274,11 +274,11 @@
 
 ;; and and> would simply require that all functions are true.
 
-;; Any validiation expression can be combined with ++ :
+;; Any validiation expression can be combined with a set:
 
 (df int-stuff
     (:i (< 1))
-    [(++ :i (or> #(< 2 % 10) #(> -2 % -10))) [x y 5]]
+    [#{:i (or> #(< 2 % 10) #(> -2 % -10))} [x y 5]]
 )
 
 ;; x and y must also be integers between one of these two ranges
@@ -656,7 +656,7 @@
 (df intvec [(epcoll> integer?) v]
     )
 
-(df intvec [(++ :v (epcoll> (t :i))) v]
+(df intvec [#{:v (epcoll> (t :i))} v]
     v)
 
 (df intvec [(epv> (t :i)) v]

@@ -1046,7 +1046,7 @@ You saw above one way to ensure this:
 
 ```(blend red-square [(= :red) [color :red]] square)```
 
-That validation of ```(= :red)``` does not go away just because ```color``` might be assigned to a different keyword, either in a call to ```make-red-square``` or ```red-square?``` or in similar calls to other blended forms based on ```red-square```. It is there permanently and must be ```:red```. You can also think of this as setting or requring a constant for color -- even though we are not actually storing any state. 
+That validation of ```(= :red)``` does not go away just because ```color``` might be assigned to a different keyword, either in a call to ```make-red-square``` or ```red-square?``` or in similar calls to other blended forms based on ```red-square```. It is there permanently and must be ```:red```. You can also think of this as setting or requiring a constant for color -- even though we are not actually storing any state. 
 
 However, as a default value, you can create other blended forms that pay no attention to the color, and they automatically get this parameter and value:
 
@@ -1144,7 +1144,7 @@ This works with any type of value, including other blended items (which expand t
 This "final field" behavior when using a map in the arg list is different than a vector of default values in the following ways:
 
 * Unlike a default vector, any validation expressions preceding the map have no effect on the parameters in the map.
-* You cannot assign multiple parameters to the same default value in a map as you can in a default vector.
+* You cannot assign multiple parameters to the same default value in a map as you can in a default vector. You must list each value separately for each parameter, even if the values are the same.
 * Validation expressions are automatically created to require the values of the named parameters to be equal to the specified value or, if the value is a symbol, pass a predicate named on the symbol, as defined previously in a ```desc``` or ```blend```
 
 

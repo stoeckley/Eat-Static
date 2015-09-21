@@ -535,6 +535,12 @@ Optional arguments shown in brackets may be in any order. "))
    (let [dfs (map #(symbol (str @make-prefix %)) r)]
      `(merge ~@(map (fn [x] `(transform-or-map (getor ~x) ~f)) dfs)))))
 
+(defn extract-non-nil-defaults
+  "Given a vector of default values, as per arg-split, extract the symbols with non-nil defaults."
+  [defaults]
+  (for [[s v] defaults :when (not (nil? v))]
+    s))
+
 (defmacro blended-arglist
   "Takes a series of symbols at run-time and builds a defaults vector based on the default values for all the descriptions those symbols represent, but removing any required symbols in the arg vector, and appends it to a supplied validation list to automatically build a combined list of defaults in a single vector, along with other validators. Also constructs predicate tests for each of the descriptions, and adds that as a requirement to the input map. This is a macro since the valids vector contains expressions that cannot be evaluated and are parsed later."
   [descname valids descs]
@@ -542,7 +548,7 @@ Optional arguments shown in brackets may be in any order. "))
          defaults# (desc-defaults ~descs identity)
          argsplit# (arg-split '~valids (gensym) false (gensym))
          required# (:req argsplit#)
-         optional# (:opt argsplit#)
+         optional# (extract-non-nil-defaults (:defaults argsplit#))
          blended-defaults# (apply dissoc defaults# required#)
          blended-defaults# (apply dissoc blended-defaults# optional#)]
      (conj '~valids

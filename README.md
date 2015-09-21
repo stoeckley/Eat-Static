@@ -997,7 +997,9 @@ If you are blending "types" that all have the same named parameter as a default,
 ```
 If you stored functions as defaults, then this would let you decide which of the blended items gets the proper implementation for the same named function, much like inheritance in standard OO.
 
-Also -- any definitions of a parameter inside the blend arglist will override that same named parameter in any of the parents you list. Thus, you can make an optional parameter required, or a required parameter optional, or change the default value. As you will see below, using the "final field" designation will prevent a child from doing this successfully, allowing you to create specific blends you can always trust.
+Also -- any definitions of a parameter inside the blend arglist will override that same named parameter in any of the parents you list. Thus, you can make an optional parameter required, or a required parameter optional, or change the default value. However, a required parameter or a paramater with a default value cannot be removed or made nil; in either case, you can assign a default value only.
+
+As you will see below, using the "final field" designation will also prevent a child from doing things, allowing you to create specific blends you can always trust.
 
 Worth noting:
 ```clojure

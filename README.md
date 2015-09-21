@@ -730,7 +730,7 @@ Map constructors and validators using ```describe```:
 ;; Additionally, the make-child function automatically adds default values
 ;; to your map, if they were supplied in the original arg list:
 
-(describe defaults [:i a [b 8 c 9] -z])
+(describe defaults [:i a [b 8 c 9]])
 
 (make-defaults {:a 1})
 

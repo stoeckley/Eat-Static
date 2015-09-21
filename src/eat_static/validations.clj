@@ -667,6 +667,11 @@ Optional arguments shown in brackets may be in any order. "))
   (let [s (symbol (str @make-prefix sym))]
     `(~s ~map)))
 
+(defmacro mc
+  "Like make, but lets you call like c"
+  [sym & args]
+  `(make ~sym ~(apply hash-map args) ))
+
 (defmacro is?
   "The partner to make, finds the proper predicate based on the set suffix."
   [sym map]

@@ -997,6 +997,8 @@ If you are blending "types" that all have the same named parameter as a default,
 ```
 If you stored functions as defaults, then this would let you decide which of the blended items gets the proper implementation for the same named function, much like inheritance in standard OO.
 
+Also -- any definitions of a parameter inside the blend arglist will override that same named parameter in any of the parents you list. Thus, you can make an optional parameter required, or a required parameter optional, or change the default value. As you will see below, using the "final field" designation will prevent a child from doing this successfully, allowing you to create specific blends you can always trust.
+
 Worth noting:
 ```clojure
 ;; these are particularly loose definitions, and thus
@@ -1348,6 +1350,7 @@ Just as ```c``` lets you pass named parameters as individual arguments, ```c>```
  * **dv** like ```d``` but creates a vector of default maps
  * **vmake** like ```dv``` but accepts additional args to merge onto the default map repeated in the vector
  * **make** and **is?** allow you to access the factory and predicate versions of symbols described by ```desc``` and ```blend``` without knowing the naming scheme
+ * **mc** combo of make and c; like make, but lets you call like c
 
 Hopefully, they help you take advantage of Clojure's excellent tools for making your code safer and easier.
 

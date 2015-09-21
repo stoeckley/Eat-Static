@@ -175,8 +175,14 @@
    #(let [value (second %2)
           predicate (if (symbol? value)
                       `(~(symbol (str value @pred-suffix)))
-                      `(= ~value))]
+                      `(= ~value))
+          ;; experimental idea:
+          ;;req-pred `(~(keyword (first %2)) ~(symbol (str "__raw__" input-map)))
+          ]
       (-> %
+          ;; experimental idea:
+          ;; (assoc :lastfn req-pred)
+          ;; (place-symbol :req input-map input-map return)
           (assoc :lastfn predicate)
           (place-symbol :map (first %2) input-map return)))
    result arg))
@@ -338,7 +344,9 @@
                :or ~ormap}]
              ~(or pre# `(comment "No pre or post map provided"))
              ~(if (or is-pred? @use-assertions)
-                `(let [~m (if (map? ~m)
+                `(let [; this might get used in a future feature:
+                       ;;~(symbol (str "__raw__" m)) ~m
+                       ~m (if (map? ~m)
                             (merge ~(into {} (for [[k v] ormap] [(keyword k) v])) ~m)
                             ~m)]
                    ~@(apply list* 
@@ -366,7 +374,7 @@ arg-vector & body]
 Optional arguments shown in brackets may be in any order. "))
 
 (defn- process-arg-loop
-  "Helper for process-args. Analyzes the forms provided to the function definition."
+  "Helper for process-args. Analyzes the forms provided to the function definition. This is not the function that analyzes the argument vector of the defined function, but rather then args provided to the overall build definition, such as df or blend."
   [args is-pred? begin]
   (loop [process args
          finished false

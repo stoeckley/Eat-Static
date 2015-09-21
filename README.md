@@ -358,27 +358,25 @@ Basic keyword validator syntax:
 
 Just as ```:n``` specified ```z``` as a number, Eat Static provides easy built-in run-time type checks for all Clojure primitives:
 
-    * number
-    * integer
-    * float
-    * ratio
-    * boolean
-    * function
-    * vector
-    * map
-    * set
-    * list
-    * symbol
-    * string
-    * character
-    * keyword
-    * "anything" type -- allows any value for an arg
+* number
+* integer
+* float
+* ratio
+* boolean
+* function
+* vector
+* map
+* set
+* list
+* symbol
+* string
+* character
+* keyword
+* "anything" type -- allows any value for an arg
 
-    The anything type is also the default if an arg 
-    is not preceded by any validation criteria. 
+The anything type is also the default if an arg is not preceded by any validation criteria. 
 
-    Keyword specifiers for these types are listed at the top of this
-    distribution's validations.clj file, in the map called type-checks.
+*Keyword specifiers for these types are listed at the top of this distribution's validations.clj file, in the map called type-checks.*
 
 Creating specific validation expressions for :pre-style checks uses syntax similar to the ```->``` macro, and allows one validation to check multiple args:
 
@@ -922,7 +920,7 @@ And a few more examples:
 ;; (pred ...) is typically easier when you combine
 ;; full-map validation with individual element checks
 ```
-#### Blend
+### Blend
 
 Now that you have seen ```describe```, ```desc``` and general predicate composition, the final tool for building new type/traits out of existing ones is ```blend``` which is a special version of ```describe```. 
 

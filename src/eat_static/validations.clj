@@ -562,9 +562,7 @@ Optional arguments shown in brackets may be in any order. "))
 (defn blend-fn
   "Helper for blend macro; is run-time"
   [descname args]
-   (eval `(desc ~descname ~args))
-   ;;`(describe ~descname ~args)
-  )
+   (eval `(desc ~descname ~args)))
 
 ;; The blend macro's implementation is the only tool in this file that makes explicit
 ;; use of Clojure's eval, in two places, for those who are interested in that sort of thing.
@@ -574,6 +572,21 @@ Optional arguments shown in brackets may be in any order. "))
   (assert descs "Blend requires at least one previously described name after its arg list.")
   `(let [ba# (blended-arglist ~descname ~valids ~descs)]
      (blend-fn '~descname ba#)))
+
+
+;; Developer's debugging tools, not for public use
+
+(defn- seeblend-fn
+  "Helper for seeblend macro"
+  [descname args]
+  (eval
+   `(see '~(second (eval `(see '(desc ~descname ~args)))))))
+
+(defmacro seeblend
+  "Shows the defn built from a blend"
+  [descname valids & descs]
+  `(let [ba# (blended-arglist ~descname ~valids ~descs)]
+     (seeblend-fn '~descname ba#)))
 
 ;; Helper functions and macros
 

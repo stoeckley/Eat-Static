@@ -164,8 +164,10 @@
                                (assoc r (first process) v))))
                     r))]
     (reduce (fn [r [s default]]
-              (-> r (place-symbol :opt (symbol-root s) input-map return)
-                  (update-in [:defaults] conj [(symbol-root s) default])))
+              (if (not (nil? default))
+                (-> r (place-symbol :opt (symbol-root s) input-map return)
+                    (update-in [:defaults] conj [(symbol-root s) default]))
+                (-> r (place-symbol :opt (symbol-root s) input-map return))))
             result assigns)))
 
 (defn- assign-expressions-default-map

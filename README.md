@@ -1404,8 +1404,3 @@ Issues, feedback, pull requests all welcome. Many thanks.
 
 
 Copyright 2015 Balcony Studio, the Netherlands
-
-todo:
-once a param is required, it cannot be made optional in a child except as a final field, or maybe just a default value
-
-removal of a default value from a parent can only be done by replacing with a required param or a new default value. otherwise make- fails to include it. but a child can change the validation on the symbol while keeping it default with -x. how to keep the default value when -x is used.

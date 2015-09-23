@@ -1155,14 +1155,14 @@ This works with any type of value, including other blended items (which expand t
 This "final field" behavior when using a map in the arg list is different than a vector of default values in the following ways:
 
 * Unlike a default vector, any validation expressions preceding the map have no effect on the parameters in the map.
-* You cannot assign multiple parameters to the same default value in a map as you can in a default vector. You must list each value separately for each parameter, even if the values are the same.
+* You cannot assign multiple parameters to the same default value in a map as you can in a default vector. You must associate each value separately for each parameter, even if the values are the same.
 * Validation expressions are automatically created to require the values of the named parameters to be equal to the specified value or, if the value is a symbol, pass a predicate named on the symbol, as defined previously in a ```desc``` or ```blend```
 
-Final note about final fields: unwise to use them to store anonymous functions, since Clojure does not provide any reliable way to measure equality between functions (how could it?). For example, built-in core functions can be equated, i.e. ```(= neg? neg?)``` but anonymous functions cannot, ```(= #(+ 2 2) #(+ 2 2)) ; is false```. If you want to store functions in a final field, use a def'd function already assigned to a var. ```(def myfun #(+ 2 2))``` now you can store ```myfun``` reliably in a final field.
+Final note about final fields: unwise to use them to store anonymous functions, since Clojure does not provide any reliable way to measure equality between functions (how could it?). For example, built-in core functions can be equated, i.e. ```(= neg? neg?)``` but anonymous functions cannot, ```(= #(+ 2 2) #(+ 2 2)) ; is false```. If you want to store functions in a final field, use a def'd function already assigned to a var. ```(def myfun #(+ 2 2))``` -- now you can store ```myfun``` reliably in a final field.
 
 ##### Quickly generating default maps
 
-If all you want is a map of all the default values for a described or blended type, you can use ```d``` (for "defaults") and ```dv``` to get a vector of those defaults:
+If all you want is a map of all the default values for a described or blended type, you can use ```d``` (for "defaults") and ```dv``` to get a vector of those defaults. All they do is act like a make- function that is passed an empty map, therefore these fail if there are required parameters.
 
 ```clojure
 (desc baby-white-kitty [:k [color :white] :i [age 0] :b [likes-milk true]])
@@ -1227,7 +1227,7 @@ If you want to tweak the defaults or supply the required parameters, just use th
  {:color :white, :age 0, :make "GM"}
  {:color :white, :age 0, :make "GM"}]
 ```
-Note that ```d``` and ```dv``` are merely calling ```make``` with an empty map; if the described symbol has required parameters, these two calls will assertively alert you. If you really want to get a map of defaults without regards to any other requirements on the described symbol, use ```danger```... Because its results are only a subset of a type's possible requirements, it should not be used much.
+Note that ```d``` and ```dv``` are merely calling ```make``` with an empty map; if the described symbol has required parameters, these two calls will assertively alert you. If you really want to get a map of just the default values without regards to any other requirements on the described symbol, use ```danger```... Because its results are only a subset of a type's possible requirements, it should not be used much.
 
 #### Relationships between objects:
 ```clojure
@@ -1395,14 +1395,14 @@ Just as you can do things in a Clojure pre/post map that make no sense, you coul
 * Default value vectors can assign multiple symbols to the same default, which appears at the end of a sequence of symbols. Be mindful that in ```[[a b 9]]```, ```a``` has a default value of ```9```, not ```nil```. If you want to mix optional and default values and make ```a``` have no default, use ```[-a [b 9]]``` or ```[b 9 a]```.
 * It is entirely possible to specify a default value for a symbol that would not itself pass another validation specified in the argument vector, just as you could write conflicting ```:or``` and ```:pre``` maps. 
 * If you use a local in your function body, but specify that local as optional with no default value, then it is entirely possible that you will get a null pointer exception if you haven't first checked that it could be nil and act appropriately. i.e. ```(df mult [-b] (* b 1))``` does exactly this with ```(mult {})```, since you cannot multiply nil as a number.
-* The library will let you try to assign multiple default values to the same symbol in different default value vectors. Only one will be used, of course, and it is not defined which one it will be. You would not likely ever do this except by accident.
+* The library will let you try to assign multiple default values to the same symbol in different default value vectors. Only one will be used, of course, and it is not defined which one it will be. You would not likely ever do this except by accident. A future version will likely enforce that you cannot do this.
 * The libary will not let you specify a symbol as both required and optional.
 * If you wish to specify all defaults in the same default vector for beauty's sake, but the args have different types, use ```:any``` before the vector to mix default types: ```(describe aa [:i -a :f -b :any [a 1 b 4.4]])``` If ```:any``` is omitted, then you'd be trailing the ```:f``` type validator for these defaults, requiring ```a``` to be both an integer and a float! Don't worry -- one validation like ```:any``` does not cancel another like ```:f```, so the type of ```a``` and ```b``` is still enforced.
 
 ##### Validation
 
 * A validation item in the argument vector affects only those symbols up until the next validation item. If you have ```[:i :n a b c]``` the ```:i``` has no purpose. This is good since often these would confict, i.e. ```[:i :f a b]```. If you need to combine them, use a set of expressions.
-* Validation expressions are not functions. They are list expressions, similar to the thread-first ```->``` macro. Don't use functions like ```neg?``` in isolation, use ```(neg?)``` instead, unless you are already inside an expression, like and>, in which case you must use an ordinary function.
+* Validation expressions are not functions. They are list expressions, or keyword primitive type checks. Don't use functions like ```neg?``` in isolation, use ```(neg?)``` instead, unless you are already inside an expression, like ```and>```, in which case you must use an ordinary function.
 * While the vast majority of use cases will provide a meaningful assertion message if a validation fails, occasionally you can write an expression that attempts to do something with nil that instead leads to a null pointer exception instead, which carries no useful message. The assertion is valid based on your specified validation criteria, but the message is not clear.
 * Beware of ```false``` and ```nil```. If you expect to pass nil as a legitimate value to your function, do not make that argument required, as it will enforce it as non-nil. If you expect to pass ```false``` to your function, it is wise to specify the argument as a boolean type, as in some cases a ```false``` value may not pass validation if it is a more general type, such as ```:any```.
 

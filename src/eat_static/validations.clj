@@ -127,9 +127,12 @@
   (let [l (:lastfn ass)
         place2 (if (= :map place) :opt place)
         put #(cond
-               (= sym input-map) (update-in % [%2] conj sym)
+               
+               (= sym input-map)
+               (update-in % [%2] conj sym)
 
-               (= sym return) (throw-text "wrong use of place-symbol")
+               (= sym return) ; warning to library developer
+               (throw-text "wrong use of place-symbol")
 
                ;; (and (= :opt place) (some #{sym} (:opt ass)))
                ;; (throw-text (str "Multiple declarations of optional value " sym))
@@ -138,17 +141,24 @@
                    (and (= :req place) (some #{sym} (:opt ass))))
                (throw-text (str "Symbol " sym " cannot be both optional and required."))
                
-               :else (-> % (update-in [place2] conj sym)
-                         (update-in [%2] conj sym)))]
-    (cond (= :finished process) ass
-          process (-> ass (put process)
-                      (place-symbol place sym input-map return
-                                    :process (or (first remain) :finished)
-                                    :remain (next remain)))
-          (vector? l) (place-symbol ass place sym input-map return
-                                    :process (first l)
-                                    :remain (next l))
-          :else (put ass l))))
+               :else
+               (-> % (update-in [place2] conj sym)
+                   (update-in [%2] conj sym)))]
+
+    (cond
+      
+      (= :finished process) ass
+      
+      process (-> ass (put process)
+                  (place-symbol place sym input-map return
+                                :process (or (first remain) :finished)
+                                :remain (next remain)))
+      
+      (vector? l) (place-symbol ass place sym input-map return
+                                :process (first l)
+                                :remain (next l))
+      
+      :else (put ass l))))
 
 (defn parse-defaults
   "Parses a bunch of default values, as per the design of a vector or map in the arg list. Used in the overall reduction fn. Arg is the actual defaults seq, result is the final reduction result."
@@ -199,6 +209,7 @@
   [input-map is-output? return]
   (fn [result arg]
     (cond
+      
       (set? arg)
       (do (assert (not is-output?) "A function's output validation list already acts like a set of validations thus a set should not be used.")
           (assert (every? (fn [x] (or (keyword? x) (list? x))) arg) "A set only accepts keywords or lists as validators.")
@@ -229,7 +240,8 @@
                       result l)
               (update-in result [:output-validations] conj l)))
           
-          :else (place-symbol result (if (is-optional arg) :opt :req) sym input-map return)))
+          :else
+          (place-symbol result (if (is-optional arg) :opt :req) sym input-map return)))
 
       (vector? arg)
       (if is-output?
@@ -242,9 +254,10 @@
                   (throw-text "Output return cannot be optional, therefore cannot be used in a default-setting map."))
           (parse-default-settings-map result arg input-map return))
       
-      :else (if is-output?
-              (throw-text "Output validation list contained an element that is not a keyword or list.")
-              (throw-text "Arg list contained an element that is not a symbol, vector, map, keyword, or list.")))))
+      :else
+      (if is-output?
+        (throw-text "Output validation list contained an element that is not a keyword or list.")
+        (throw-text "Arg list contained an element that is not a symbol, vector, map, keyword, or list.")))))
 
 (defn arg-split
   "Splits and analyzes the vector of function arguments or the list of output validations. Return is the symbol name of the output from the fn."
@@ -319,7 +332,7 @@
           {:req #{return} :opt #{}}
           (:output-validations validmap)))
 
-;; Easy mechanism to disable all assertions and checks when building functions.
+;; Mechanism to disable all assertions and checks when building functions.
 (defonce use-assertions (atom true))
 (defn off [] (reset! use-assertions false))
 (defn on [] (reset! use-assertions true))
@@ -354,7 +367,8 @@
                  (let [b (if pre# (rest body) body)]
                    `((let [~return (do ~@b)]
                        ~@(when @use-assertions
-                           (build-asserts (transform-output-validations arg-outs return) false m true return))
+                           (build-asserts
+                            (transform-output-validations arg-outs return) false m true return))
                        ~return)))
                  () ; splices nothing, an empty space
                  ))))
@@ -375,6 +389,7 @@ Optional arguments shown in brackets may be in any order. "))
          analysis {}]
     (if finished analysis
         (cond
+          
           (string? (first process))
           (cond (= 'fn begin) (throw-text "Anonymous fns can't have doc strings.")
                 (:doc analysis) (throw-text "More than one doc string provided.")
@@ -399,12 +414,15 @@ Optional arguments shown in brackets may be in any order. "))
           (map? (first process))
           (cond
             is-pred? (throw-text "Predicate functions cannot name or validate output.")
+            
             (not= 1 (count (first process))) (throw-text "One key and value allowed for custom in/out name map.")
+            
             (:input analysis) (throw-text "More than one symbol provided to name input map.")
+            
             :else (recur (rest process) false
                          (assoc analysis :input (first (first (first process)))
                                 :return (second (first (first process))))))
-                    
+          
           (vector? (first process))
           (if (:v-args analysis)
             (throw-text "More than one arg vector provided.")
@@ -412,7 +430,8 @@ Optional arguments shown in brackets may be in any order. "))
                    (assoc analysis :v-args (first process)
                           :body (rest process))))
           
-          :else (throw-arity-exception)))))
+          :else
+          (throw-arity-exception)))))
 
 (defmacro process-args
   "Analyzes the forms provided to the function definition."

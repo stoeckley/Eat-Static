@@ -37,6 +37,10 @@ Automate several excellent tools in Clojure for writing safer code -- tools you 
 * clojars
 * :require
 
+### Support, Questions
+
+Please feel free to open an issue with any general questions, feedback, or problems.
+
 ## Examples
 
 Clojure is a dynamic language, and we like it that way. These run-time checks are opt-in and ad-hoc. Mix these function definitions with normal def and defn to sprinkle safety in places you want it.

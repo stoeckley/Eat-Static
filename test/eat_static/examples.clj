@@ -474,6 +474,8 @@
 
 (pred is-dutch-senior? [(is-senior?) person (is-dutch?) person])
 
+(pred is-dutch-senior? [#{(is-dutch?)(is-senior?)} person])
+
 ;; call it:
 
 (def hank {})

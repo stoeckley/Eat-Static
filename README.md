@@ -815,6 +815,10 @@ Based on what has been shown thus far, here are a few more examples of quickly g
 ;; fails:
 
 (make-short-child {:name "andrew" :age 12 :height 1.5 :sex :m})
+
+;; returns true:
+
+(short-child? {:name "andrew" :age 12 :height 0.7 :sex :m})
 ```
 Predicates are great for building trait validation, where a data structure must meet different criteria at different times, depending on the traits of interest:
 
@@ -827,6 +831,10 @@ Predicates are great for building trait validation, where a data structure must 
 ;; you simply want to verify a combination of traits:
 
 (pred is-dutch-senior? [(is-senior?) person (is-dutch?) person])
+
+;; same as
+
+(pred is-dutch-senior? [#{(is-dutch?)(is-senior?)} person])
 
 ;; call it:
 
@@ -940,7 +948,8 @@ A ```make-...``` function built with ```describe``` or ```desc``` automatically 
 ;; desc and describe are synonymous in the above definitions
 
 ;; blend can use any functions defined using the standard "make-..." and "...?"
-;; naming convention outlined above
+;; naming convention outlined above, or whatever has been defined as the naming
+;; scheme, as explained earlier.
 
 ;; e is a required keyword, and ab-cd is both a ab and a cd type
 (blend ab-cd [:k e] ab cd)
@@ -995,7 +1004,7 @@ If you are blending "types" that all have the same named parameter as a default,
 ```
 If you stored functions as defaults, then this would let you decide which of the blended items gets the proper implementation for the same named function, much like inheritance in standard OO.
 
-Any definitions of a parameter inside the blend arglist will override that same named parameter in any of the parents you list. Thus, you can make an optional parameter required, or a required parameter optional with a default value. However, a required parameter or a paramater with a default value cannot be removed or made nil; in either case, you can assign a default value only. 
+Any definitions of a parameter inside the blend arglist will override that same named parameter in any of the parents you list. Thus, you can make an optional parameter required, or a required parameter optional with a default value. However, a required parameter or a paramater with a default value cannot be removed or made nil; in either case, you can assign a default value only; assigning nil as the default value is ignored. 
 
 As you will see below, using the "final field" designation will also prevent a child from doing things, allowing you to create specific blends you can always trust.
 

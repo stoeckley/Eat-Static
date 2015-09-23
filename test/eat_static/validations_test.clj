@@ -366,8 +366,12 @@
 (deftest blended-overrides
   (is (desc a9 [[a 9]]))
   (is (blend a9b8 [[b 8]] a9))
+  (is (blend anil [[a nil]] a9b8))
+  (is (= {:a 9 :b 8} (eval '(d anil))))
   (is (= {:a 9 :b 8} (eval '(d a9b8))))
   (is (eval '(blend aRb8 [a] a9b8)))
+  (is (blend anil2 [[a nil]] aRb8))
+  (is (thrown? AssertionError (eval '(d aRb8))))
   (is (thrown? AssertionError (eval '(d aRb8))))
   (is (thrown? AssertionError (eval '(make aRb8 {}))))
   (is (thrown? AssertionError (eval '(mc aRb8 :b 99))))

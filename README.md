@@ -26,7 +26,7 @@ Automate several excellent tools in Clojure for writing safer code -- tools you 
 
 ***
 
-**First**, if you want a good static type system that runs at compile time, look no further than [Core.Typed](https://github.com/clojure/core.typed).  Alternately, there is the interesting [core.contracts](https://github.com/clojure/core.contracts) library. Both these options add a fair amount of verbosity and additional logic to your work. Instead, Eat Static prioritizes streamlined syntax to guard how you call functions and ensure that arguments and data structures are always what you expect -- without writing much extra code. If you desire this flexibility and power without syntax bloat, Eat Static might be for you.
+**First**, if you want a good static type system that runs at compile time, consider [Core.Typed](https://github.com/clojure/core.typed).  Alternately, there is the interesting [core.contracts](https://github.com/clojure/core.contracts) library. Both these options add a fair amount of verbosity and additional logic to your work. Instead, Eat Static prioritizes streamlined syntax to guard how you call functions and ensure that arguments and data structures are always what you expect -- without writing much extra code. If you desire this flexibility and power without syntax bloat, Eat Static might be for you.
 
 **Second**, Eat Static was an excellent techno group from the U.K.
 
@@ -99,7 +99,7 @@ The syntax savings grows with argument complexity. As soon as you decide that al
 (defn my-function [{:keys [a b c] :or {a 0 b 0 c 0}
                                   :as my-function-input}] ...)
 ```
-Any symbol inside a vector is an optional argument, and you can assign the same default to many optionals at once. (*optional* here does not mean the same thing as in a language like Swift.)
+Any symbol inside a vector is an optional argument, and you can assign the same default to many optionals at once. (*optional* here is a term used more loosely than is some other languages; it just means, "not required.")
 
 More and more syntax is saved as argument requirements increase. 
 
@@ -560,7 +560,7 @@ Finally, for completeness, you can create an anonymous predicate function with `
 
 ;; pred and predfn are not assertive, but this foo call is assertive
 ;; as all df forms enforce their arguments to the specified criteria.
-;; foo fails if mymap does not have :a and :b keys
+;; the first foo above fails if mymap does not have :a and :b keys
 
 ;; the *> helpers are laid out to simplify validation expressions, 
 ;; and several are introduced below.
@@ -761,7 +761,7 @@ Map constructors and validators using ```describe```:
 ```
 ##### A note on function names
 
-```describe```, ```desc``` and ```blend``` (explained below) generate 2 functions, a "factory" with ```df``` that validates a map before usage, using assertions, and a predicate that provides true/false verification that a map meets the described criteria. These are separate bonafide functions that have their own def'd name. As shown above, ```describe``` gives you the option of controlling how they are named, while ```desc``` and ```blend``` do not. Several of the features of Eat Static rely on a consistent naming scheme behind the scenes, and you can override the ```make-``` and ```...?``` prefix and suffix used throughout the library if you wish, which will change how function names are defined, and update other tools that need to peek at these generated functions:
+As shown above, ```describe```, ```desc``` and ```blend``` (explained below) generate 2 functions, a "factory" with ```df``` that validates a map before usage, using assertions, and a predicate that provides true/false verification that a map meets the described criteria. These are separate bonafide functions that have their own def'd name. As shown above, ```describe``` gives you the option of controlling how they are named, while ```desc``` and ```blend``` do not. Several of the features of Eat Static rely on a consistent naming scheme behind the scenes, and you can override the ```make-``` and ```...?``` prefix and suffix used throughout the library if you wish, which will change how function names are defined, and update other tools that need to peek at these generated functions:
 
 ```set-describe-names! [prefix suffix]```
 
@@ -786,10 +786,6 @@ Additionally, instead of calling the def'd functions directly, you can use the `
 ;; allows you to forget the naming scheme that is set
 
 (is? fb *1)
-
-(d fb)
-;; returns {:r :whatever}
-;; getting defaults is described further below
 
 ;; these two functions return unresolved symbol errors, 
 ;; since the naming scheme has changed:

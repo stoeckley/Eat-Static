@@ -342,8 +342,16 @@
   (is (= {:age 2 :in-diapers true :h 1 :k :hi :j "yo" :l {:a 1}}
          (n-baby-child3 {:age 2 :in-diapers true}))))
 
-(deftest default-settings-maps
+(deftest default-settings-maps ;; aka final field
   (is (desc deff [{x 6 l :red}]))
+  (is (blend deffer [{x 7}] deff))
+  (is (blend deffer2 [[l :blue]] deff))
+  (is (thrown? AssertionError (eval '(d deffer2))))
+  (is (thrown? AssertionError (eval '(make-deffer2 {:l :blue}))))
+  (is (= {:x 6 :l :red} (eval '(make-deffer2 {:l :red}))))
+  (is (thrown? AssertionError (eval '(d deffer))))
+  (is (thrown? AssertionError (eval '(make-deffer {:x 7}))))
+  (is (thrown? AssertionError (eval '(make-deffer {:x 6}))))
   (is (false? (deff? {:l :blue :x 2})))
   (is (false? (deff? {:l :blue})))
   (is (= (make-deff (merge (d deff) {:h 1})) {:h 1 :l :red :x 6}))

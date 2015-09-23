@@ -1040,7 +1040,7 @@ Worth noting:
 
 ;; However, you have now turned color into something akin to a "final" field
 ;; with the validation expression; any other value of color will not pass 
-;; validation, including in blended "sub-classes." This is appropraite here, 
+;; validation, including in blended "sub-classes." This is appropriate here, 
 ;; since anything "derived" from a red-square should probably still be red.
 ;; The choice with how to restrict values for parameters thus allows a 
 ;; lot of flexibility for differing scenarios.
@@ -1049,7 +1049,7 @@ Worth noting:
 ```
 ##### Final fields
 
-Some simple syntax sugar exists to do this, but first a few thoughts.
+Some simple syntax sugar exists to do what you just saw, but first a few thoughts.
 
 A final field in OO terms is a parameter that can no longer be overridden by a sub-class. In Eat Static, the notion of types is controlled entirely by predicate functions, and therefore introducing a predicate that requires specific equality is a way to ensure that a parameter set to any other value by any other blended form does not pass the type check.
 

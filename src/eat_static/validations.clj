@@ -500,7 +500,7 @@ Optional arguments shown in brackets may be in any order. "))
 
 ;; desc does not accept optional changes to the named created functions.
 ;; this forces consistency on naming conventions, and makes it possible
-;; do do things with the blend macro 
+;; to do things with the blend macro 
 (defmacro desc
   [title arglist]
   (object-build title arglist 'df 'pred))

@@ -1149,6 +1149,7 @@ This "final field" behavior when using a map in the arg list is different than a
 * You cannot assign multiple parameters to the same default value in a map as you can in a default vector. You must list each value separately for each parameter, even if the values are the same.
 * Validation expressions are automatically created to require the values of the named parameters to be equal to the specified value or, if the value is a symbol, pass a predicate named on the symbol, as defined previously in a ```desc``` or ```blend```
 
+Final note about final fields: unwise to use them to store anonymous functions, since Clojure does not provide any reliable way to measure equality between functions (how could it?). For example, built-in core functions can be equated, i.e. ```(= neg? neg?)``` but anonymous functions cannot, ```(= #(+ 2 2) #(+ 2 2)) ; is false```. If you want to store functions in a final field, use a def'd function already assigned to a var. ```(def myfun #(+ 2 2))``` now you can store ```myfun``` reliably in a final field.
 
 ##### Quickly generating default maps
 

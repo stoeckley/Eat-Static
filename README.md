@@ -4,6 +4,7 @@
 
 ##### A single vector DSL that joins many features in one place to *quickly*:
 * Make type checks on whole maps, specific k/v pairs, or function arguments easily
+* Choose between assertive checks or true/false predicate tests
 * Specify and validate function return types
 * Build intricate map constructors & validators with one line of code
 * Construct complex functional predicates on the fly

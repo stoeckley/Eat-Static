@@ -347,7 +347,47 @@
   (is (= {:q :ui :w :w :e :e :r :whatever} (make fb {:q :ui :w :w :e :e})))
   (is (is? fb {:q :ui :w :w :e :hi :r :yupper}))
   (is (false? (is? fb {:q 2 :w :w :e :hi :r :yupper})))
-  (is (nil? (default-describe-names!))))
+  (is (nil? (default-describe-names!)))
+
+  (is (do (desc person [:str name :i age :k sex :n height])
+          (desc tall [(> 2) height])
+          (desc tall-person [(ep> person? tall?) tall-person-input])
+          (desc short-person [(person?) short-person-input (< 1) height])
+          (desc tall-person-bobby [(tall-person?) tall-person-bobby-input (= "bobby") name])
+          (desc child [(person?) child-input (< 27) age])
+          (desc short-child [(child?) short-child-input (< 0.8) height])))
+  (is (thrown? AssertionError (make-short-child {:name "andrew" :age 12 :height 1.5 :sex :m})))
+  (is (short-child? {:name "andrew" :age 12 :height 0.7 :sex :m}))
+
+  (is (do (pred is-dutch? [(= "netherlands") country])
+          (pred is-senior? [(> 65) age])
+          (pred is-vegetarian? [(= false) eats-meat])
+          (pred elder-dutch-vegetarian? person
+                [(person?) person (is-senior?) person (is-vegetarian?) person (is-dutch?) person])
+          (pred elder-dutch-vegetarian2? person
+                [((every-pred person? is-senior? is-vegetarian? is-dutch?)) person])
+          (pred elder-dutch-vegetarian3? person [(ep> person? is-senior? is-vegetarian? is-dutch?) person])
+          (def old-dutch-veggie-eater? (every-pred person? is-senior? is-vegetarian? is-dutch?))
+          (def veggie-eater? (every-pred person? is-vegetarian?))
+          (def young-veggie-eater? (every-pred person? (complement is-senior?) is-vegetarian?))
+          (def young-veggie-eater2? (every-pred person? (predfn [(< 20) age]) is-vegetarian?))
+          (pred young-veggie-eater3? m [(ep> person? is-vegetarian?) m (< 20) age])
+          (df invite-to-amsterdam-elder-poker-party [(is-senior?) person (is-dutch?) person] :invited)
+          (pred is-dutch-senior? [(is-senior?) person (is-dutch?) person])
+          (pred is-dutch-senior2? [#{(is-dutch?)(is-senior?)} person])
+          (def hank {:country "netherlands" :age 67 })
+          (describe person2 [:str name country :i age :k sex :n height :b eats-meat])
+          (pred american-meat-eating-child? [(< 10) age (= true) eats-meat (= "USA") country])
+          (def jimmy (make-person {:age 5 :eats-meat true :country "USA" :height 1 :sex :m :name "jimmy"}))
+          (pred american-child-likes-meat? [(person?) kid (american-meat-eating-child?) kid])
+          (pred american-child-likes-meat2? kid [(person?) kid (american-meat-eating-child?) kid])))
+
+  (is (false? (american-meat-eating-child? {:age 50 :eats-meat true :country "USA"})))
+  (is (c is-dutch-senior? :person hank))
+  (is (false? (c is-dutch-senior? :person (assoc hank :age 1))))
+  (is (false? (c is-dutch-senior? :person (assoc hank :age :young))))
+  (is (american-meat-eating-child? jimmy))
+  (is (c american-child-likes-meat? :kid jimmy)))
 
 
 ;; note that in some cases, testing a macro here requires use of eval to

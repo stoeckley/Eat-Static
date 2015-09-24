@@ -79,12 +79,19 @@
 
 ;; prefix, suffix and describe-names affect how generated functions are named
 
+(defn assert-prefix-suffix
+  [prefix suffix]
+  (assert (string? prefix) "Prefix must be a string")
+  (assert (string? suffix) "Suffix must be a string")
+  (assert (not (and (= "" (clojure.string/trim prefix))
+                    (= "" (clojure.string/trim suffix))))
+          "Prefix and Suffix cannot both be empty."))
+
 (def make-prefix (atom "make-"))
 (def pred-suffix (atom "?"))
 
 (defn set-describe-names! [prefix suffix]
-  (assert (string? prefix) "Prefix must be a string")
-  (assert (string? suffix) "Suffix must be a string")
+  (assert-prefix-suffix prefix suffix)
   (reset! make-prefix prefix)
   (reset! pred-suffix suffix)
   (println "Eat Static: New names for generated functions have been set."))
@@ -506,10 +513,7 @@ Optional arguments shown in brackets may be in any order. "))
   (when (seq decorate)
     (assert (= 2 (count decorate))
             "Describe requires both or neither the prefix and suffix names after the arg vector.")
-    (assert (or (symbol? prefixmake) (string? prefixmake))
-            "Prefix for make function name to describe must be symbol or string.")
-    (assert (or (symbol? suffixpred) (string? suffixpred))
-            "Suffix for predicate function name to describe must be symbol or string."))
+    (assert-prefix-suffix prefixmake suffixpred))
   (apply object-build title arglist d p decorate))
 
 (defmacro describe

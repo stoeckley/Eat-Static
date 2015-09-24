@@ -528,6 +528,16 @@
   (is (false? (c old-dutch-vegetarian-spouses4? :wife alice :husband mike)))
   (is (false? (c old-dutch-vegetarian-spouses5? :wife alice :husband mike))))
 
+(deftest pred-options
+  (is (pred my-function in [a b c] ))
+  (is (my-function {:a 1 :c :hello :b 2}))
+  (is (pred my-function "doc" [a b c]))
+  (is (my-function {:a 1 :c :hello :b 2}))
+  (is (pred my-function in "doc" [a b c]))
+  (is (my-function {:a 1 :c :hello :b 2}))
+  (is (pred my-function "doc" in [a b c]))
+  (is (my-function {:a 1 :c :hello :b 2})))
+
 (deftest df-output-keys
   (is (df a ((:b)) [c] c))
   (is (= {:b 5} (c a :c {:b 5})))

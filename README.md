@@ -524,6 +524,8 @@ You could write a normal function that returns a truthy value to use as a predic
 ;; Predicates created with pred are not allowed to have a function body,
 ;; but they do accept doc strings and custom names for the input map.
 ```
+In addition to not throwing asserts itself, ```pred``` also wraps your validation expressions in a try/catch behind the scenes, so if they test something like ```(> 5 :kw)```, this simply returns false for the validation, rather than throwing a Clojure exception.
+
 Finally, for completeness, you can create an anonymous predicate function with ```predfn```, which builds a fn rather than a defn:
 ```clojure
 ((predfn [a b]) {:a 1})  ;this ad-hoc test returns false for the map {:a 1}
@@ -1374,11 +1376,9 @@ Eat Static offers another library-specific mechanism to remove all the expanded 
 
 ### Tests and Code Examples
 
-All the code on this page is available in the examples.clj file of the test folder, so you can download and play around with the functions.
+If you are familiar with the basic tools offered by clojure.test, including just the ```deftest``` and ```is``` macros, you can see many examples of this library's features in the test folder, including scenarios when assertions are thrown. The ```deftest``` called ```readme``` contains all the examples on this ```README``` page as well, including variations of these examples to flesh out the various points. It is the first test in the ```validations_test.clj``` file.
 
-Also, if you are familiar with the basic tools offered by clojure.test, including just the ```deftest``` and ```is``` macros, you can see many examples of this library's features in the test folder, including scenarios when assertions are thrown.
-
-The ```deftest``` called ```readme``` contains the examples on this page as well.
+Also, all the code on this page is available in the examples.clj file of the test folder, so you can download and play around with the functions.
 
 ### Gotchas
 

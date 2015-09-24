@@ -248,7 +248,62 @@
   (is (false? (is-senior? p4)))
   (is (false? (is-senior? p5)))
   (is (false? (is-senior? {:first-name "andrew" :age 99})))
-  )
+
+  (is (false? ((predfn [a b]) {:a 1})))
+  (is (false? (pred> {:a 1} [a b])))
+  (is (df foo [((predfn [a b])) mymap] foo-input))
+  (is (df foo2 [(pred> [a b]) mymap] foo2-input))
+  (is (thrown? AssertionError (c foo :mymap {:a 1})))
+  (is (thrown? AssertionError (c foo2 :mymap {:a 1})))
+
+  (is (pred foo [(:a) mymap]))
+  (is (false? (foo {:mymap 4})))
+  (is (false? (foo {:mymap {:b 2}})))
+  (is (c foo :mymap {:a :whatevs}))
+
+  (is (df process-seniors [(#(every? is-senior? %)) persons] :nice))
+  (is (thrown? AssertionError (c process-seniors :persons [p1 p2])))
+  (is (= :nice (c process-seniors :persons [p2 {:name "andrew" :age 99}])))
+  (is (pred is-awesome? [(= :super-cool) cool-factor]))
+  (is (df process-awesome-seniors [(epcoll> is-senior? is-awesome?) persons] :wicked))
+  (is (thrown? AssertionError (c process-awesome-seniors :persons [p2 {:name "andrew" :age 99}])))
+  (is (def p2a (merge p2 {:cool-factor :super-cool})))
+  (is (= :wicked (c process-awesome-seniors :persons
+                    [p2a {:name "andrew" :age 99 :cool-factor :super-cool}])))
+
+  (is (df all-have-a-b
+          [(epcoll> (predfn [a b])) maps maps2] :yup))
+  (is (= :yup (c all-have-a-b :maps [{:a 1 :b 2} {:a 5 :b 6 :c 7}]
+                 :maps2 [{:a "hi" :b 11.1} {:b 6 :a :yo}])))
+  (is (thrown? AssertionError (c all-have-a-b :maps [{:a 1 :b 2} {:a 5  :c 7}]
+                                 :maps2 [{:a "hi" :b 11.1} {:b 6 :a :yo}])))
+
+  (is (df intvec [(epcoll> integer?) v] :yippers))
+  (is (df intvec2 [#{:v (epcoll> integer?)} v] :uh-huh))
+  (is (df intvec2b [(epv> (t :i)) v] :uh-huh))
+  (is (= :yippers (c intvec :v [1 2 3 4 -2 -123 0])))
+  (is (= :yippers (c intvec :v (list 1 2 3 4 -2 -123 0))))
+  (is (= :yippers (c intvec :v '(1 2 3 4 -2 -123 0))))
+  (is (= :uh-huh (c intvec2 :v [1 2 3 4 -2 -123 0])))
+  (is (thrown? AssertionError (c intvec2 :v '(1 2 3 4 -2 -123 0))))
+  (is (thrown? AssertionError (c intvec :v '(1 2 3 4 -2 -123 1.0))))
+  (is (= :uh-huh (c intvec2b :v [1 2 3 4 -2 -123 0])))
+  (is (thrown? AssertionError (c intvec2b :v '(1 2 3 4 -2 -123 0))))
+
+  (is (df vari [(or> #(epcoll> % (t :i)) #(epcoll> % (t :k))) v] :yes))
+  (is (= :yes (c vari :v [1 5 2 32 4 -123 3 5 4 5])))
+  (is (= :yes (c vari :v [:nice :dude])))
+  (is (thrown? AssertionError (c vari :v [1 5 2 :hi -123 :whatever-man])))
+  (is (thrown? AssertionError (c vari :v ["hi" "there"])))
+
+  (is (defn vec-of-ints [x] (epv> x (t :i))))
+  (is (df many-vecs [(vec-of-ints) a b c] :indeed))
+  (is (pred many-vecs-p [(vec-of-ints) a b c]))
+  (is (= :indeed (many-vecs {:a [2 -2] :b [66 -9876562] :c [0]})))
+  (is (false? (many-vecs-p {:a [2 -2] :b [66 -9876562] :c [0.1]})))
+  (is (false? (many-vecs-p {:a [2 -2] :b [66 -9876562 :hi] :c [0]})))
+  (is (thrown? AssertionError (many-vecs {:a [2 -2] :b [66 -9876562] :c [0.1]})))
+  (is (thrown? AssertionError (many-vecs {:a [2 -2] :b [66 -9876562 :hi] :c [0]}))))
 
 ;; note that in some cases, testing a macro here requires use of eval to
 ;; full expand the macro before testing inside the clojure.test macros

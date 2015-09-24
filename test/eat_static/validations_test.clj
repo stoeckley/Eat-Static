@@ -21,6 +21,7 @@
   (is (df my-function [a b c] my-function-input))
   (is (defn my-function2 [{:keys [a b c] :as my-function2-input}]
         my-function2-input))
+  (is (thrown? AssertionError (my-function {:a 1})))
   (is (= (my-function {:a 1 :b 4 :c 98}) (my-function2 {:a 1 :b 4 :c 98})))
   (is (= (my-function {:a 1 :c 12 :b 4}) (c my-function :a 1 :c 12 :b 4)
          (c my-function2 :c 12 :b 4 :a 1)))

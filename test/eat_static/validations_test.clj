@@ -400,38 +400,38 @@
   (is (= {:e :hi, :w 1.1, :q 55, :a 1, :c 3, :b 2, :d 4}
          (eval '(make-ab-cd {:e :hi :w 1.1 :q 55}))))
 
-  (is (do (desc red-rectangle [:n [width 5 height 3] :k [color :red]])
-          (desc square [:n [width 5 height 5]])
-          (blend red-square [] red-rectangle square)))
+  (is (eval '(do (desc red-rectangle [:n [width 5 height 3] :k [color :red]])
+                 (desc square [:n [width 5 height 5]])
+                 (blend red-square [] red-rectangle square))))
   (is (= (eval '(make-red-square {})) {:width 5, :height 5, :color :red}))
-  (is (blend red-square [] square red-rectangle))
+  (is (eval '(blend red-square [] square red-rectangle)))
   (is (= (eval '(make-red-square {})) {:color :red, :width 5, :height 3}))
-  (is (blend blue-square [[color :blue]] square))
+  (is (eval '(blend blue-square [[color :blue]] square)))
   (is (= (eval '(make-blue-square {})) {:width 5, :height 5, :color :blue}))
-  (is (red-square? (eval '(make-blue-square {}))))
+  (is (eval '(red-square? (make-blue-square {}))))
 
-  (is (blend red-square [(= :red) [color :red]] square))
-  (is (blend tiny-red-square [#{:f (< 1)} [width height 0.01]] red-square))
+  (is (eval '(blend red-square [(= :red) [color :red]] square)))
+  (is (eval '(blend tiny-red-square [#{:f (< 1)} [width height 0.01]] red-square)))
   (is (= (eval '(make-tiny-red-square {})) {:width 0.01, :height 0.01, :color :red}))
-  (is (false? (tiny-red-square? {:color :green})))
-  (is (false? (tiny-red-square? (eval '(make-blue-square {})))))
-  (is (tiny-red-square? {:color :red}))
-  (is (tiny-red-square? {}))
+  (is (false? (eval '(is? tiny-red-square {:color :green}))))
+  (is (false? (eval '(tiny-red-square? (eval '(make-blue-square {}))))))
+  (is (eval '(tiny-red-square? {:color :red})))
+  (is (eval '(tiny-red-square? {})))
 
-  (is (blend tiny-green-square [[color :green]] tiny-red-square))
+  (is (eval '(blend tiny-green-square [[color :green]] tiny-red-square)))
   (is (thrown? AssertionError (eval '(make-tiny-green-square {}))))
   (is (= {:color :red :width 0.01 :height 0.01}
          (eval '(make-tiny-green-square {:color :red}))))
 
-  (is (blend red-square [{color :red}] square))
-  (is (blend tiny-red-square [#{:f (< 1)} [width height 0.01]] red-square))
+  (is (eval '(blend red-square [{color :red}] square)))
+  (is (eval '(blend tiny-red-square [#{:f (< 1)} [width height 0.01]] red-square)))
   (is (= (eval '(make-tiny-red-square {})) {:width 0.01, :height 0.01, :color :red}))
   (is (thrown? AssertionError (eval '(make-tiny-red-square {:color :green}))))
-  (is (false? (tiny-red-square? {:color :green})))
-  (is (false? (tiny-red-square? (eval '(make-blue-square {})))))
-  (is (tiny-red-square? {:color :red}))
-  (is (tiny-red-square? {}))
-  (is (blend tiny-green-square [[color :green]] tiny-red-square))
+  (is (false? (eval '(tiny-red-square? {:color :green}))))
+  (is (false? (eval '(tiny-red-square? (eval '(make-blue-square {}))))))
+  (is (eval '(tiny-red-square? {:color :red})))
+  (is (eval '(tiny-red-square? {})))
+  (is (eval '(blend tiny-green-square [[color :green]] tiny-red-square)))
   (is (thrown? AssertionError (eval '(make-tiny-green-square {}))))
   (is (= {:color :red :width 0.01 :height 0.01}
          (eval '(make-tiny-green-square {:color :red}))))
@@ -441,13 +441,13 @@
   (is (= (eval '(make-red-square-1 {})) {:width 1, :height 1, :color :red}))
   (is (= (eval '(make-two-red-square-1 {})) {:one {:width 1, :height 1, :color :red},
                                              :two {:width 1, :height 1, :color :red}}))
-  (is (false? (two-red-square-1? {:one {:width 1, :height 2, :color :red},
-                                  :two {:width 1, :height 1, :color :red}})))
+  (is (false? (eval '(two-red-square-1? {:one {:width 1, :height 2, :color :red},
+                                         :two {:width 1, :height 1, :color :red}}))))
 
-  (is (thrown? AssertionError (def some-square (make-red-square-1 {:width 2 :height 2}))))
-  (is (def john-square (make-red-square-1 {:owner "John"})))
-  (is (red-square-1? {:a 2 :b 3}))
-  (is (false? (red-square-1? {:a 2 :b 3 :color :green})))
+  (is (thrown? AssertionError (def some-square (eval '(make-red-square-1 {:width 2 :height 2})))))
+  (is (def john-square (eval '(make-red-square-1 {:owner "John"}))))
+  (is (eval '(red-square-1? {:a 2 :b 3})))
+  (is (false? (eval '(red-square-1? {:a 2 :b 3 :color :green}))))
   (is (= (eval '(make-red-square-1 {:a 2 :b 3})) {:a 2, :b 3, :width 1, :height 1, :color :red}))
 
   (is (desc baby-white-kitty [:k [color :white] :i [age 0] :b [likes-milk true]]))
@@ -483,7 +483,7 @@
           {:color :white, :age 0, :make "GM"}])))
 
 (deftest readme-c>test
-  (is (desc person [:str name spouse country]))
+  (is (desc person [:str name spouse country :b [vegetarian false]]))
   (is (df married? [(person?) wife husband] (= (:name husband) (:spouse wife))))
   (is (pred dutch? [(person?) dutch?-input (= "netherlands" country)]))
   (is (pred married-dutch? in [(married?) in (dutch?) wife husband]))
@@ -552,7 +552,7 @@
                 (ep> #(or (= 100 (+ 10 %)) (zero? (- % 20))
                           (zero? (- % 5)) (zero? (- % 50))
                           (zero? (- % 200)))
-                      #(< % 100)))
+                     #(< % 100)))
           "complex"
           [b] b))
   (is (= 20 (c a :b 20)))
@@ -740,8 +740,8 @@
                       :w [{:a 1 :b 2} {:c 5 :a 99 :b -20}]
                       :z [{:a -1 :b -1}]))))
   (is (false? (c vex :v [{:a 1 :b 2} {:a 99 :b -20}]
-                      :w [{:a 1 :b 2} {:c 1.1 :a 99 :b -20}]
-                      :z [{:a -1 :b -1}])))
+                 :w [{:a 1 :b 2} {:c 1.1 :a 99 :b -20}]
+                 :z [{:a -1 :b -1}])))
   (is (false? (c vex :v [{:a 1 :b 2} {:c 5 :a 99 :b -20.0}])))
   (is (false? (c vex :v [{:a 1} {:c 5 :a 99 :b -20}]
                  :w [{:a 1 :b 2} {:c 5 :a 99 :b -20}])))
@@ -785,9 +785,9 @@
   (is (thrown? AssertionError (eval '(make-abcdr {}))))
   (is (= [{:a 5 :b 6}{:a 5 :b 6}{:a 5 :b 6}] (dv ab 3)))
   (is (= (eval '(dv cdab 2)) [{:g {:p :any, :a 5, :b 6}, :d 1.1, :c 1.1, :a 5, :b 6}
-                        {:g {:p :any, :a 5, :b 6}, :d 1.1, :c 1.1, :a 5, :b 6}]))
+                              {:g {:p :any, :a 5, :b 6}, :d 1.1, :c 1.1, :a 5, :b 6}]))
   (is (= (eval '(vmake cdab {:yo :man} 2)) [{:yo :man :g {:p :any, :a 5, :b 6}, :d 1.1, :c 1.1, :a 5, :b 6}
-                                      {:g {:p :any, :a 5, :b 6} :yo :man, :d 1.1, :c 1.1, :a 5, :b 6}])))
+                                            {:g {:p :any, :a 5, :b 6} :yo :man, :d 1.1, :c 1.1, :a 5, :b 6}])))
 
 (deftest describe-options
   (is (describe person [:i age]))

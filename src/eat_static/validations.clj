@@ -18,6 +18,11 @@
   [x]
   (contains? #{true false} x))
 
+(defn not-nil?
+  "True if value is not nil. False, otherwise."
+  [x]
+  (not (nil? x)))
+
 ;; clojure primitive type checks
 ;; including quotations for use in macros
 (def types
@@ -27,6 +32,7 @@
    :keyword ['keyword? keyword?]
    :string ['string? string?]
    :char ['char? char?]
+   :any ['not-nil? not-nil?]
    :identity ['identity identity]
    :map ['map? map?]
    :vector ['vector? vector?]
@@ -51,8 +57,8 @@
    :string (:string types)
    :c (:char types)
    :char (:char types)
-   :anything (:identity types)
-   :any (:identity types)
+   :anything (:any types)
+   :any (:any types)
    :identity (:identity types)
    :m (:map types)
    :map (:map types)

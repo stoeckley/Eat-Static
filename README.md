@@ -1420,7 +1420,7 @@ Just as you can do things in a Clojure pre/post map that make no sense, you coul
 * A validation item in the argument vector affects only those symbols up until the next validation item. If you have ```[:i :n a b c]``` the ```:i``` has no purpose. This is good since often these would confict, i.e. ```[:i :f a b]```. If you need to combine them, use a set of expressions.
 * Validation expressions are not functions. They are list expressions, or keyword primitive type checks. Don't use functions like ```neg?``` in isolation, use ```(neg?)``` instead, unless you are already inside an expression, like ```and>```, in which case you must use an ordinary function.
 * While the vast majority of use cases will provide a meaningful assertion message if a validation fails, occasionally you can write an expression that attempts to do something with nil that instead leads to a null pointer exception instead, which carries no useful message. The assertion is valid based on your specified validation criteria, but the message is not clear.
-* Beware of ```false``` and ```nil```. If you expect to pass nil as a legitimate value to your function, do not make that argument required, as it will enforce it as non-nil. If you expect to pass ```false``` to your function, it is wise to specify the argument as a boolean type, as in some cases a ```false``` value may not pass validation if it is a more general type, such as ```:any```.
+* Beware of ```nil```. If you expect to pass nil as a legitimate value to your function, do not make that argument required, as it will enforce it as non-nil. 
 
 ### Community
 

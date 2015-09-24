@@ -27,7 +27,7 @@ Automate several excellent tools in Clojure for writing safer code -- tools you 
 
 ***
 
-**First**, if you want a good static type system that runs at compile time, consider [Core.Typed](https://github.com/clojure/core.typed).  Alternately, there is the interesting [core.contracts](https://github.com/clojure/core.contracts) library. Both these options add a fair amount of verbosity and additional logic to your work. Instead, Eat Static prioritizes streamlined syntax to guard how you call functions and ensure that arguments and data structures are always what you expect -- without writing much extra code. If you desire this flexibility and power without syntax bloat, Eat Static might be for you.
+**First**, if you want a static type system that runs at compile time, consider [Core.Typed](https://github.com/clojure/core.typed).  Alternately, there is the interesting [core.contracts](https://github.com/clojure/core.contracts) library. Both these options add a fair amount of verbosity and additional logic to your work. Instead, Eat Static prioritizes streamlined syntax to guard how you call functions and ensure that arguments and data structures are always what you expect -- without writing much extra code. If you desire this flexibility and power without syntax bloat, Eat Static might be for you. A final alternative is [Prismatic Schema] (https://github.com/Prismatic/schema), which offers data validation in the spirit of this library. Eat Static takes a different approach, and makes expressions part of the type safety, while giving top priority to quick syntax for all the features.
 
 **Second**, Eat Static was an excellent techno group from the U.K.
 

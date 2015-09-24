@@ -480,21 +480,35 @@
           {:color :white, :age 0, :make "GM"}
           {:color :white, :age 0, :make "GM"}
           {:color :white, :age 0, :make "GM"}
-          {:color :white, :age 0, :make "GM"}])))
+          {:color :white, :age 0, :make "GM"}]))
 
-(deftest readme-c>test
-  (is (desc person [:str name spouse country :b [vegetarian false]]))
+  (is (desc person [:str name spouse country :b [eats-meat false] :k -sex :n -height]))
   (is (df married? [(person?) wife husband] (= (:name husband) (:spouse wife))))
+  (is (pred married2? [(person?) husband wife (#(= (:name husband) (:spouse %))) wife])   )
   (is (pred dutch? [(person?) dutch?-input (= "netherlands" country)]))
   (is (pred married-dutch? in [(married?) in (dutch?) wife husband]))
   (is (pred married-dutch-c? [(c> married? :wife :husband husband) wife (dutch?) wife husband]))
   (is (def andrew (make-person {:name "andrew" :spouse "christine" :country "netherlands"})))
   (is (def bobby (make-person {:name "bobby" :spouse "alice" :country "netherlands"})))
   (is (def christine (make-person {:name "christine" :spouse "andrew" :country "netherlands"})))
+  (is (false? (c married2? :husband bobby :wife christine)))
+  (is (married2? {:husband andrew :wife christine}))
   (is (not (false? (c married-dutch? :wife christine :husband andrew ))))
   (is (false? (married-dutch? {:c {:wife christine :husband bobby}})))
   (is (not (false? (c married-dutch-c? :wife christine :husband andrew ))))
-  (is (false? (married-dutch-c? {:c {:wife christine :husband bobby}}))))
+  (is (false? (married-dutch-c? {:c {:wife christine :husband bobby}})))
+
+  (is (df old-dutch-vegetarian-spouses? [(person?) husband wife]
+          (and (c married? :husband husband :wife wife)
+               (elder-dutch-vegetarian? husband)
+               (elder-dutch-vegetarian? wife))))
+  (is (df old-dutch-vegetarian-spouses2? in [(person?) husband wife]
+          (and (married? in) ((predfn [(elder-dutch-vegetarian?) husband wife]) in))))
+  (is (do (def alice (make-person {:name "alice" :spouse "jon" :country "netherlands" :age 99
+                                   :sex :female :height 1.4}))
+          (def jon (make-person {:name "jon" :spouse "alice" :country "netherlands" :age 97
+                                 :sex :male :height 2}))))
+  #_(is (old-dutch-vegetarian-spouses2? {:husband jon :wife alice})))
 
 
 (deftest df-output-keys

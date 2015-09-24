@@ -137,6 +137,8 @@ Next, you want to ensure that ```a``` ```b``` and ```c``` are only integers:
 ;; You can freely add your own :pre/:post map to a df if desired
 
 ```
+All Clojure primitives offer basic type checks like this, and the details are explained further below.
+
 Here are a few more basic examples:
 ```clojure
 (df my-function [a [b c 0]] ...) 
@@ -148,7 +150,7 @@ Here are a few more basic examples:
 (df my-function [:i a [b 5 c 6 d 7] e :n f] ...)
 ;; a,e,f are required and b,c,d each have a different default value
 ;; a,b,c,d,e must be integers, but f can be any number
-;; (more details below)
+
 ```
 More complex argument requirements are equally handled with ease:
 ```clojure

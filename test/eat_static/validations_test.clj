@@ -303,7 +303,52 @@
   (is (false? (many-vecs-p {:a [2 -2] :b [66 -9876562] :c [0.1]})))
   (is (false? (many-vecs-p {:a [2 -2] :b [66 -9876562 :hi] :c [0]})))
   (is (thrown? AssertionError (many-vecs {:a [2 -2] :b [66 -9876562] :c [0.1]})))
-  (is (thrown? AssertionError (many-vecs {:a [2 -2] :b [66 -9876562 :hi] :c [0]}))))
+  (is (thrown? AssertionError (many-vecs {:a [2 -2] :b [66 -9876562 :hi] :c [0]})))
+
+  (is (pred kitty [:k color :i age :b likes-milk]))
+  (is (defn bunch-o-kitties [ks] (epv> ks kitty)))
+  (is (df feed-kitties [(bunch-o-kitties) cats] :fed))
+  (is (= :fed (c feed-kitties :cats [{:color :blue :age 0 :likes-milk true}])))
+  (is (= :fed (c feed-kitties :cats [{:color :green :age 10 :likes-milk false}
+                                     {:color :blue :age 0 :likes-milk true}])))
+  (is (thrown? AssertionError (c feed-kitties :cats [{:color :blue :age 0}])))
+  (is (thrown? AssertionError (c feed-kitties :cats [{:color :blue :likes-milk true :age 0.5}])))
+  (is (thrown? AssertionError (c feed-kitties :cats [{:color "blue" :age 0 :likes-milk true}])))
+
+  (is (df make-person [:bool eats-meat :str name [spouse] country :i age :k education]
+          make-person-input))
+  (is (describe dperson [:bool eats-meat :str name [spouse] country :i age :k education]))
+  (is (pred person? [:bool eats-meat :str name [spouse] country :i age :k education]))
+  (is (describe child [:str name fav-toy :i age :k education]))
+  (is (make-person {:name "Ludwig" :spouse "Angela" :education :college
+                    :country "USA" :age 39 :eats-meat false}))
+  (is (make-person {:name "Bobby" :country "USA" :age 4 :eats-meat true :education :pre-school}))
+  (is (thrown? AssertionError (make-person {:name "Bobby" :country "USA" :age 4 :eats-meat true})))
+  (is (false? (person? {:name "Bobby" :country "USA" :age 4 :eats-meat true})))
+  (is (false? (dperson? {:name "Bobby" :country "USA" :age 4 :eats-meat true})))
+  (is (person? {:name "Bobby" :country "USA" :age 4 :eats-meat true :education :pre-school}))
+  (is (dperson? {:name "Bobby" :country "USA" :age 4 :eats-meat true :education :pre-school}))
+  (is (= (make-person {:name "Ludwig" :spouse "Angela" :education :college
+                       :country "USA" :age 39 :eats-meat false})
+         (make-dperson {:name "Ludwig" :spouse "Angela" :education :college
+                        :country "USA" :age 39 :eats-meat false})))
+  (is (def alex (make-child {:name "alex" :fav-toy "legos" :age 8 :education :primary})))
+  (is (child? alex))
+  (is (describe baby-child [(child?) baby-child-input (< 2) age]))
+  (is (describe baby-child2 [(child?) baby-child2-input (< 2) age] new- ""))
+  (is (child? (make-baby-child (assoc alex :age 1))))
+  (is (baby-child2 (new-baby-child2 (assoc alex :age 1))))
+
+  (is (describe defaults [:i a [b 8 c 9]]))
+  (is (= (make-defaults {:a 1}) {:a 1 :b 8 :c 9}))
+  (is (= (make-defaults {:a 1 :b 2}) {:a 1 :b 2 :c 9}))
+  (is (nil? (set-describe-names! "front" "back")))
+  (is (desc fb [:k q w e [r :whatever]]))
+  (is (= {:q :ui :w :w :e :e :r :whatever} (make fb {:q :ui :w :w :e :e})))
+  (is (is? fb {:q :ui :w :w :e :hi :r :yupper}))
+  (is (false? (is? fb {:q 2 :w :w :e :hi :r :yupper})))
+  (is (nil? (default-describe-names!))))
+
 
 ;; note that in some cases, testing a macro here requires use of eval to
 ;; full expand the macro before testing inside the clojure.test macros

@@ -298,10 +298,10 @@
       (if (or (req i) (= input-map i) (= return i))
         (assert-sym f i req-text is-pred?)
         (if is-pred?
-          `(if ~i
+          `(if (not (nil? ~i))
              ~(assert-sym f i opt-text is-pred?)
              true)
-          `(when ~i
+          `(when (not (nil? ~i))
              ~(assert-sym f i opt-text is-pred?)))))))
 
 (defn- build-asserts
@@ -549,7 +549,7 @@ Optional arguments shown in brackets may be in any order. "))
   ([m f]
    (into {}
          (map (fn [[k v]]
-                (when v
+                (when (not (nil? v))
                   [(f k) (eval v)])) m))))
 
 (defmacro desc-defaults

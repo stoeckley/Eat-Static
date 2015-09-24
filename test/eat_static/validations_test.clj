@@ -504,12 +504,27 @@
                (elder-dutch-vegetarian? wife))))
   (is (df old-dutch-vegetarian-spouses2? in [(person?) husband wife]
           (and (married? in) ((predfn [(elder-dutch-vegetarian?) husband wife]) in))))
+  (is (pred old-dutch-vegetarian-spouses3? [(elder-dutch-vegetarian?) husband wife 
+                                            (c> married? :husband :wife wife) husband]))
+  (is (pred old-dutch-vegetarian-spouses4? [(elder-dutch-vegetarian?) husband wife 
+                                            (c> married? :wife :husband husband) wife]))
+  (is (pred old-dutch-vegetarian-spouses5? in [(elder-dutch-vegetarian?) husband wife (married?) in]))
   (is (do (def alice (make-person {:name "alice" :spouse "jon" :country "netherlands" :age 99
                                    :sex :female :height 1.4}))
           (def jon (make-person {:name "jon" :spouse "alice" :country "netherlands" :age 97
+                                 :sex :male :height 2}))
+          (def mike (make-person {:name "mike" :spouse "alice" :country "netherlands" :age 97
                                  :sex :male :height 2}))))
-  #_(is (old-dutch-vegetarian-spouses2? {:husband jon :wife alice})))
-
+  (is (old-dutch-vegetarian-spouses2? {:husband jon :wife alice}))
+  (is (old-dutch-vegetarian-spouses? {:husband jon :wife alice}))
+  (is (old-dutch-vegetarian-spouses3? {:husband jon :wife alice}))
+  (is (old-dutch-vegetarian-spouses4? {:husband jon :wife alice}))
+  (is (old-dutch-vegetarian-spouses5? {:husband jon :wife alice}))
+  (is (false? (old-dutch-vegetarian-spouses2? {:husband mike :wife alice})))
+  (is (false? (c old-dutch-vegetarian-spouses? :wife alice :husband mike)))
+  (is (false? (old-dutch-vegetarian-spouses3? {:husband mike :wife alice})))
+  (is (false? (c old-dutch-vegetarian-spouses4? :wife alice :husband mike)))
+  (is (false? (c old-dutch-vegetarian-spouses5? :wife alice :husband mike))))
 
 (deftest df-output-keys
   (is (df a ((:b)) [c] c))

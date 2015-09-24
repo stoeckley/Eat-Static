@@ -1,4 +1,4 @@
-;;  Copyright (c) Andrew Stoeckley, 2015. All rights reserved.
+;;  Copyright (c) Andrew Stoeckley / Balcony Studio 2015. All rights reserved.
 
 ;;  The use and distribution terms for this software are covered by the
 ;;  Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)
@@ -13,6 +13,7 @@
 
 ;; A mild handful of tests
 
+(on)
 (default-describe-names!)
 
 ;; all examples from the readme page

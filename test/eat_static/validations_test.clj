@@ -15,6 +15,246 @@
 
 (default-describe-names!)
 
+;; all examples from the readme page
+(deftest readme
+  (is (df my-function [a b c] my-function-input))
+  (is (defn my-function2 [{:keys [a b c] :as my-function2-input}]
+        my-function2-input))
+  (is (= (my-function {:a 1 :b 4 :c 98}) (my-function2 {:a 1 :b 4 :c 98})))
+  (is (= (my-function {:a 1 :c 12 :b 4}) (c my-function :a 1 :c 12 :b 4)
+         (c my-function2 :c 12 :b 4 :a 1)))
+  (is (= (my-function {:a 1 :c 12 :b 4 :z :yo})
+         (c my-function :z :yo :a 1 :c 12 :b 4)
+         (c my-function2 :c 12 :z :yo :b 4 :a 1)))
+  
+  (is (df my-function3 [[a b c 0]] my-function3-input))
+  (is (defn my-function4 [{:keys [a b c] :or {a 0 b 0 c 0}
+                           :as my-function4-input}] my-function4-input))
+  (is (= {} (my-function3 {}) (my-function4 {})))
+  
+  (is (df my-function3b [[a b c 0]] [a b c]))
+  (is (defn my-function4b [{:keys [a b c] :or {a 0 b 0 c 0}
+                            :as my-function4b-input}] [a b c]))
+  (is (= [0 0 0] (my-function3b {}) (my-function4b {})))
+  
+  (is (df my-function5 [:int [a b c 0]] my-function5-input))
+  (is (defn my-function6 [{:keys [a b c] :or {a 0 b 0 c 0}
+                           :as my-function6-input}]
+        {:pre [(integer? a) (integer? b) (integer? c)]}
+        my-function6-input))
+  (is (= {} (my-function5 {}) (my-function6 {})))
+  
+  (is (df my-function5b [:int [a b c 0]] my-function5b-input))
+  (is (defn my-function6b [{:keys [a b c] :or {a 0 b 0 c 0}
+                            :as my-function6b-input}]
+        {:pre [(integer? a) (integer? b) (integer? c)]}
+        my-function6b-input))
+  (is (= {} (my-function5b {}) (my-function6b {})))
+  (is (thrown? AssertionError (my-function5b {:a 1.1})))
+  (is (thrown? AssertionError (my-function6b {:a 1.1})))
+  (is (= {:a 1} (my-function5b {:a 1}) (my-function6b {:a 1})))
+  
+  (is (df my-function7 [:int [a b c 4]] [a b c]))
+  (is (defn my-function8 [{:keys [a b c] :or {a 4 b 4 c 4}
+                           :as my-function8-input}]
+        {:pre [(integer? a) (integer? b) (integer? c)]}
+        [a b c]))
+  (is (= [4 4 4] (my-function7 {}) (my-function8 {})))
+
+  (is (df my-function9 [a [b c 0]] :hi))
+  (is (df my-function10 [a [b c]] :hi))
+  (is (df my-function11 [:i a [b 5 c 6 d 7] e :n f] {:a a :b b :c c :d d :e e :f f}))
+  (is (= :hi (my-function9 {:a 1}) (my-function10 {:a 88})))
+  (is (thrown? AssertionError (my-function9 {:b 1 :c 1})))
+  (is (thrown? AssertionError (my-function10 {:b 1 :c 1})))
+  (is (thrown? AssertionError (my-function11 {:b 1 :c 1})))
+  (is (thrown? AssertionError (my-function11 {:a 1.1 :e 4 :f 45 :b 1 :c 1})))
+  (is (my-function11 {:a 1 :e 4 :f 45 :b 1 :c 1}))
+  (is (thrown? AssertionError (my-function11 {:a 1 :b 1 :c 1})))
+  (is (thrown? AssertionError (my-function11 {:a 1 :b 1 :e 1 :c 1})))
+  (is (thrown? AssertionError (my-function11 {:a 1 :b 1 :c 1 :e 1 :f :hi})))
+  (is (= {:a 99 :b 5 :c 6 :d 7 :e 88 :f 1.1}
+         (my-function11 {:a 99 :e 88 :f 1.1})))
+  (is (= {:a 99 :b 5 :c 6 :d 7 :e 88 :f 1.1}
+         (c my-function11 :a 99 :e 88 :f 1.1)))
+  (is (= {:a 99 :c 6 :d 7 :e 88 :f 1.1 :b -100}
+         (c my-function11 :a 99 :e 88 :f 1.1 :b -100)))
+
+  (is (df two-ints [(> b) a :i b (< 10) a b] [a b]))
+  (is (= [5.5 5] (two-ints {:a 5.5 :b 5})))
+  (is (= [9.5 9] (c two-ints :a 9.5 :b 9)))
+  (is (= [8.123 -2222] (c two-ints :b -2222 :a 8.123)))
+  (is (= [8 -2222] (c two-ints :b -2222 :a 8)))
+  (is (thrown? AssertionError (c two-ints :b 5.5 :a 5.5)))
+  (is (thrown? AssertionError (c two-ints :a 5.5 :b 10)))
+  (is (thrown? AssertionError (c two-ints :a 10 :b 9)))
+  (is (thrown? AssertionError (c two-ints :a 4 :b 5)))
+  (is (= [5 4] (c two-ints :a 5 :b 4)))
+
+  (is (df my-function in [a b c] in))
+  (is (= {:a 1 :c :hello :b 2} (my-function {:a 1 :c :hello :b 2})))
+
+  (is (df my-function "doc"[a b c] {:a a :c c :b b}))
+  (is (= {:a 1 :c :hello :b 2} (my-function {:a 1 :c :hello :b 2})))
+
+  (is (df my-function in "doc" [a b c] in))
+  (is (= {:a 1 :c :hello :b 2} (my-function {:a 1 :c :hello :b 2})))
+
+  (is (df my-function "doc" in [a b c] in))
+  (is (= {:a 1 :c :hello :b 2} (my-function {:a 1 :c :hello :b 2})))
+
+  (is (df validate-output (:i) [a] a))
+  (is (= 5 (validate-output {:a 5})))
+  (is (thrown? AssertionError (validate-output {:a 5.0})))
+
+  (is (df another "integer less than 10" custom-input-map-name (:i (< 10)) [:i a b] (+ a b)))
+  (is (= 5 (c another :a 2 :b 3)))
+  (is (thrown? AssertionError (another {:a 5 :b 5})))
+
+  (is (df another custom-input-map-name "integer less than 10" (:i (< 10)) [:i a b] (+ a b)))
+  (is (= 5 (c another :a 2 :b 3)))
+  (is (thrown? AssertionError (another {:a 5 :b 5})))
+
+  (is (df another (:i (< 10)) [:i a b] (+ a b)))
+  (is (= -25 (c another :a -22 :b -3)))
+  (is (thrown? AssertionError (another {:a 5 :b 5})))
+
+  (is (df has-keys-foo-bar ((:foo)(:bar)) [a] a))
+  (is (df has2 ((pred> [foo bar])) [a] a))
+  (is (df has3 (((predfn [foo bar]))) [a] a))
+  (is (= {:foo 1 :bar 0} (has-keys-foo-bar {:a {:bar 0 :foo 1}})
+         (has2 {:a {:bar 0 :foo 1}}) (has3 {:a {:bar 0 :foo 1}})
+         (c has2 :a {:foo 1 :bar 0})))
+  (is (thrown? AssertionError (has-keys-foo-bar {:a {:foo 1}})))
+  (is (thrown? AssertionError (has2 {:a {:foo 1}})))
+  (is (thrown? AssertionError (has3 {:a {:foo 1}})))
+
+  (is (df has2 ((pred> [:i foo bar])) [a] a))
+  (is (df has3 (((predfn [:i foo bar]))) [a] a))
+  (is (thrown? AssertionError (has2 {:a {:foo 1 :bar 1.1}})))
+  (is (thrown? AssertionError (has3 {:a {:foo 1 :bar 1.1}})))
+
+  (is (df zero-or-one ((or> #(= 1 %) #(= 0 %))) [x] x))
+  (is (thrown? AssertionError (c zero-or-one :x 2)))
+  (is (= 1 (c zero-or-one :x 1)))
+
+  (is (df out (:i (or> #(> % 10) #(< % -5))) [:i x y z] (+ x y z)))
+  (is (defn out2
+        [{:keys [x y z] :as out-input}]
+        {:pre [(integer? x) (integer? y) (integer? z)]
+         :post [(integer? %)
+                (or (> % 10) (< % -5))]}
+        (+ x y z)))
+  (is (= (out {:x 5 :y 6 :z 7}) (c out2 :y 6 :x 5 :z 7)))
+  (is (= (out {:x 5 :y 6 :z -70}) (c out2 :y 6 :x 5 :z -70)))
+  (is (thrown? AssertionError (c out :x 1 :y 1 :z 1)))
+  (is (thrown? AssertionError (c out2 :x 1 :y 1 :z 1)))
+
+  (is (defn circle
+        [{:keys [radius x y color] :or {color :blue}
+          :as circle-input}]
+        {:pre [(>= radius 1) (integer? x) (integer? y)
+               (#{:blue :white} color)]}
+        circle-input))
+  (is (df circle2 [(>= 1) radius :i x y (#{:blue :white}) [color :blue]] circle2-input))
+  (is (= (circle {:radius 2 :x 1 :y 1 :color :white})
+         (circle2 {:radius 2 :x 1 :y 1 :color :white})
+         (c circle2 :radius 2 :x 1 :y 1 :color :white)
+         (c circle :radius 2 :x 1 :y 1 :color :white)
+         {:radius 2 :x 1 :y 1 :color :white}))
+  (is (thrown? AssertionError (circle2 {:radius 0.5 :x 1 :y 1 :color :white})))
+  (is (thrown? AssertionError (circle2 {:radius 2 :x 1 :y 1 :color :green})))
+  (is (thrown? AssertionError (circle2 {:radius 2 :x 1.0 :y 1 :color :white})))
+  (is (thrown? AssertionError (circle {:radius 0.5 :x 1 :y 1 :color :white})))
+  (is (thrown? AssertionError (circle {:radius 2 :x 1 :y 1 :color :green})))
+  (is (thrown? AssertionError (circle {:radius 2 :x 1.0 :y 1 :color :white})))
+
+  (is (defn circle
+        [{:keys [radius x y z color] :or {color :blue}
+          :as circle-input}]
+        {:pre [(>= radius 1) (integer? x) (integer? y)
+               (#{:blue :white} color)
+               (if z (integer? z) true)]}
+        circle-input))
+  (is (df circle2 [(>= 1) radius :i x y -z (#{:blue :white}) [color :blue]] circle2-input))
+  (is (= (circle {:radius 2 :x 1 :y 1 :color :white})
+         (circle2 {:radius 2 :x 1 :y 1 :color :white})
+         (c circle2 :radius 2 :x 1 :y 1 :color :white)
+         (c circle :radius 2 :x 1 :y 1 :color :white)
+         {:radius 2 :x 1 :y 1 :color :white}))
+  
+  (is (df intsgreater [#{:i (> 1)} x y z] [x y z]))
+  (is (= [2 3 4] (c intsgreater :x 2 :y 3 :z 4)))
+  (is (thrown? AssertionError (c intsgreater :x 2 :y 3 :z 1)))
+  (is (thrown? AssertionError (c intsgreater :x 2 :y 3 :z 4.4)))
+
+  (is (df i2 [(or> #(< 2 % 10) #(> -2 % -10)) x y] [x y]))
+  (is (= [3 4] (i2 {:x 3 :y 4})))
+  (is (thrown? AssertionError (i2 {:x 2 :y 4})))
+  (is (thrown? AssertionError (i2 {:x -2 :y 4})))
+  (is (= [-5 5] (c i2 :x -5 :y 5)))
+
+  (is (df ki [(or> integer? keyword?) x] x))
+  (is (df ki2 [(or> (t :i) (t :k)) x] x))
+  (is (thrown? AssertionError (ki {:x 1.1})))
+  (is (= :hi (ki {:x :hi})))
+  (is (= 4 (c ki :x 4)))
+  (is (thrown? AssertionError (ki2 {:x 1.1})))
+  (is (= :hi (ki2 {:x :hi})))
+  (is (= 4 (c ki2 :x 4)))
+  (is (= (ki {:x :yo}) (ki2 {:x :yo})))
+
+  (is (df int-stuff (:i (< 1)) [#{:i (or> #(< 2 % 10) #(> -2 % -10))} [x y 5]] (- x (* 2 y))))
+  (is (= -5 (int-stuff {})))
+  (is (= 0 (c int-stuff :x 8 :y 4)))
+  (is (thrown? AssertionError (c int-stuff :x 10 :y 5)))
+  (is (thrown? AssertionError (c int-stuff :x 8.5 :y 5)))
+  (is (thrown? AssertionError (c int-stuff :x 9 :y 1)))
+  (is (defn cint-stuff
+        [{:keys [x y] :or {x 5 y 5}
+          :as int-stuff-input}]
+        {:pre [(integer? x) (integer? y)
+               (or (< 2 x 10) (> -2 x -10))
+               (or (< 2 y 10) (> -2 y -10))]
+         :post [(integer? %) (< % 1)]}
+        (- x (* 2 y)) ))
+  (is (= -5 (cint-stuff {})))
+  (is (= 0 (c cint-stuff :x 8 :y 4)))
+  (is (thrown? AssertionError (c cint-stuff :x 10 :y 5)))
+  (is (thrown? AssertionError (c cint-stuff :x 8.5 :y 5)))
+  (is (thrown? AssertionError (c cint-stuff :x 9 :y 1)))
+
+  (is (def sexes #{:male :female}))
+  (is (df person [:str name (sexes) sex] person-input))
+  (is (thrown? AssertionError (person {:name "andrew" :sex :wolf})))
+  (is (= {:name "andrew" :sex :male} (person {:name "andrew" :sex :male})))
+
+  (is (df is-senior? [:string name (> 65) age] true))
+  (is (df process-seniors [(is-senior?) person1 person2] :cool))
+  (is (def p1 {:name "john" :age 60}))
+  (is (def p2 {:name "john" :age 66}))
+  (is (def p3 {:name "john" :age :old}))
+  (is (def p4 {:age 70}))
+  (is (def p5 {:name :none :age 60}))
+  (is (= :cool (c process-seniors :person1 p2 :person2 p2)))
+  (is (= :cool (c process-seniors :person1 p2 :person2 {:name "andrew" :age 99})))
+  (is (thrown? AssertionError (c process-seniors :person1 p2 :person2 p4)))
+  (is (thrown? AssertionError (c process-seniors :person1 p2 :person2 p5)))
+  (is (thrown? AssertionError (c process-seniors :person1 p2 :person2 p1)))
+
+  (is (pred is-senior? [:string name (> 65) age]))
+  (is (false? (is-senior? p1)))
+  (is (false? (is-senior? p3)))
+  (is (false? (is-senior? p4)))
+  (is (false? (is-senior? p5)))
+  (is (false? (is-senior? {:first-name "andrew" :age 99})))
+  )
+
+;; note that in some cases, testing a macro here requires use of eval to
+;; full expand the macro before testing inside the clojure.test macros
+
+
+
 (deftest df-output-keys
   (is (df a ((:b)) [c] c))
   (is (= {:b 5} (c a :c {:b 5})))
@@ -374,11 +614,11 @@
 (deftest blended-overrides
   (is (desc a9 [[a 9]]))
   (is (blend a9b8 [[b 8]] a9))
-  (is (blend anil [[a nil]] a9b8))
+  (is (eval '(blend anil [[a nil]] a9b8)))
   (is (= {:a 9 :b 8} (eval '(d anil))))
   (is (= {:a 9 :b 8} (eval '(d a9b8))))
   (is (eval '(blend aRb8 [a] a9b8)))
-  (is (blend anil2 [[a nil]] aRb8))
+  (is (eval '(blend anil2 [[a nil]] aRb8)))
   (is (thrown? AssertionError (eval '(d aRb8))))
   (is (thrown? AssertionError (eval '(d aRb8))))
   (is (thrown? AssertionError (eval '(make aRb8 {}))))

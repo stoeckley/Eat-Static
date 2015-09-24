@@ -278,7 +278,10 @@
         `(assert (~kfn ~s) ~(str t ": Type " kfn " for " s)))
       (throw-text (str "Invalid type keyword in argument list: " f)))
     (if is-pred?
-      `~(conj (rest f) s (first f))
+      `(try
+         ~(conj (rest f) s (first f))
+         (catch Exception e# false))
+      ;; `~(conj (rest f) s (first f))
       `(assert ~(conj (rest f) s (first f))
                ~(str t ": " f " for " s)))))
 

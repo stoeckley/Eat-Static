@@ -341,7 +341,7 @@ You could amend your function in Clojure by doing two things:
 
 ```clojure
 (df circle
-   [(>= 1) radius :i x y -z (#{:valid :colors}) [color :blue]]
+   [(>= 1) radius :i x y -z (#{:blue :white}) [color :blue]]
   ...
   )
 
@@ -1378,6 +1378,8 @@ All the code on this page is available in the examples.clj file of the test fold
 
 Also, if you are familiar with the basic tools offered by clojure.test, including just the ```deftest``` and ```is``` macros, you can see many examples of this library's features in the test folder, including scenarios when assertions are thrown.
 
+The ```deftest``` called ```readme``` contains the examples on this page as well.
+
 ### Gotchas
 
 #### A few things to remember and watch out for
@@ -1405,7 +1407,6 @@ Just as you can do things in a Clojure pre/post map that make no sense, you coul
 * Validation expressions are not functions. They are list expressions, or keyword primitive type checks. Don't use functions like ```neg?``` in isolation, use ```(neg?)``` instead, unless you are already inside an expression, like ```and>```, in which case you must use an ordinary function.
 * While the vast majority of use cases will provide a meaningful assertion message if a validation fails, occasionally you can write an expression that attempts to do something with nil that instead leads to a null pointer exception instead, which carries no useful message. The assertion is valid based on your specified validation criteria, but the message is not clear.
 * Beware of ```false``` and ```nil```. If you expect to pass nil as a legitimate value to your function, do not make that argument required, as it will enforce it as non-nil. If you expect to pass ```false``` to your function, it is wise to specify the argument as a boolean type, as in some cases a ```false``` value may not pass validation if it is a more general type, such as ```:any```.
-
 
 ### Community
 

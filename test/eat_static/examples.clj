@@ -17,6 +17,8 @@
  ;;;; Examples for the main Readme page of this library. See the Readme for
  ;;;; explanations of this code.
 
+ ;;;; Also see the deftest called readme in the test file; it contains all these examples
+
 
 
 (df my-function [a b c] )
@@ -235,7 +237,7 @@
   )
 
 (df circle
-   [(>= 1) radius :i x y -z (#{:valid :colors}) [color :blue]]
+   [(>= 1) radius :i x y -z (#{:blue :white}) [color :blue]]
   )
 
 ;; added -z

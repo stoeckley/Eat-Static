@@ -562,6 +562,19 @@
   (is (thrown? AssertionError (a {:c {:b 15 :c :hi}})))
   (is (thrown? AssertionError (a {:c {:b 5 :c 4}}))))
 
+(deftest output-types
+  (is (desc h [:i a b c]))
+  (is (df mh ((h?)) [:n x] {:a x :b (inc x) :c (inc (inc x))}))
+  (is (df mh2 ((:x) (h?)) [:n x -y]
+          (if y
+            {:a x :b (inc x) :c (inc (inc x)) :x y}
+            {:a x :b (inc x) :c (inc (inc x))})))
+  (is (= {:a 3 :b 4 :c 5} (c mh :x 3)))
+  (is (= {:a 30 :b 31 :c 32} (c mh :x 30)))
+  (is (thrown? AssertionError (c mh :x 3.5)))
+  (is (thrown? AssertionError (c mh2 :x 3)))
+  (is (= {:a 3 :b 4 :c 5 :x 9} (c mh2 :x 3 :y 9))))
+
 (deftest df-output-int
   (is (df a (:i) [b] (* b 2)))
   (is (df b (:i) [c] (int (* 2.0 c))))

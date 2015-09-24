@@ -27,11 +27,19 @@ Automate several excellent tools in Clojure for writing safer code -- tools you 
 
 ***
 
-**First**, if you want a static type system that runs at compile time, consider [Core.Typed](https://github.com/clojure/core.typed).  Alternately, there is the interesting [core.contracts](https://github.com/clojure/core.contracts) library. Both these options add a fair amount of verbosity and additional logic to your work. Instead, Eat Static prioritizes streamlined syntax to guard how you call functions and ensure that arguments and data structures are always what you expect -- without writing much extra code. If you desire this flexibility and power without syntax bloat, Eat Static might be for you. A final alternative is [Prismatic Schema] (https://github.com/Prismatic/schema), which offers data validation in the spirit of this library. Eat Static takes a different approach, and makes expressions part of the type safety, while giving top priority to quick syntax for all the features.
+**First**, a couple good pre-requisites for using Eat Static are Sierra's [Thinking in Data](http://www.infoq.com/presentations/Thinking-in-Data) and Hickey's [Simplicity Matters](https://www.youtube.com/watch?v=rI8tNMsozo0), both of which expound the virtues of consolidating function arguments as an associative structure, and using run-time checks via assertions to make your code safer in a dynamic environment. (These checks are easily disabled when you compile for production.)
 
 **Second**, Eat Static was an excellent techno group from the U.K.
 
-**Third**, a couple good pre-requisites for using Eat Static are Sierra's [Thinking in Data](http://www.infoq.com/presentations/Thinking-in-Data) and Hickey's [Simplicity Matters](https://www.youtube.com/watch?v=rI8tNMsozo0), both of which expound the virtues of consolidating function arguments as an associative structure, and using run-time checks via assertions to make your code safer in a dynamic environment. (These checks are easily disabled when you compile for production.)
+***
+
+##### Alternatives
+
+Other libraries which aim to solve similar problems are [Core.Typed](https://github.com/clojure/core.typed), [core.contracts](https://github.com/clojure/core.contracts), and [Prismatic Schema] (https://github.com/Prismatic/schema). These first two options add a fair amount of verbosity and additional logic to your work which can interfere with the elegance of coding Clojure. Schema offers validation in the spirit of this library, but doesn't address many of the needs of this author. 
+
+Eat Static takes a different approach, and makes ordinary functions and expressions part of the type safety, while giving top priority to quick syntax for all the features. It aims to provide a genuinely trivial effort for adding safety checks and trait techniques to any function or ordinary Clojure map with no heavy boilerplate or changes to how you structure your code.
+
+***
 
 ### Includes
 
@@ -731,10 +739,12 @@ Map constructors and validators using ```describe```:
 ;; creating new descriptions based on existing ones:
 
 (describe baby-child [(child?) baby-child-input (< 2) age])
+```
+##### Automatic default values
 
-;; Additionally, the make-child function automatically adds default values
-;; to your map, if they were supplied in the original arg list:
+Additionally, the make-child function automatically adds default values to your map, if they were supplied in the original arg list:
 
+```clojure
 (describe defaults [:i a [b 8 c 9]])
 
 (make-defaults {:a 1})
@@ -744,11 +754,12 @@ Map constructors and validators using ```describe```:
 (make-defaults {:a 1 :b 2})
 
 ;; returns {:a 1 :b 2 :c 9}
+```
 
-;; You can optionally provide the prefix and suffix used for the make function
-;; and predicate, respectively; either you provide both, or neither:
+You can optionally provide the prefix and suffix used for the make function and predicate, respectively; either you provide both, or neither:
 
-(describe baby-child [(child?) baby-child-input (< 2) age] new- "")
+```clojure
+(describe baby-child [(child?) baby-child-input (< 2) age] "new-" "")
 
 ;; This generates new-baby-child as the make function, and baby-child as the
 ;; predicate function.

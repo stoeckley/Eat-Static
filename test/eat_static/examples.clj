@@ -447,7 +447,7 @@
 
 ;; optionally naming the two functions generated:
 
-(describe baby-child [(child?) baby-child-input (< 2) age] new- "")
+(describe baby-child [(child?) baby-child-input (< 2) age] "new-" "")
 
 
 ;; Additionally, describe- creates private versions of the constructor and validator

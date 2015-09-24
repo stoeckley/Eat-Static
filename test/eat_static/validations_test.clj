@@ -387,12 +387,114 @@
   (is (false? (c is-dutch-senior? :person (assoc hank :age 1))))
   (is (false? (c is-dutch-senior? :person (assoc hank :age :young))))
   (is (american-meat-eating-child? jimmy))
-  (is (c american-child-likes-meat? :kid jimmy)))
+  (is (c american-child-likes-meat? :kid jimmy))
 
+  ;; note that in some cases, testing a macro here requires use of eval to
+  ;; full expand the macro before testing inside the clojure.test macros
+  
+  (is (do (describe ab [:i q [a 1 b 2]])
+          (desc cd [:f w -r :any [c 3 d 4]])
+          (blend ab-cd [:k e] ab cd)))
+  (is (thrown? AssertionError (eval '(make-ab-cd {:e :hi}))))
+  (is (thrown? AssertionError (eval '(make-ab-cd {:e :hi :w 1.1}))))
+  (is (= {:e :hi, :w 1.1, :q 55, :a 1, :c 3, :b 2, :d 4}
+         (eval '(make-ab-cd {:e :hi :w 1.1 :q 55}))))
 
-;; note that in some cases, testing a macro here requires use of eval to
-;; full expand the macro before testing inside the clojure.test macros
+  (is (do (desc red-rectangle [:n [width 5 height 3] :k [color :red]])
+          (desc square [:n [width 5 height 5]])
+          (blend red-square [] red-rectangle square)))
+  (is (= (eval '(make-red-square {})) {:width 5, :height 5, :color :red}))
+  (is (blend red-square [] square red-rectangle))
+  (is (= (eval '(make-red-square {})) {:color :red, :width 5, :height 3}))
+  (is (blend blue-square [[color :blue]] square))
+  (is (= (eval '(make-blue-square {})) {:width 5, :height 5, :color :blue}))
+  (is (red-square? (eval '(make-blue-square {}))))
 
+  (is (blend red-square [(= :red) [color :red]] square))
+  (is (blend tiny-red-square [#{:f (< 1)} [width height 0.01]] red-square))
+  (is (= (eval '(make-tiny-red-square {})) {:width 0.01, :height 0.01, :color :red}))
+  (is (false? (tiny-red-square? {:color :green})))
+  (is (false? (tiny-red-square? (eval '(make-blue-square {})))))
+  (is (tiny-red-square? {:color :red}))
+  (is (tiny-red-square? {}))
+
+  (is (blend tiny-green-square [[color :green]] tiny-red-square))
+  (is (thrown? AssertionError (eval '(make-tiny-green-square {}))))
+  (is (= {:color :red :width 0.01 :height 0.01}
+         (eval '(make-tiny-green-square {:color :red}))))
+
+  (is (blend red-square [{color :red}] square))
+  (is (blend tiny-red-square [#{:f (< 1)} [width height 0.01]] red-square))
+  (is (= (eval '(make-tiny-red-square {})) {:width 0.01, :height 0.01, :color :red}))
+  (is (thrown? AssertionError (eval '(make-tiny-red-square {:color :green}))))
+  (is (false? (tiny-red-square? {:color :green})))
+  (is (false? (tiny-red-square? (eval '(make-blue-square {})))))
+  (is (tiny-red-square? {:color :red}))
+  (is (tiny-red-square? {}))
+  (is (blend tiny-green-square [[color :green]] tiny-red-square))
+  (is (thrown? AssertionError (eval '(make-tiny-green-square {}))))
+  (is (= {:color :red :width 0.01 :height 0.01}
+         (eval '(make-tiny-green-square {:color :red}))))
+
+  (is (do (eval '(blend red-square-1 [{width 1 height 1}] red-square))
+          (eval '(desc two-red-square-1 [{one red-square-1 two red-square-1}]))))
+  (is (= (eval '(make-red-square-1 {})) {:width 1, :height 1, :color :red}))
+  (is (= (eval '(make-two-red-square-1 {})) {:one {:width 1, :height 1, :color :red},
+                                             :two {:width 1, :height 1, :color :red}}))
+  (is (false? (two-red-square-1? {:one {:width 1, :height 2, :color :red},
+                                  :two {:width 1, :height 1, :color :red}})))
+
+  (is (thrown? AssertionError (def some-square (make-red-square-1 {:width 2 :height 2}))))
+  (is (def john-square (make-red-square-1 {:owner "John"})))
+  (is (red-square-1? {:a 2 :b 3}))
+  (is (false? (red-square-1? {:a 2 :b 3 :color :green})))
+  (is (= (eval '(make-red-square-1 {:a 2 :b 3})) {:a 2, :b 3, :width 1, :height 1, :color :red}))
+
+  (is (desc baby-white-kitty [:k [color :white] :i [age 0] :b [likes-milk true]]))
+  (is (= (d baby-white-kitty) {:color :white, :age 0, :likes-milk true}))
+  (is (def feline-litter (dv baby-white-kitty 5)))
+  (is (= feline-litter [{:color :white, :age 0, :likes-milk true}
+                        {:color :white, :age 0, :likes-milk true}
+                        {:color :white, :age 0, :likes-milk true}
+                        {:color :white, :age 0, :likes-milk true}
+                        {:color :white, :age 0, :likes-milk true}]))
+
+  (is (do (desc car [:i [age 0] :str [make "GM"]])
+          (desc new-car-purchase [:str store (car?) [new-car (d car)]])
+          (desc new-car-purchase2 [:str store {new-car car}])))
+  (is (= (c make-new-car-purchase :store "Al's Car Shop")
+         {:store "Al's Car Shop", :new-car {:age 0, :make "GM"}}))
+  (is (desc factory-output [(epv> car?) [cars (dv car 5)]]))
+  (is (= (make-factory-output {})
+         {:cars
+          [{:age 0, :make "GM"}
+           {:age 0, :make "GM"}
+           {:age 0, :make "GM"}
+           {:age 0, :make "GM"}
+           {:age 0, :make "GM"}]}))
+  (is (= (make-factory-output {:cars (dv car 2)})
+         {:cars [{:age 0, :make "GM"}
+                 {:age 0, :make "GM"}]}))
+  (is (= (vmake car {:color :white} 5)
+         [{:color :white, :age 0, :make "GM"}
+          {:color :white, :age 0, :make "GM"}
+          {:color :white, :age 0, :make "GM"}
+          {:color :white, :age 0, :make "GM"}
+          {:color :white, :age 0, :make "GM"}])))
+
+(deftest readme-c>test
+  (is (desc person [:str name spouse country]))
+  (is (df married? [(person?) wife husband] (= (:name husband) (:spouse wife))))
+  (is (pred dutch? [(person?) dutch?-input (= "netherlands" country)]))
+  (is (pred married-dutch? in [(married?) in (dutch?) wife husband]))
+  (is (pred married-dutch-c? [(c> married? :wife :husband husband) wife (dutch?) wife husband]))
+  (is (def andrew (make-person {:name "andrew" :spouse "christine" :country "netherlands"})))
+  (is (def bobby (make-person {:name "bobby" :spouse "alice" :country "netherlands"})))
+  (is (def christine (make-person {:name "christine" :spouse "andrew" :country "netherlands"})))
+  (is (not (false? (c married-dutch? :wife christine :husband andrew ))))
+  (is (false? (married-dutch? {:c {:wife christine :husband bobby}})))
+  (is (not (false? (c married-dutch-c? :wife christine :husband andrew ))))
+  (is (false? (married-dutch-c? {:c {:wife christine :husband bobby}}))))
 
 
 (deftest df-output-keys
@@ -647,20 +749,6 @@
                  :w [{:a 1 :b 2} {:c 5 :a 99 :b -20}])))
   (is (false? (c vex :v [{:a 1 :b -1} {:c 5 :a 99 :b -20}] :z [{:a 1 :b 1.1}]
                  :w [{:a 1 :b 2} {:c 5 :a 99 :b -20}]))))
-
-(deftest c>test
-  (is (desc person [:str name spouse country]))
-  (is (df married? [(person?) wife husband] (= (:name husband) (:spouse wife))))
-  (is (pred dutch? [(person?) dutch?-input (= "netherlands" country)]))
-  (is (pred married-dutch? in [(married?) in (dutch?) wife husband]))
-  (is (pred married-dutch-c? [(c> married? :wife :husband husband) wife (dutch?) wife husband]))
-  (is (def andrew (make-person {:name "andrew" :spouse "christine" :country "netherlands"})))
-  (is (def bobby (make-person {:name "bobby" :spouse "alice" :country "netherlands"})))
-  (is (def christine (make-person {:name "christine" :spouse "andrew" :country "netherlands"})))
-  (is (not (false? (c married-dutch? :wife christine :husband andrew ))))
-  (is (false? (married-dutch? {:c {:wife christine :husband bobby}})))
-  (is (not (false? (c married-dutch-c? :wife christine :husband andrew ))))
-  (is (false? (married-dutch-c? {:c {:wife christine :husband bobby}}))))
 
 (deftest defaults
   (is (desc dude [:i x [age (+ 10 15)]]))

@@ -2,20 +2,19 @@
 
 #### Easy run-time type-checking and validation of Clojure maps and functions
 
-##### A single vector DSL that joins many features in one place to *quickly*:
+##### A small DSL that joins many features in one place to *quickly*:
 * Make type checks on whole maps, specific k/v pairs, or function arguments easily
 * Choose between assertive checks or true/false predicate tests
 * Specify and validate function return types
 * Build intricate map constructors & validators with one line of code
-* Construct complex functional predicates on the fly
-* Build custom types on demand
-* Compose existing types into new composite types easily
 * Generate default maps based on simple inheritance, with final field support
+* Construct complex functional predicates on the fly
+* Leverage custom types and traits from basic Clojure maps
+* Compose existing types into new composite types easily
 * Write functions that accept named, unordered parameters
 * Specify function arguments as required or optional
 * Provide default values for optional arguments
 * Group :pre/:post style conditions
-* Leverage trait-like behavior from basic Clojure maps
 
 ... and doing these tasks with *very* minimal syntax.
 
@@ -35,9 +34,9 @@ Automate several excellent tools in Clojure for writing safer code -- tools you 
 
 ##### Alternatives
 
-Other libraries which aim to solve similar problems are [Core.Typed](https://github.com/clojure/core.typed), [core.contracts](https://github.com/clojure/core.contracts), and [Prismatic Schema] (https://github.com/Prismatic/schema). These first two options add a fair amount of verbosity and additional logic to your work which can interfere with the elegance of coding Clojure. Schema offers validation in the spirit of this library, but doesn't address many of the needs of this author. 
+Other libraries which aim to solve similar problems are [Core.Typed](https://github.com/clojure/core.typed), [core.contracts](https://github.com/clojure/core.contracts), and [Prismatic Schema] (https://github.com/Prismatic/schema). These first two options add a fair amount of verbosity and additional logic to your work which can interfere with the elegance of Clojure. Schema offers validation in the spirit of this library, but doesn't address many of the needs of this author. 
 
-Eat Static takes a different approach, and makes ordinary functions and expressions part of the type safety, while giving top priority to quick syntax for all the features. It aims to provide a genuinely trivial effort for adding safety checks and trait techniques to any function or ordinary Clojure map with no heavy boilerplate or changes to how you structure your code.
+Eat Static takes a different approach, and makes ordinary functions and expressions the basis for type safety, while giving top priority to quick syntax for all the features. It aims to provide a simple path for adding safety checks and trait techniques to any function or ordinary Clojure map with no heavy boilerplate or changes to how you structure your code. For example, an *enum* is just a Clojure set; the API for these checks is thus very minimal, familiar, and flexible.
 
 ***
 

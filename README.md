@@ -741,6 +741,10 @@ Map constructors and validators using ```describe```:
 
 (describe baby-child [(child?) baby-child-input (< 2) age])
 ```
+Unlike ```df``` and ```pred``` which generate functions directly based on the name you provide to them, ```describe``` and ```desc``` each build two functions, a ```df``` and a ```pred```, and both are automatically annotated with doc-strings based on the name of the type you give to ```describe/desc```. Thus, ```describe/desc``` simply take the name of the type/trait and its validation vector, and no doc-string; since these are designed as type definitions, the name you give them and the validation vector should be self-documenting.
+
+As you will see further below, if want to validate the overall input-map based on other types (like the ```(child?)``` expression above), just use ```blend``` which is more elegant and powerful for this purpose, thus providing a custom name to the input map is not available with ```describe/desc```, though you can use the default -input name if necessary. And since there is no function body to these tools, there is no output validation list accepted. 
+
 ##### Automatic default values
 
 Additionally, the make-child function automatically adds default values to your map, if they were supplied in the original arg list:

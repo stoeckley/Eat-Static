@@ -493,13 +493,17 @@ Optional arguments shown in brackets may be in any order. "))
 
 ;; Describe and Blend helpers:
 
+(defn- assert-describe-arglist
+  [arglist]
+  (assert (vector? arglist) "Second arg to describe, desc, or blend must be a vector for the arglist. Do not pass custom-input names, doc-strings, or output validation lists."))
+
 (defn- object-build
   "For building the 'objects' with describe, desc and blend."
   ([title arglist d p]
    (object-build title arglist d p @make-prefix @pred-suffix))
   ([title arglist d p prefixmake suffixpred]
    (assert (symbol? title) "Name to describe must be symbol")
-   (assert (vector? arglist) "Second arg to describe must be a vector for the arglist.")
+   (assert-describe-arglist arglist)
    (let [m (symbol (str title "-input"))
          make-name (symbol (str prefixmake title))]
      `(do (~d ~make-name
@@ -516,6 +520,7 @@ Optional arguments shown in brackets may be in any order. "))
 (defn describe-build
   "This intermediate step does not exist for desc since it does not provide the option to name the function created. This step simply asserts that you have done so correctly."
   [title arglist d p [prefixmake suffixpred :as decorate]]
+  (assert-describe-arglist arglist)
   (when (seq decorate)
     (assert (= 2 (count decorate))
             "Describe requires both or neither the prefix and suffix names after the arg vector.")
@@ -601,7 +606,9 @@ Optional arguments shown in brackets may be in any order. "))
 (defmacro blend
   "Generates a describe expression that adds all the default values of the supplied previously-described symbols to the arg list for the new describe (as per the describe macro)."
   [descname valids & descs]
+  (assert-describe-arglist valids)
   (assert descs "Blend requires at least one previously described name after its arg list.")
+  (assert (every? symbol? descs) "Blend accepts symbols only after the arg vector. The symbols should be previously named with describe, desc or blend.")
   `(let [ba# (blended-arglist ~descname ~valids ~descs)]
      (blend-fn '~descname ba#)))
 

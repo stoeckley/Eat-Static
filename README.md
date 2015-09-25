@@ -741,13 +741,10 @@ Map constructors and validators using ```describe```:
 
 (describe baby-child [(child?) baby-child-input (< 2) age])
 ```
-Unlike ```df``` and ```pred``` which generate functions directly based on the name you provide to them, ```describe``` and ```desc``` each build two functions, a ```df``` and a ```pred```, and both are automatically annotated with doc-strings based on the name of the type you give to ```describe/desc```. Thus, ```describe/desc``` simply take the name of the type/trait and its validation vector, and no doc-string; since these are designed as type definitions, the name you give them and the validation vector should be self-documenting.
-
-As you will see further below, if want to validate the overall input-map based on other types (like the ```(child?)``` expression above), just use ```blend``` which is more elegant and powerful for this purpose, thus providing a custom name to the input map is not available with ```describe/desc```, though you can use the default -input name if necessary. And since there is no function body to these tools, there is no output validation list accepted. 
 
 ##### Automatic default values
 
-Additionally, the make-child function automatically adds default values to your map, if they were supplied in the original arg list:
+Additionally, the make- "constructor" function automatically adds default values to your map, if they were supplied in the original arg list:
 
 ```clojure
 (describe defaults [:i a [b 8 c 9]])
@@ -768,16 +765,15 @@ You can optionally provide the prefix and suffix used for the make function and 
 
 ;; This generates new-baby-child as the make function, and baby-child as the
 ;; predicate function.
-
-;; A nearly identical form of "describe" is "desc". It is shorter to type
-;; and does not accept optional names for the two functions it creates, using the
-;; standard make- and ..? function names.
-;; Using "desc" forces consistency on the naming conventions, which is important
-;; if you use "blend" described further below.
-
-;; Additionally, describe- and desc- create private versions 
-;; of the constructor and validator
 ```
+A nearly identical form of ```describe``` is ```desc```. It is shorter to type and does not accept optional names for the two functions it creates, using the standard make- and ..? function names. Using ```desc``` forces consistency on the naming conventions, which is important if you use ```blend``` described further below.
+
+Additionally, ```describe-``` and ```desc-``` create private versions of the constructor and validator
+
+Unlike ```df``` and ```pred``` which generate functions directly based on the name you provide to them, ```describe``` and ```desc``` each build two functions, a ```df``` and a ```pred```, and both are automatically annotated with doc-strings based on the name of the type you give to ```describe/desc```. Thus, ```describe/desc``` simply take the name of the type/trait and its validation vector, and no doc-string; since these are designed as type definitions, the name you give them and the validation vector should be self-documenting.
+
+As you will see further below, if want to validate the overall input-map based on other types (like the ```(child?)``` expression above), just use ```blend``` which is more elegant and powerful for this purpose, thus providing a custom name to the input map is not available with ```describe/desc```, though you can use the default -input name if necessary. And since there is no function body to these tools, there is no output validation list accepted. 
+
 ##### A note on function names
 
 As shown above, ```describe```, ```desc``` and ```blend``` (explained below) generate 2 functions, a "factory" with ```df``` that validates a map before usage, using assertions, and a predicate that provides true/false verification that a map meets the described criteria. These are separate bonafide functions that have their own def'd name. As shown above, ```describe``` gives you the option of controlling how they are named, while ```desc``` and ```blend``` do not. Several of the features of Eat Static rely on a consistent naming scheme behind the scenes, and you can override the ```make-``` and ```...?``` prefix and suffix used throughout the library if you wish, which will change how function names are defined, and update other tools that need to peek at these generated functions:

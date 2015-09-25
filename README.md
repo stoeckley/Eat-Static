@@ -984,7 +984,7 @@ The ```ab-cd``` type (or trait) has all the properties and requirements of the `
 ;; {:e :hi, :w 1.1, :q 55, :a 1, :c 3, :b 2, :d 4}
 
 ```
-Another application of this tool is to create specific "sub-classed" default versions of types by supplying a default value in ```blend``` for a previously described required parameter.
+One application of this tool is to create specific "sub-classed" default versions of types by supplying a default value in ```blend``` for a previously described required parameter, or a previous default value.
 
 ##### inheritance -- which type gets the control?
 

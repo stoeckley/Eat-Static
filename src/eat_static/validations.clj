@@ -112,6 +112,35 @@
   (reset! pred-suffix "?")
   (println "Eat Static: New names for generated functions have been set to defaults."))
 
+(defn- get-make
+  "Returns the make-fn for a symbol previously defined with desc"
+  [sym]
+  (symbol (str @make-prefix sym)))
+
+(defn- get-pred
+  "Returns the pred-fn for a symbol previously defined with desc"
+  [sym]
+  (symbol (str sym @pred-suffix)))
+
+(defn- get-desc-sym
+  "Helper for get-desc-fn. Given a symbol, returns either the make fn or the pred fn defined previously for the symbol"
+  [sym kw]
+  (assert (nil? (re-find #"/" sym)) "get-desc-sym works on a non-qualified symbol only.")
+  (assert (not= "" (clojure.string/trim (str sym))) "Empty symbol provided to get-desc-fn")
+  (assert (#{:make :pred} kw) "get-desc-fn accepts :make or :pred only")
+  (if (= :make kw)
+    (get-make sym)
+    (get-pred sym)))
+
+(defn get-desc-fn
+  "Given a symbol, returns either the make fn or the pred fn defined previously for the symbol, returning the exact fn name as a symbol, with the ns alias if it was provided. kw is either :make or :pred"
+  [sym kw]
+  (let [sym (str sym)]
+    (if (re-find #"/" sym)
+      (let [[n s] (clojure.string/split (str sym) #"/")]
+        (symbol (str n "/" (get-desc-sym s kw))))
+      (get-desc-sym sym kw))))
+
 ;; Helpers used when parsing the macros:
 
 (defn- is-pre-or-post
@@ -199,7 +228,8 @@
   (reduce
    #(let [value (second %2)
           predicate (if (symbol? value)
-                      `(~(symbol (str value @pred-suffix)))
+                      ;;`(~(symbol (str value @pred-suffix)))
+                      `(~(get-desc-fn value :pred))
                       `(= ~value))]
       (-> %
           (assoc :lastfn predicate)
@@ -571,7 +601,8 @@ Optional arguments shown in brackets may be in any order. "))
   "Takes a sequence of symbols as previously defined with describe, and builds a map of all merged defaults from all function arg lists in those symbols' definitions. Optional function will map over the keyword so you can keep the original symbol, or get a keyword, or make a string, etc. This is a macro since the supplied symbols don't actually resolve to anything; new symbols are generated based on these symbols that point to the actual def'd vars created with a describe expression."
   ([r] `(desc-defaults ~r keyword))
   ([r f]
-   (let [dfs (map #(symbol (str @make-prefix %)) r)]
+   (let [;dfs (map #(symbol (str @make-prefix %)) r)
+         dfs (map #(get-desc-fn % :make) r)]
      `(merge ~@(map (fn [x] `(transform-or-map (getor ~x) ~f)) dfs)))))
 
 (defn extract-non-nil-defaults
@@ -583,7 +614,8 @@ Optional arguments shown in brackets may be in any order. "))
 (defmacro blended-arglist
   "Takes a series of symbols at run-time and builds a defaults vector based on the default values for all the descriptions those symbols represent, but removing any required symbols in the arg vector, and appends it to a supplied validation list to automatically build a combined list of defaults in a single vector, along with other validators. Also constructs predicate tests for each of the descriptions, and adds that as a requirement to the input map. This is a macro since the valids vector contains expressions that cannot be evaluated and are parsed later."
   [descname valids descs]
-  `(let [preds# '~(map #(symbol (str % @pred-suffix)) descs)
+  `(let [;preds# '~(map #(symbol (str % @pred-suffix)) descs)
+         preds# '~(map #(get-desc-fn % :pred) descs)
          defaults# (desc-defaults ~descs identity)
          argsplit# (arg-split '~valids (gensym) false (gensym))
          required# (:req argsplit#)
@@ -724,7 +756,8 @@ Optional arguments shown in brackets may be in any order. "))
   [sym map]
   (assert (symbol? sym) "First arg to make must be a symbol.")
   (assert (map? map) "Last arg to make must be a map.")
-  (let [s (symbol (str @make-prefix sym))]
+  (let [s (symbol (get-desc-fn sym :make)
+           #_(str @make-prefix sym))]
     `(~s ~map)))
 
 (defmacro mc
@@ -737,14 +770,16 @@ Optional arguments shown in brackets may be in any order. "))
   [sym map]
   (assert (symbol? sym) "First arg to is? must be a symbol.")
   (assert (map? map) "Last arg to is? must be a map.")
-  (let [s (symbol (str sym @pred-suffix))]
+  (let [s (symbol (get-desc-fn sym :pred)
+           #_(str sym @pred-suffix))]
     `(~s ~map)))
 
 (defmacro danger
   "Returns the default map (which could be empty) for a type defined with desc, without validating the defaults against other aspects of the type's creation (validation expressions, blended type requirements, etc)"
   [sym]
   (assert (symbol? sym) "The sole arg to d must be a symbol.")
-  (let [n (symbol (str @make-prefix sym))]
+  (let [n (get-desc-fn sym :make)
+        #_(symbol (str @make-prefix sym))]
     `(transform-or-map (getor ~n))))
 
 (defmacro d
@@ -765,7 +800,8 @@ Optional arguments shown in brackets may be in any order. "))
   (assert (symbol? sym) "First arg to vmake must be a symbol.")
   (assert (map? m) "Second arg to vmake must be a map.")
   (assert (integer? n) "last arg to vmake must be an integer")
-  (let [s (symbol (str @make-prefix sym))]
+  (let [s (get-desc-fn sym :make)
+        #_(symbol (str @make-prefix sym))]
     `(mapv (fn [_#] (~s ~m)) (range ~n))))
 
 ;; Helpers to access and use nested associated data

@@ -34,7 +34,7 @@ Automate several excellent tools in Clojure for writing safer code -- tools you 
 
 ##### Alternatives
 
-Other libraries which aim to solve similar problems are [Core.Typed](https://github.com/clojure/core.typed), [core.contracts](https://github.com/clojure/core.contracts), and [Prismatic Schema] (https://github.com/Prismatic/schema). These first two options add a fair amount of verbosity and additional logic to your work which can interfere with the elegance of Clojure. Schema offers validation in the spirit of this library, but doesn't address many of the needs of this author. 
+Other libraries which aim to solve similar problems are [Core.Typed](https://github.com/clojure/core.typed), [core.contracts](https://github.com/clojure/core.contracts), and [Prismatic Schema] (https://github.com/Prismatic/schema). These first two options add a fair amount of verbosity and additional logic to your work which can interfere with the elegance of Clojure. Schema offers validation in the spirit of this library, but doesn't address many needs of this author. 
 
 Eat Static takes a different approach, and makes ordinary functions and expressions the basis for type safety, while giving top priority to quick syntax for all the features. It aims to provide a simple path for adding safety checks and trait techniques to any function or ordinary Clojure map with no heavy boilerplate or changes to how you structure your code. For example, an *enum* is just a Clojure set; the API for these checks is thus very minimal, familiar, and flexible.
 

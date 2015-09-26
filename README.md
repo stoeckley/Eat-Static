@@ -984,6 +984,8 @@ The ```ab-cd``` type (or trait) has all the properties and requirements of the `
 ;; {:e :hi, :w 1.1, :q 55, :a 1, :c 3, :b 2, :d 4}
 
 ```
+Behind the scenes, ```blend``` is using's Clojure's automatic ```:arglist``` metadata that it appends to all function definitions. Eat Static leverages this aspect of the Clojure environment rather than manage or store default values on its own.
+
 One application of this tool is to create specific "sub-classed" default versions of types by supplying a default value in ```blend``` for a previously described required parameter, or a previous default value.
 
 ##### inheritance -- which type gets the control?

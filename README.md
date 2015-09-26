@@ -157,8 +157,8 @@ More complex argument requirements are equally handled with ease:
 
 (df two-ints [(> b) a :i b (< 10) a b] ...)
 
-;; b must be an integer and a must be greater than b, 
-;; but both a and b must be less than 10.
+;; "b" must be an integer and "a" must be greater than "b", 
+;; but both "a" and "b" must be less than 10.
 ;; if any of these fail, the whole function call fails
 ```
 

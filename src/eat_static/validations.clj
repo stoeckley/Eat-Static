@@ -807,10 +807,3 @@ Optional arguments shown in brackets may be in any order. "))
         r (rest a)]
     `(get-in ~l ~(vec (map keyword r)))))
 
-;; This one is really not that useful; better to use "g"
-(defn f
-  "f is for function
-  Accepts a keyword for a function parameter of a map, the map, and any args for the function, and calls it."
-  [fun obj & args]
-  (apply (get obj fun (constantly nil)) args))
-

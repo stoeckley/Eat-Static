@@ -518,7 +518,7 @@ You could write a normal function that returns a truthy value to use as a predic
 
 ;; Error if you call this fn with maps that don't exhibit the required trait
 ```
-**However**, since the purpose of the df forms is to build assertive functions, you can't use is-senior? everywhere you might want a true or false return value, since it throws exceptions instead of false (...and what if you have assertions turned off in your environment?). Additionally, there is the inelegant extraneous presence of the dangling "true". Fixing both of these problems is the **pred** form, which creates a non-assertive function using the same syntax as df. You do not pass a function body or a :pre/:post map to pred:
+**However**, since the purpose of the df forms is to build assertive functions, you cannot use this function ```is-senior?``` everywhere you might want a true or false return value, since it throws exceptions instead of false (...and what if you have assertions turned off in your environment?). Additionally, there is the inelegant extraneous presence of the dangling "true". Fixing both of these problems is the **pred** form, which creates a non-assertive function using the same syntax as df. You do not pass a function body or a :pre/:post map to pred:
 
 ``` clojure
 

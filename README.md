@@ -680,6 +680,8 @@ Here is a way to describe a kitty cat, and a bunch of them, and then a function 
 (defn bunch-o-kitties [ks] (epv> ks kitty))
 
 (df feed-kitties [(bunch-o-kitties) cats] ... )
+
+;; In other words, bunch-o-kitties is a homogenous collection of a custom type
 ```
 #### Custom aggregate types
 

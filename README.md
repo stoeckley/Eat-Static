@@ -690,7 +690,9 @@ Some languagues like Agda or Idris offer type checking based not just on the dat
 
 This naturally comes for free in Eat Static. When you define a type such as ```is-senior?``` requiring the ```age``` field to be ```> 65```, this is similar to dependent types in those languages. 
 
-Of course, here it is at run-time, while other languages attempt to do this at compile-time. However, eventually, to get the same flexibility with static checks as you get with run-time checks, your type system must extend all the way down to the value level at compile time, which no language provides. This is one of the interesting trade-offs between static and run-time type checking. You do not get certain guarantees before the program runs, but you acquire must greater flexibility in those type checks once the program is running.
+Of course, here it is at run-time, while other languages attempt to do this at compile-time. However, eventually, to get the same flexibility with static checks as you get with run-time checks, your type system must extend all the way down to the value level at compile time, which no language provides easily. This is one of the interesting trade-offs between static and run-time type checking. You do not get certain guarantees before the program runs, but you acquire must greater flexibility in those type checks once the program is running.
+
+With Eat Static, your "type" also has the flexibility to be a run-time guarantee in the form of an assertion, or mere run-time conditional for routing logic, all with the same type definition.
 
 ### Custom aggregate types
 

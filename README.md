@@ -684,9 +684,13 @@ Here is a way to describe a kitty cat, and a bunch of them, and then a function 
 
 ;; In other words, bunch-o-kitties is a homogenous collection of a custom type
 ```
-#### Dependent Types
+#### Dependent Types, and run-time vs. static type checking
 
-Some languagues like Agda or Idris offer type checking based not just on the data type itself, but also with a restriction on the values of that data. The underlying type is therefore based on a data type as well as a predicate. This naturally comes for free in Eat Static. When you define a type such as ```is-senior?``` requiring the ```age``` field to be ```> 65```, this is similar to dependent types in those languages.
+Some languagues like Agda or Idris offer type checking based not just on the data type itself, but also with a restriction on the values of that data. The underlying type is therefore based on a data type as well as a predicate. 
+
+This naturally comes for free in Eat Static. When you define a type such as ```is-senior?``` requiring the ```age``` field to be ```> 65```, this is similar to dependent types in those languages. 
+
+Of course, here it is at run-time, while other languages attempt to do this at compile-time. However, eventually, to get the same flexibility with static checks as you get with run-time checks, your type system must extend all the way down to the value level at compile time, which no language provides. This is one of the interesting trade-offs between static and run-time type checking. You do not get certain guarantees before the program runs, but you acquire must greater flexibility in those type checks once the program is running.
 
 ### Custom aggregate types
 
@@ -1436,7 +1440,7 @@ It would be nice to extend this library to ClojureScript, using reader condition
 
 * Some of the primitive type checks are not available in JS
 * Exception handling, and throwing exceptions, are different in JS
-* The blend macro relies on arglist metadata which is not available at runtime in JS, though all the other macros should work for df, describe, pred, etc. This may mean removing blend from the cljs version, or implementing it there in an entirely different way
+* The blend macro relies on arglist metadata which is not available at run-time in JS, though all the other macros should work for df, describe, pred, etc. This may mean removing blend from the cljs version, or implementing it there in an entirely different way
 
 These may eventually get looked at, but it is not currently a priority.
 

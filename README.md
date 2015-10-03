@@ -11,6 +11,7 @@
 * Construct complex functional predicates on the fly
 * Leverage custom types and traits from basic Clojure maps
 * Compose existing types into new composite types easily
+* Create "dependent type" behavior, inspired by languages like Agda and Idris
 * Write functions that accept named, unordered parameters
 * Specify function arguments as required or optional
 * Provide default values for optional arguments
@@ -661,7 +662,7 @@ Sometimes you need to ensure that all items in a sequence, such as a vector, exh
   ... )
 
 ```
-##### Simple functional types
+#### Simple functional types
 If you want to create and re-use a particular "type" such as the vector of integers demonstrated above, just lift it out into its own function:
 ```clojure
 (defn vec-of-ints [x] (epv> x (t :i))) 
@@ -683,7 +684,11 @@ Here is a way to describe a kitty cat, and a bunch of them, and then a function 
 
 ;; In other words, bunch-o-kitties is a homogenous collection of a custom type
 ```
-#### Custom aggregate types
+#### Dependent Types
+
+Some languagues like Agda or Idris offer type checking based not just on the data type itself, but also with a restriction on the values of that data. The underlying type is therefore based on a data type as well as a predicate. This naturally comes for free in Eat Static. When you define a type such as ```is-senior?``` requiring the ```age``` field to be ```> 65```, this is similar to dependent types in those languages.
+
+### Custom aggregate types
 
 In addition to the simple techniques above for defining a custom "type", Eat Static provides a couple of useful tools for rounding out the picture of a specification for an aggregate map.
 
@@ -1424,6 +1429,16 @@ Just as you can do things in a Clojure pre/post map that make no sense, you coul
 * Validation expressions are not functions. They are list expressions, or keyword primitive type checks. Don't use functions like ```neg?``` in isolation, use ```(neg?)``` instead, unless you are already inside an expression, like ```and>```, in which case you must use an ordinary function.
 * While the vast majority of use cases will provide a meaningful assertion message if a validation fails, occasionally you can write an expression that attempts to do something with nil that instead leads to a null pointer exception instead, which carries no useful message. The assertion is valid based on your specified validation criteria, but the message is not clear.
 * Beware of ```nil```. If you expect to pass nil as a legitimate value to your function, do not make that argument required, as it will enforce it as non-nil. 
+
+### To Do
+
+It would be nice to extend this library to ClojureScript, using reader conditions. Here are the items that would need addressed to do so:
+
+* Some of the primitive type checks are not available in JS
+* Exception handling, and throwing exceptions, are different in JS
+* The blend macro relies on arglist metadata which is not available at runtime in JS, though all the other macros should work for df, describe, pred, etc. This may mean removing blend from the cljs version, or implementing it there in an entirely different way
+
+These may eventually get looked at, but it is not currently a priority.
 
 ### Community
 

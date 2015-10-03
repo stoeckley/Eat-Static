@@ -11,7 +11,7 @@
 * Construct complex functional predicates on the fly
 * Leverage custom types and traits from basic Clojure maps
 * Compose existing types into new composite types easily
-* Create "dependent type" behavior, inspired by languages like Agda and Idris
+* Create "dependent type" behavior, similar to languages like Agda or Idris
 * Write functions that accept named, unordered parameters
 * Specify function arguments as required or optional
 * Provide default values for optional arguments

@@ -43,9 +43,9 @@ Eat Static takes a different approach, and makes ordinary functions and expressi
 
 ### Includes
 
-* clojars -- (deploying to Clojars shortly)
+* Clojars: ```[nl.balconystudio/eat-static "0.1.0"]```
 
-* ``` (:require [eat-static.validations :refer :all])```
+* Require: ```[eat-static.validations :refer :all]```
 
 ### Support, Questions
 

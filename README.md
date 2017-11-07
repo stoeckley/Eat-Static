@@ -1,3 +1,6 @@
+Note: This library was an experiment a few years ago and served mainly as good training for writing macros. I don't use it, and neither should you. What I do use, however, is my much lighter and simpler library, [clojure-assistant](https://github.com/astoeckley/clojure-assistant).
+
+---------------------------------------------------------------------------------
 ## Eat Static
 
 #### Easy run-time type-checking and validation of Clojure maps and functions
